@@ -5,7 +5,6 @@ namespace Wallet\Core\Http\Livewire\Datatables;
 use Rappasoft\LaravelLivewireTables\DataTableComponent;
 use Rappasoft\LaravelLivewireTables\Views\Column;
 use App\Models\User;
-use Illuminate\Support\Facades\Auth;
 
 class UsersTable extends DataTableComponent
 {

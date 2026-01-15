@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Collection;
 use Livewire\Component;
 use Wallet\Core\Http\Traits\WalletEvents;
 use Wallet\Core\Models\TransactionType;
+use Illuminate\Support\Str;
 
 class TransactionTypesComponent extends Component
 {

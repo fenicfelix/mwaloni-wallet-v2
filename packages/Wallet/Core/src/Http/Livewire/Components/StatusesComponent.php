@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Collection;
 use Livewire\Component;
 use Wallet\Core\Http\Traits\WalletEvents;
 use Wallet\Core\Models\Status;
+use Illuminate\Support\Str;
 
 class StatusesComponent extends Component
 {

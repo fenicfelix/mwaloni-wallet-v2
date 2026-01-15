@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Collection;
 use Livewire\Component;
 use Wallet\Core\Http\Traits\WalletEvents;
 use Wallet\Core\Models\AccountType;
+use Illuminate\Support\Str;
 
 class AccountTypesComponent extends Component
 {

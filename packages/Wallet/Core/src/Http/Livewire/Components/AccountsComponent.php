@@ -9,14 +9,17 @@ use App\Jobs\Ncba\QueryNcbaBalance;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Livewire\Component;
 use Wallet\Core\Http\Traits\MwaloniWallet;
 use Wallet\Core\Http\Traits\WalletEvents;
 use Wallet\Core\Jobs\FetchAccountBalance;
+use Wallet\Core\Jobs\ProcessPayment;
 use Wallet\Core\Models\Account;
 use Wallet\Core\Models\AccountType;
 use Wallet\Core\Models\Currency;
 use Wallet\Core\Models\PaymentChannel;
+use Wallet\Core\Models\Transaction;
 
 class AccountsComponent extends Component
 {
@@ -61,7 +64,7 @@ class AccountsComponent extends Component
         $this->editWithheldAmount = false;
         $this->add = false;
         $this->cashout = false;
-        $this->editId = false;
+        $this->editId = null;
         $this->account = new Account();
 
         $this->reset("form");
