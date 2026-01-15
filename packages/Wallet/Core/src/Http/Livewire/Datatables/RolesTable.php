@@ -14,7 +14,7 @@ class RolesTable extends DataTableComponent
     public function configure(): void
     {
         $this->setPrimaryKey('id');
-        $this->setDefaultSort('id', 'ASC');
+        $this->setDefaultSort('id', 'desc');
         $this->setTableAttributes([
             'class' => 'table table-theme table-row v-middle',
         ]);

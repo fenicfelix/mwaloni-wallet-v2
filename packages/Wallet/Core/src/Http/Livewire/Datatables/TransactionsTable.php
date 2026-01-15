@@ -23,7 +23,7 @@ class TransactionsTable extends DataTableComponent
     public function configure(): void
     {
         $this->setPrimaryKey('id');
-        $this->setDefaultSort('id', 'DESC');
+        $this->setDefaultSort('id', 'desc');
         $this->setTableAttributes([
             'class' => 'table-theme table-row v-middle',
         ]);

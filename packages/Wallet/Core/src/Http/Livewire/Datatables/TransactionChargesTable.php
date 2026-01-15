@@ -14,7 +14,7 @@ class TransactionChargesTable extends DataTableComponent
     public function configure(): void
     {
         $this->setPrimaryKey('id');
-        $this->setDefaultSort('minimum', 'ASC');
+        $this->setDefaultSort('minimum', 'asc');
         $this->setTableAttributes([
             'class' => 'table table-theme table-row v-middle',
         ]);

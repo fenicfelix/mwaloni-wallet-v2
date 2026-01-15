@@ -14,6 +14,7 @@ class MessagesTable extends DataTableComponent
     public function configure(): void
     {
         $this->setPrimaryKey('id');
+        $this->setDefaultSort('id', 'desc');
         $this->setTableAttributes([
             'class' => 'table table-theme table-row v-middle',
         ]);
