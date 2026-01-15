@@ -1,0 +1,51 @@
+<?php
+
+namespace Wallet\Core\Http\Livewire\Datatables;
+
+use Rappasoft\LaravelLivewireTables\DataTableComponent;
+use Rappasoft\LaravelLivewireTables\Views\Column;
+use Wallet\Core\Models\Outbox;
+
+class MessagesTable extends DataTableComponent
+{
+    protected $model = Outbox::class;
+    public $counter = 1;
+
+    public function configure(): void
+    {
+        $this->setPrimaryKey('id');
+        $this->setTableAttributes([
+            'class' => 'table table-theme table-row v-middle',
+        ]);
+    }
+
+    public function columns(): array
+    {
+        return [
+            Column::make('Id', 'id')
+                ->sortable()
+                ->format(fn() => $this->counter++),
+            Column::make("To", "to")
+                ->searchable()
+                ->sortable(),
+            Column::make("Message", "message")
+                ->searchable()
+                ->sortable(),
+            Column::make("Status", "sent")
+                ->sortable()
+                ->format(
+                    fn($value) => ($value) ? '<span class="disc text-success"></span>' : '<span class="disc text-warning"></span>'
+                )->html(),
+            Column::make("Sent On", "created_at")
+                ->sortable()
+                ->format(
+                    fn($value, $row, Column $column) => ($row->sent_at) ? date('d M, Y', strtotime($row->sent_at)) : "-"
+                ),
+            Column::make("Sent At", "sent_at")
+                ->sortable()
+                ->format(
+                    fn($value, $row, Column $column) => ($row->sent_at) ? date('h:i A', strtotime($row->sent_at)) : "-"
+                ),
+        ];
+    }
+}

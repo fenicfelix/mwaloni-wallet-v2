@@ -1,0 +1,34 @@
+{
+  "name": "wallet/core",
+  "description": "Wallet is a minimal, composable payment core for Laravel.",
+  "type": "library",
+  "license": "MIT",
+  "keywords": ["laravel", "wallet", "core"],
+  "require": {
+    "php": "^8.0",
+    "illuminate/support": "^8.0|^9.0|^10.0|^11.0|^12.0"
+  },
+  "require-dev": {
+    "orchestra/testbench": "^8.0|^9.0|^10.0",
+    "phpunit/phpunit": "^10.0|^11.0"
+  },
+  "autoload": {
+    "psr-4": {
+      "Wallet\\Core\\": "src/"
+    }
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "Wallet\\Core\\Tests\\": "tests/"
+    }
+  },
+  "extra": {
+    "laravel": {
+      "providers": [
+        "Wallet\\Core\\Providers\\CoreServiceProvider"
+      ]
+    }
+  },
+  "minimum-stability": "stable",
+  "prefer-stable": true
+}
