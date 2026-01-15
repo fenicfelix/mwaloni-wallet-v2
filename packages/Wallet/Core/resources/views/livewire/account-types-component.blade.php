@@ -6,7 +6,7 @@
     </div>
     <div class="mt-4 padding">
         <div class="row">
-            @include('_includes.technical-nav')
+            @include('core::_includes.technical-nav')
             <div class="col-md-9 col-sm-12">
                 <div class="row">
                     <div class="col-12">

@@ -108,35 +108,12 @@
                                 </div>
                                 <div class="mt-4">
                                     <button type="button" class="btn btn-danger rounded" wire:click="backToList">Cancel</button>
-                                    <button type="submit" wire:loading.attr="disabled" class="btn btn-primary dark">{{ ($editId) ? 'Save Changes' : 'Submit' }}</button>
+                                    <button type="submit" wire:loading.attr="disabled" class="btn btn-dark rounded">{{ ($editId) ? 'Save Changes' : 'Submit' }}</button>
                                     <span class="d-custom-none">
                                         <img src="{{ asset('themes/agile/img/working.gif') }}" width="20" alt=""> <small>please wait...</small>
                                     </span>
                                 </div>
                             </form>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-sm-12 col-md-6 d-table h-100">
-                    <div class="card">
-                        <div class="card-body">
-                            <div class="row px-3">
-                                <div class="col-sm-12">
-                                    <fieldset>
-                                        <legend>API Credentials</legend>
-                                        <code>Please copy the below credentials before saving.</code><br>
-                                        @isset($form['username'])
-                                            <label>Username: <span id="api_username_label">{{ $form['username'] }}</span></label><br>
-                                        @endisset
-                                        @isset($form['password'])
-                                            <label>Password: {{ $form['password'] ?? '' }}</label><br>
-                                        @endisset
-                                        @if ($editId)
-                                            <button type="button" class="btn btn-primary rounded" wire:click="generateNewPassword">Generate New Password</button>
-                                        @endif
-                                    </fieldset>
-                                </div>
-                            </div>
                         </div>
                     </div>
                 </div>

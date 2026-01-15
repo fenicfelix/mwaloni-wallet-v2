@@ -49,6 +49,6 @@ class TransactionTypesTable extends DataTableComponent
 
     public function editFunction($form_id)
     {
-        $this->emit('editFunction', $form_id);
+        $this->dispatch('editFunction', $form_id);
     }
 }

@@ -10,6 +10,10 @@
     margin-bottom: 10px;
 }
 
+.table-row td {
+    color: #647787!important;
+}
+
 fieldset.form-fieldset {
     padding: 1rem;
     border: 1px solid #cbd5e0;

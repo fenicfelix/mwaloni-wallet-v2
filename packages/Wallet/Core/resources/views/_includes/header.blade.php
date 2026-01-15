@@ -21,23 +21,10 @@
     <link rel="stylesheet" href="{{ asset('themes/agile/css/all.min.css') }}" type="text/css" />
     <link rel="stylesheet" href="{{ asset('themes/agile/libs/toastr/toastr.min.css') }}" type="text/css" />
     
-    <link rel="stylesheet" href="{{ asset('themes/agile/css/custom.css?v3.1.0') }}" type="text/css" />
-
-
-    <!-- Styles -->
-    {{-- <link rel="stylesheet" href="{{ asset('css/app.css') }}">
-
-    <!-- Scripts -->
-    <script src="{{ asset('js/app.js') }}" defer></script> --}}
-
-    {{-- @livewireStyles --}}
+    <link rel="stylesheet" href="{{ asset('themes/agile/css/custom.css?v3.1.0.1') }}" type="text/css" />
 
     <!-- jQuery -->
-    {{-- <script src="//unpkg.com/alpinejs" defer></script> --}}
-    {{-- <script src="{{ asset('themes/agile/libs/alpine/alpine.js') }}"></script> --}}
     <script src="{{ asset('themes/agile/libs/jquery/dist/jquery.min.js') }}"></script>
-    
-    <script> var isDynamic = false;</script>
 </head>
 
 <body class="layout-column">

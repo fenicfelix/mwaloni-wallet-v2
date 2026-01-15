@@ -22,7 +22,7 @@ class AccountsComponent extends Component
 {
     use WalletEvents, MwaloniWallet;
 
-    public bool $editId = false;
+    public ?int $editId = null;
 
     public array $form = [];
 

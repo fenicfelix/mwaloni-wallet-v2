@@ -25,7 +25,7 @@ class TransactionsTable extends DataTableComponent
         $this->setPrimaryKey('id');
         $this->setDefaultSort('id', 'DESC');
         $this->setTableAttributes([
-            'class' => 'table table-theme table-row v-middle',
+            'class' => 'table-theme table-row v-middle',
         ]);
         $this->setFilterLayout('slide-down');
 
@@ -52,7 +52,7 @@ class TransactionsTable extends DataTableComponent
 
     public function columns(): array
     {
-        return [
+        $columns = [
             Column::make('Id', 'id')
                 ->sortable()
                 ->format(fn() => $this->counter++),
@@ -166,6 +166,8 @@ class TransactionsTable extends DataTableComponent
 
             Column::make("Status Id", "status_id")->deselected(),
         ];
+
+        return $columns;
     }
 
     public function filters(): array
@@ -198,54 +200,54 @@ class TransactionsTable extends DataTableComponent
 
     public function viewFunction($form_id)
     {
-        $this->emit('viewFunction', $form_id);
+        $this->dispatch('viewFunction', $form_id);
     }
 
     public function editFunction($form_id)
     {
-        $this->emit('editFunction', $form_id);
+        $this->dispatch('editFunction', $form_id);
     }
 
     public function bulkRetry()
     {
         foreach ($this->getSelected() as $form_id) {
-            $this->emit('retryPayment', $form_id);
+            $this->dispatch('retryPayment', $form_id);
         }
         $this->clearSelected();
     }
 
     public function retryPayment($form_id)
     {
-        $this->emit('retryPayment', $form_id);
+        $this->dispatch('retryPayment', $form_id);
     }
 
     public function paidOffline($form_id)
     {
-        $this->emit('paidOffline', $form_id);
+        $this->dispatch('paidOffline', $form_id);
     }
 
     public function queryStatus($form_id)
     {
-        $this->emit('queryStatus', $form_id);
+        $this->dispatch('queryStatus', $form_id);
     }
 
     public function queryMultipleStatus()
     {
         foreach ($this->getSelected() as $form_id) {
-            $this->emit('queryStatus', $form_id);
+            $this->dispatch('queryStatus', $form_id);
         }
         $this->clearSelected();
     }
 
     public function export()
     {
-        $transactions = $this->getSelected();
-        $this->clearSelected();
-        return Excel::download(new TransactionsExport($transactions), 'transactions.xlsx');
+        // $transactions = $this->getSelected();
+        // $this->clearSelected();
+        // return Excel::download(new TransactionsExport($transactions), 'transactions.xlsx');
     }
 
     public function reverse($form_id)
     {
-        $this->emit('reverse', $form_id);
+        $this->dispatch('reverse', $form_id);
     }
 }

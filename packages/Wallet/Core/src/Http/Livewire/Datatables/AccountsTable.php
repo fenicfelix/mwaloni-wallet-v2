@@ -93,26 +93,26 @@ class AccountsTable extends DataTableComponent
 
     public function editFunction($form_id)
     {
-        $this->emit('editFunction', $form_id);
+        $this->dispatch('editFunction', $form_id);
     }
 
     public function deactivateAccount($form_id)
     {
-        $this->emit('deactivateAccount', $form_id);
+        $this->dispatch('deactivateAccount', $form_id);
     }
 
     public function cashoutFunction($form_id)
     {
-        $this->emit('cashoutFunction', $form_id);
+        $this->dispatch('cashoutFunction', $form_id);
     }
 
     public function fetchBalance($form_id)
     {
-        $this->emit('fetchBalance', $form_id);
+        $this->dispatch('fetchBalance', $form_id);
     }
 
     public function updateWithheldAmount($form_id)
     {
-        $this->emit('updateWithheldAmount', $form_id);
+        $this->dispatch('updateWithheldAmount', $form_id);
     }
 }

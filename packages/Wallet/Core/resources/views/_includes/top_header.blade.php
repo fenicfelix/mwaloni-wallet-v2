@@ -13,46 +13,30 @@
     <!-- Navbar collapse -->
     <div class="collapse navbar-collapse order-2 order-lg-1 justify-content-center" id="navbarToggler">
   	  <ul class="navbar-nav" data-nav>
-        {{-- @can('dashboard-list') --}}
-            <li class="nav-item {{ request()->is('/') ? 'active' : ''}}">
-                <a href="{{ route('dashboard') }}" class="nav-link"><span class="nav-text">Home</span></a>
-            </li>
-        {{-- @endcan
-        @can('transaction-list') --}}
+        <li class="nav-item {{ request()->is('/') ? 'active' : ''}}">
+            <a href="{{ route('dashboard') }}" class="nav-link"><span class="nav-text">Home</span></a>
+        </li>
         <li class="nav-item {{ request()->is('*transactions*') ? 'active' : ''}}">
             <a href="{{ route('transactions') }}" class="nav-link"><span class="nav-text">Transactions</span></a>
         </li>
-        {{-- @endcan
-        @can('account-list') --}}
-            <li class="nav-item {{ request()->is('*accounts*') ? 'active' : ''}}">
-                <a href="{{ route('accounts') }}" class="nav-link"><span class="nav-text">Accounts</span></a>
-            </li>
-        {{-- @endcan
-        @can('client-list') --}}
-            <li class="nav-item {{ request()->is('*clients*') ? 'active' : ''}}">
-                <a href="{{ route('clients') }}" class="nav-link"><span class="nav-text">Clients</span></a>
-            </li>
-        {{-- @endcan
-        @can('service-list') --}}
-            <li class="nav-item {{ request()->is('*services*') ? 'active' : ''}}">
-                <a href="{{ route('services') }}" class="nav-link"><span class="nav-text">Services</span></a>
-            </li>
-        {{-- @endcan
-        @can('message-list') --}}
-            <li class="nav-item {{ request()->is('*messages*') ? 'active' : ''}}">
-                <a href="{{ route('messages') }}" class="nav-link"><span class="nav-text">Messages</span></a>
-            </li>
-        {{-- @endcan
-        @can('user-list') --}}
-            <li class="nav-item {{ request()->is('*users*') ? 'active' : ''}}">
-                <a href="{{ route('users') }}" class="nav-link"><span class="nav-text">System Users</span></a>
-            </li>
-        {{-- @endcan
-        @can('technical-manage') --}}
-            <li class="nav-item {{ request()->is('*technical*') ? 'active' : ''}}">
-                <a href="{{ route('technical.roles') }}" class="nav-link"><span class="nav-text">Technical</span></a>
-            </li>
-        {{-- @endcan --}}
+        <li class="nav-item {{ request()->is('*accounts*') ? 'active' : ''}}">
+            <a href="{{ route('accounts') }}" class="nav-link"><span class="nav-text">Accounts</span></a>
+        </li>
+        <li class="nav-item {{ request()->is('*clients*') ? 'active' : ''}}">
+            <a href="{{ route('clients') }}" class="nav-link"><span class="nav-text">Clients</span></a>
+        </li>
+        <li class="nav-item {{ request()->is('*services*') ? 'active' : ''}}">
+            <a href="{{ route('services') }}" class="nav-link"><span class="nav-text">Services</span></a>
+        </li>
+        <li class="nav-item {{ request()->is('*messages*') ? 'active' : ''}}">
+            <a href="{{ route('messages') }}" class="nav-link"><span class="nav-text">Messages</span></a>
+        </li>
+        <li class="nav-item {{ request()->is('*users*') ? 'active' : ''}}">
+            <a href="{{ route('users') }}" class="nav-link"><span class="nav-text">System Users</span></a>
+        </li>
+        <li class="nav-item {{ request()->is('*technical*') ? 'active' : ''}}">
+            <a href="{{ route('technical.roles') }}" class="nav-link"><span class="nav-text">Technical</span></a>
+        </li>
   	  </ul>
     </div>
   

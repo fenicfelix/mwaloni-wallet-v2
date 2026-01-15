@@ -13,8 +13,6 @@
         var table_processer = "";
         var dt_serverside = false;
     </script>
-
-    
     
     <!-- Bootstrap -->
     <script src="{{ asset('themes/agile/libs/popper.js/dist/umd/popper.min.js') }}"></script>
@@ -32,12 +30,7 @@
 
     <!-- theme -->
     <script src="{{ asset('themes/agile/js/theme.js') }}"></script>
-    {{-- <script src="{{ asset('themes/agile/js/functions.js?v=1.0.2') }}"></script> --}}
 
-    {{-- @livewireScripts --}}
-
-    @stack('js')
-    @yield('js')
 
     <script>
         $("#action-logout").on('click', function (e) {
@@ -71,6 +64,9 @@
     <?php
     }
     ?>
+    
+    @stack('js')
+
     </body>
 
     </html>

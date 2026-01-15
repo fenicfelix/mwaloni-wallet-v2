@@ -5,7 +5,7 @@
         <div class="page-title padding pb-0 ">
             <span class="float-left"><h2 class="text-md mb-0 headliner">{{ $content_title }}</h2></span>
             <span class="float-right">
-                <button class="btn btn-primary rounded" wire:click="cancelEdit">Back to List</button></a>
+                <button class="btn btn-dark rounded" wire:click="cancelEdit">Back to List</button></a>
             </span>
         </div>
         <div class="mt-4"></div>
@@ -93,13 +93,11 @@
                             <label class="col-sm-4 col-form-label font-weight-bold">Status Message</label>
                             <label class="col-sm-8 col-form-label transaction-label">{{ $transaction->result_description ?? 'Waiting for callback' }}</label>
                         </div>
-                        @can('transaction-check-status')
-                            <hr>
-                            <div class="form-group row">
-                                <label class="col-sm-12 col-form-label font-weight-bold">Status</label>
-                                <code class="col-sm-12">{{ $transaction->payload?->raw_callback }}</code>
-                            </div>
-                        @endcan
+                        <hr>
+                        <div class="form-group row">
+                            <label class="col-sm-12 col-form-label font-weight-bold">Status</label>
+                            <code class="col-sm-12">{{ $transaction->payload?->raw_callback }}</code>
+                        </div>
                      </div>
                   </div>
                </div>

@@ -80,11 +80,11 @@ class ServicesTable extends DataTableComponent
 
     public function editFunction($form_id)
     {
-        $this->emit('editFunction', $form_id);
+        $this->dispatch('editFunction', $form_id);
     }
 
     public function withdrawCharges($form_id)
     {
-        $this->emit('withdrawCharges', $form_id);
+        $this->dispatch('withdrawCharges', $form_id);
     }
 }

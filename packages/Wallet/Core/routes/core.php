@@ -30,7 +30,7 @@ Route::middleware(['auth', 'web'])->group(function () {
 
     // Route::middleware(['role_or_permission:user-create'])->get('user/reset-password/{id}', [UsersController::class, 'reset_password'])->name("reset_password");
 
-    Route::middleware(['role_or_permission:technical-manage'])->prefix('technical')->as('technical.')->group(function () {
+    Route::prefix('technical')->as('technical.')->group(function () {
         Route::get('roles', RolesComponent::class)->name('roles');
         Route::get('account-types', AccountTypesComponent::class)->name('account_types');
         Route::get('statuses', StatusesComponent::class)->name('statuses');

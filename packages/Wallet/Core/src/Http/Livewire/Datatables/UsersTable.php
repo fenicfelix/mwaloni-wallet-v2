@@ -67,16 +67,16 @@ class UsersTable extends DataTableComponent
 
     public function showApiDetails($form_id)
     {
-        $this->emit('showApiDetails', $form_id);
+        $this->dispatch('showApiDetails', $form_id);
     }
 
     public function editFunction($form_id)
     {
-        $this->emit('editFunction', $form_id);
+        $this->dispatch('editFunction', $form_id);
     }
 
     public function resetPasswordFunction($form_id)
     {
-        $this->emit('resetPasswordFunction', $form_id);
+        $this->dispatch('resetPasswordFunction', $form_id);
     }
 }

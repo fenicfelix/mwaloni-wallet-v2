@@ -128,15 +128,6 @@ class ServicesComponent extends Component
         $this->max_amount = (($this->service->account->utility_balance + $this->service->account->working_balance) - $this->service->revenue);
     }
 
-    public function generateNewPassword()
-    {
-        if ($this->form) {
-            $this->form['password'] = $this->generateRandomString('password');
-        } else {
-            $this->notify("Missing service details.", "warning");
-        }
-    }
-
     public function rules()
     {
         $rules = [];
