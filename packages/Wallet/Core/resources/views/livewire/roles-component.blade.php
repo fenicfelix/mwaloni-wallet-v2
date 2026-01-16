@@ -35,16 +35,27 @@
                                             </div>
                                             <div class="row row-sm">
                                                 @foreach ($permissionsConfig as $group => $permissions)
-                                                    <h6>{{ $group }}</h6>
-                                                    @foreach ($permissions as $key => $value)
-                                                        <div class="col-12 mb-2">
-                                                            <input wire:model.defer="formData.permissions.{{ $key }}" class="add-permission" type="checkbox" value="{{ $key }}"
-                                                                id="permission-{{ $key }}">
-                                                            <label for="permission-{{ $key }}">
-                                                                {{ $key }} {{ $value }}
+                                                    <div class="col-12 col-md-3 mb-3">
+                                                        <div class="mb-2">
+                                                            <label class="md-switch">
+                                                                <input type="checkbox" value="{{ $group }}"
+                                                                    wire:click.prevent="toggleGroup('{{ $group }}')"
+                                                                > <i
+                                                                    class="blue"></i>
+                                                                <strong>{{ $group }}</strong>
                                                             </label>
                                                         </div>
-                                                    @endforeach
+                                                        <div class="row row-sm">
+                                                            @foreach ($permissions as $key => $value)
+                                                            <div class="col-12 mb-3 ml-3">
+                                                                <label class="md-switch">
+                                                                    <input type="checkbox" wire:model.defer="formData.permissions.{{ $key }}" value="{{ $key }}"> <i class="blue"></i>
+                                                                    {{ $value }}
+                                                                </label>
+                                                            </div>
+                                                            @endforeach
+                                                        </div>
+                                                    </div>
                                                 @endforeach
                                             </div>
                                         </div>

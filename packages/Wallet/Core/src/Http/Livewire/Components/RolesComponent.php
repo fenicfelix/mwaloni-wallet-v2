@@ -7,6 +7,7 @@ namespace Wallet\Core\Http\Livewire\Components;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\DB;
 use Livewire\Component;
+use Wallet\Core\Http\Enums\PermissionType;
 use Wallet\Core\Http\Traits\WalletEvents;
 use Wallet\Core\Models\Role;
 
@@ -18,11 +19,11 @@ class RolesComponent extends Component
 
     public ?bool $add = false;
 
-    public ?Collection $items;
-
     public ?int $edit_id;
 
     public ?array $formData = [];
+
+    public ?array $permissionTypes = [];
 
     public ?array $permissionsConfig = [];
 
@@ -34,7 +35,7 @@ class RolesComponent extends Component
 
     public function mount()
     {
-        $this->items = Role::get();
+        $this->permissionTypes = PermissionType::cases();
         $this->permissionsConfig = config('core.acl.permissions');
         $this->initializeValues();
     }
@@ -107,6 +108,26 @@ class RolesComponent extends Component
             $this->initializeValues();
             $this->add = false;
             $this->notify(($update) ? 'The role has been updated.' : 'The role has not been created.', "error");
+        }
+    }
+
+    public function toggleGroup(string $group): void
+    {
+        $groupPermissions = array_keys($this->permissionsConfig[$group] ?? []);
+        $current = $this->formData['permissions'] ?? [];
+
+        $allSelected = empty(array_diff($groupPermissions, $current));
+
+        if ($allSelected) {
+            // Unselect all in group
+            $this->formData['permissions'] = array_values(
+                array_diff($current, $groupPermissions)
+            );
+        } else {
+            // Select all in group
+            $this->formData['permissions'] = array_values(
+                array_unique(array_merge($current, $groupPermissions))
+            );
         }
     }
 
