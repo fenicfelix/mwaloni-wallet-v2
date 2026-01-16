@@ -49,9 +49,9 @@
                                         </div>
                                     </div>
                                     <div class="mt-4">
-                                        <button type="button" class="btn btn-danger rounded"
+                                        <button type="button" class="btn btn-danger btn-rounded w-sm"
                                             wire:click="addFunction">Cancel</button>
-                                        <button type="submit" class="btn btn-dark rounded">{{ ($editId) ? 'Save Changes'
+                                        <button type="submit" class="btn btn-dark btn-rounded w-sm">{{ ($editId) ? 'Save Changes'
                                             : 'Submit' }}</button>
                                         <span class="d-custom-none">
                                             <img src="{{ asset('themes/agile/img/working.gif') }}" width="20" alt="">
@@ -74,8 +74,8 @@
                     <h2 class="text-md mb-0 headliner">{{ $content_title }}</h2>
                 </span>
                 <span class="float-right">
-                    <button class="btn btn-dark rounded" wire:click="addFunction">{{ ($add) ? 'Back To List' : 'Add
-                        Client' }}</button></a>
+                    <button class="btn btn-dark btn-rounded px-4" wire:click="addFunction">{{ ($add) ? 'Back To List' : 'Add
+                        Client' }}</button>
                 </span>
             </div>
         </div>

@@ -45,16 +45,16 @@
         <li class="nav-item dropdown">
             <a href="#" data-toggle="dropdown" class="nav-link d-flex align-items-center py-0 px-lg-0 px-2 text-color">
                 <span class=" mx-2 d-custom-none l-h-1x d-lg-block text-right">
-                    <small class='text-fade d-block mb-1'>Logged in as</small>
+                    <small class='text-fade d-block mb-1'>Hello, Welcome</small>
                     <span>{{ auth()->user()->first_name." ".auth()->user()->last_name }}</span>
                 </span>
                 <span class="avatar w-36">
-                <img src="{{ asset('themes/agile/img/blank_profile.png') }}" alt="Felix Ogucha">
-            </span>
+                    <i class="mr-2 i-con i-con-user"></i>
+                </span>
             </a>
             <div class="dropdown-menu dropdown-menu-right w pt-0 mt-3 animate fadeIn">
-                <a class="dropdown-item" href="{{ route('my-profile') }}"><span>My Profile</span></a>
-                <a id="action-logout" class="dropdown-item" href="#">Sign out</a>
+                <a class="dropdown-item" href="{{ route('my-profile') }}"><span> <i class="mr-2 i-con i-con-user"></i> Profile</span></a>
+                <a id="action-logout" class="dropdown-item" href="#"> <i class="mr-2 i-con i-con-close"></i> Sign out</a>
                 <form action="{{ route('logout') }}" method="POST" id="logout-form">
                     @csrf
                 </form>

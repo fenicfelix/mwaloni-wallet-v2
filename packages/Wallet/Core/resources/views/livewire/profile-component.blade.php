@@ -58,9 +58,9 @@
                                         </div>
                                     </div>
                                     <div class="modal-footer">
-                                        <button type="button" class="btn btn-danger rounded"
+                                        <button type="button" class="btn btn-danger btn-rounded w-sm"
                                             data-dismiss="modal">Cancel</button>
-                                        <button type="submit" class="btn btn-dark rounded">Submit</button>
+                                        <button type="submit" class="btn btn-dark btn-rounded w-sm">Submit</button>
                                     </div>
                                 </form>
                                 @else

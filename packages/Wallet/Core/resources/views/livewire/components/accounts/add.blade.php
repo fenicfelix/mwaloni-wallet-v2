@@ -222,8 +222,8 @@
                                     @endif
                                 </div>
                                 <div class="mt-4">
-                                    <button type="button" class="btn btn-danger rounded" wire:click="backToList">Cancel</button>
-                                    <button type="submit" class="btn btn-dark rounded">{{ ($editId) ? 'Save Changes' : 'Submit' }}</button>
+                                    <button type="button" class="btn btn-danger btn-rounded w-sm" wire:click="backToList">Cancel</button>
+                                    <button type="submit" class="btn btn-dark btn-rounded w-sm">{{ ($editId) ? 'Save Changes' : 'Submit' }}</button>
                                     <span class="d-custom-none">
                                         <img src="{{ asset('themes/agile/img/working.gif') }}" width="20" alt=""> <small>please wait...</small>
                                     </span>

@@ -180,11 +180,9 @@ li.nav-item:hover {
 .nav-pills .show>.nav-link {
     color: #ffffff;
     background-color: #2b3035;
+    border-radius: 1rem;
 }
 
-button, input {
-    border-radius: 0 !important;
-}
 table.table.table-striped tr {
     font-size: 0.85rem;
 }

@@ -115,8 +115,8 @@
                                     </div>
                                 @endif
                                 <div class="mt-4">
-                                    <button type="button" class="btn btn-danger rounded" data-dismiss="modal" wire:click="backToList">Cancel</button>
-                                    <button type="submit" class="btn btn-dark rounded">Submit</button>
+                                    <button type="button" class="btn btn-danger btn-rounded w-sm" data-dismiss="modal" wire:click="backToList">Cancel</button>
+                                    <button type="submit" class="btn btn-dark btn-rounded w-sm">Submit</button>
                                     <span class="d-custom-none">
                                         <img src="{{ asset('themes/agile/img/working.gif') }}" width="20" alt=""> <small>please wait...</small>
                                     </span>

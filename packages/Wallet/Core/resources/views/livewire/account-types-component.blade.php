@@ -13,7 +13,7 @@
                         <div class="d-flex justify-content-between p-3">
                             <h5 class="modal-title">{{ ($add) ? ($edit_id) ? 'Update Transaction Type' : 'Add
                                 Transaction Type' : 'All Transaction Types' }}</h5>
-                            <button class="btn btn-dark rounded" wire:click="addFunction">{{ ($add) ? 'Back
+                            <button class="btn btn-dark btn-rounded px-4" wire:click="addFunction">{{ ($add) ? 'Back
                                 To List' : 'Add New' }}</button>
                         </div>
                         @if ($add)
@@ -36,9 +36,9 @@
                                     </div>
                                     <hr>
                                     <div class="mt-4">
-                                        <button type="button" class="btn btn-danger rounded" data-dismiss="modal"
+                                        <button type="button" class="btn btn-danger btn-rounded w-sm" data-dismiss="modal"
                                             wire:click="addFunction">Cancel</button>
-                                        <button type="submit" class="btn btn-dark rounded">Submit</button>
+                                        <button type="submit" class="btn btn-dark btn-rounded w-sm">Submit</button>
                                         <span class="d-custom-none">
                                             <img src="{{ asset('themes/agile/img/working.gif') }}" width="20" alt="">
                                             <small>please wait...</small>

@@ -82,9 +82,9 @@
                                         </div>
                                     </div>
                                     <div class="mt-4">
-                                        <button type="button" class="btn btn-danger rounded"
+                                        <button type="button" class="btn btn-danger btn-rounded w-sm"
                                             wire:click="backToList">Cancel</button>
-                                        <button type="submit" class="btn btn-dark rounded">{{ ($editId) ? 'Save Changes'
+                                        <button type="submit" class="btn btn-dark btn-rounded w-sm">{{ ($editId) ? 'Save Changes'
                                             : 'Submit' }}</button>
                                         <span class="d-custom-none">
                                             <img src="{{ asset('themes/agile/img/working.gif') }}" width="20" alt="">
@@ -109,7 +109,7 @@
                             <p><strong>Username:</strong> {{ $user->username }}</p>
                             <p><strong>Password:</strong> {{ $form["password"] }}</p>
                             <p><strong>API Key:</strong> {{ $user->api_key }}</p>
-                            <button type="button" class="btn btn-danger rounded" wire:click="backToList">Cancel</button>
+                            <button type="button" class="btn btn-danger btn-rounded w-sm" wire:click="backToList">Cancel</button>
                         </div>
                     </div>
                 </div>
@@ -122,8 +122,8 @@
             <h2 class="text-md mb-0 headliner">{{ $content_title }}</h2>
         </span>
         <span class="float-right">
-            <button class="btn btn-dark rounded" wire:click="addFunction">{{ ($add) ? 'Back To List' : 'Register User'
-                }}</button></a>
+            <button class="btn btn-dark btn-rounded px-4" wire:click="addFunction">{{ ($add) ? 'Back To List' : 'Register User'
+                }}</button>
         </span>
     </div>
     <div class="mt-4 padding">
@@ -148,9 +148,9 @@
                                     </div>
                                     <hr>
                                     <div class="mt-4">
-                                        <button type="button" class="btn btn-danger rounded" data-dismiss="modal"
+                                        <button type="button" class="btn btn-danger btn-rounded w-sm" data-dismiss="modal"
                                             wire:click="addFunction">Cancel</button>
-                                        <button type="submit" class="btn btn-dark rounded">Submit</button>
+                                        <button type="submit" class="btn btn-dark btn-rounded w-sm">Submit</button>
                                         <span class="d-custom-none">
                                             <img src="{{ asset('themes/agile/img/working.gif') }}" width="20" alt="">
                                             <small>please wait...</small>

@@ -24,9 +24,9 @@
                                     @enderror
                                 </div>
                                 <div class="mt-4">
-                                    <button type="button" class="btn btn-danger rounded"
+                                    <button type="button" class="btn btn-danger btn-rounded w-sm"
                                         wire:click="backToList">Cancel</button>
-                                    <button type="submit" class="btn btn-dark rounded">Update Withheld Amount</button>
+                                    <button type="submit" class="btn btn-dark btn-rounded w-sm">Update Withheld Amount</button>
                                     <span class="d-custom-none">
                                         <img src="{{ asset('themes/agile/img/working.gif') }}" width="20" alt="">
                                         <small>please wait...</small>

@@ -3,8 +3,8 @@
         <div class="page-title padding pb-0 ">
             <span class="float-left"><h2 class="text-md mb-0 headliner">{{ $content_title }}</h2></span>
             <span class="float-right">
-                <button class="btn btn-dark rounded" wire:click="addFunction">{{ ($add) ? 'Back To List' : 'Create Account'
-                    }}</button></a>
+                <button class="btn btn-dark btn-rounded px-4" wire:click="addFunction">{{ ($add) ? 'Back To List' : 'Create Account'
+                    }}</button>
             </span>
         </div>
     </div>

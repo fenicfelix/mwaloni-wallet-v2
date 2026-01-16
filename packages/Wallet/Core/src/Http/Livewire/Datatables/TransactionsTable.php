@@ -132,9 +132,9 @@ class TransactionsTable extends DataTableComponent
             Column::make("Status")
                 ->sortable()
                 ->label(function ($row, Column $column) {
-                    $status = '<span class="badge bg-warning">' . $row->status_name . '</span>';
-                    if ($row->status_id == 2) $status = '<span class="badge bg-success">' . $row->status_name . '</span>';
-                    else if (in_array($row->status_id, [3, 4])) $status = '<span class="badge bg-danger">' . $row->status_name . '</span>';
+                    $status = '<span class="badge bg-warning-lt">' . $row->status_name . '</span>';
+                    if ($row->status_id == 2) $status = '<span class="badge bg-success-lt">' . $row->status_name . '</span>';
+                    else if (in_array($row->status_id, [3, 4])) $status = '<span class="badge bg-danger-lt">' . $row->status_name . '</span>';
                     return $status;
                 })->html(),
 
