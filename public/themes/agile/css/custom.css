@@ -182,7 +182,9 @@ li.nav-item:hover {
     background-color: #2b3035;
     border-radius: 1rem;
 }
-
+.table-responsive .badge-info {
+    background-color: #2b3035;
+} 
 table.table.table-striped tr {
     font-size: 0.85rem;
 }

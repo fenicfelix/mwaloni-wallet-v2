@@ -27,6 +27,16 @@ class TransactionsTable extends DataTableComponent
         $this->setTableAttributes([
             'class' => 'table-theme table-row v-middle',
         ]);
+        $this->setFilterPillsItemAttributes([
+            'class' => 'badge badge-pill badge-dark d-inline-flex align-items-center', // Add these classes to the filter pills item
+            'default-colors' => false, // Do not output the default colors
+            'default-styling' => true // Output the default styling
+        ]);
+        $this->setSortingPillsItemAttributes([
+            'class' => 'badge badge-pill badge-dark d-inline-flex align-items-center', // Add these classes to the sorting pills item
+            'default-colors' => false, // Do not output the default colors
+            'default-styling' => true // Output the default styling
+        ]);
         $this->setFilterLayout('slide-down');
 
         $this->setBulkActions([
