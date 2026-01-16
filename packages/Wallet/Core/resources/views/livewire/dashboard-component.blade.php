@@ -179,8 +179,8 @@
                 datasets: [{
                     label: 'Value in KSh. ',
                     data: graph_data["values"],
-                    backgroundColor: 'rgba(19, 126, 255, 0.2)',
-                    borderColor: 'rgba(19, 126, 255, 1)',
+                    backgroundColor: 'rgba(43, 48, 53, 0.5)',
+                    borderColor: 'rgba(43, 48, 53, 1)',
                     borderWidth: 1
                 }],
             },
