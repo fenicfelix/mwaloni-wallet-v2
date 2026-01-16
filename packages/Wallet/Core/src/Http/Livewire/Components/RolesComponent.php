@@ -20,13 +20,11 @@ class RolesComponent extends Component
 
     public ?Collection $items;
 
-    public ?Collection $permissions;
-
     public ?int $edit_id;
 
-    public ?string $name;
+    public ?array $formData = [];
 
-    public ?array $selectedPermissions;
+    public ?array $permissionsConfig = [];
 
     public ?int $count = 1;
 
@@ -37,7 +35,7 @@ class RolesComponent extends Component
     public function mount()
     {
         $this->items = Role::get();
-        $this->permissions = null;
+        $this->permissionsConfig = config('core.acl.permissions');
         $this->initializeValues();
     }
 
@@ -47,7 +45,6 @@ class RolesComponent extends Component
 
         $this->edit_id = NULL;
         $this->name = NULL;
-        $this->selectedPermissions = [];
     }
 
     public function addFunction()
@@ -61,15 +58,14 @@ class RolesComponent extends Component
         $this->edit_id = $id;
 
         $role = Role::where('id', $id)->first();
-        $this->name = $role->name;
-        $this->selectedPermissions = $role->permissions->pluck("id");
+        $this->formData = $role->toArray();
         $this->add = true;
     }
 
     public function rules()
     {
         $rules =  [
-            'name' => 'required',
+            'formData.name' => 'required',
         ];
 
         return $rules;
@@ -77,6 +73,8 @@ class RolesComponent extends Component
 
     public function store()
     {
+        dd($this->formData);
+
         $update = false;
         if ($this->edit_id) {
             $this->validate();
@@ -111,7 +109,7 @@ class RolesComponent extends Component
             $this->notify(($update) ? 'The role has been updated.' : 'The role has not been created.', "error");
         }
     }
-    
+
     public function render()
     {
         return view('core::livewire.roles-component')

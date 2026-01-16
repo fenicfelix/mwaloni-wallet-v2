@@ -50,6 +50,11 @@ class CoreServiceProvider extends ServiceProvider
             'Wallet\\Core\\Http\\Livewire\\Datatables',
             'core-datatables'
         );
+
+        $this->mergeConfigFrom(
+            __DIR__ . '/../Acl/permissions.php',
+            'core.acl.permissions'
+        );
     }
 
     protected function registerLivewireComponents(

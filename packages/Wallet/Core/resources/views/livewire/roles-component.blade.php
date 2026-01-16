@@ -25,24 +25,26 @@
                                         <div class="row row-sm">
                                             <div class="col-sm-12">
                                                 <div class="md-form-group float-label">
-                                                    <input wire:model="name" class="md-input" name="name" value=""
+                                                    <input wire:model.defer="formData.name" class="md-input" name="name" value=""
                                                         required>
                                                     <label>Role Name</label>
                                                 </div>
-                                                @error('name')
+                                                @error('formData.name')
                                                 <small class="text-danger">{{ $message }} </small>
                                                 @enderror
                                             </div>
                                             <div class="row row-sm">
-                                                @foreach ($permissions as $permission)
-                                                <div class="col-3 mb-2">
-                                                    <input wire:model="selectedPermissions" class="add-permission"
-                                                        type="checkbox" value="{{ $permission->id }}"
-                                                        id="permission-{{ $permission->id }}" name="permissions[]">
-                                                    <label for="permission-{{ $permission->id }}">
-                                                        {{ ucwords(str_replace("-", " ", $permission->name)) }}
-                                                    </label>
-                                                </div>
+                                                @foreach ($permissionsConfig as $group => $permissions)
+                                                    <h6>{{ $group }}</h6>
+                                                    @foreach ($permissions as $key => $value)
+                                                        <div class="col-12 mb-2">
+                                                            <input wire:model.defer="formData.permissions.{{ $key }}" class="add-permission" type="checkbox" value="{{ $key }}"
+                                                                id="permission-{{ $key }}">
+                                                            <label for="permission-{{ $key }}">
+                                                                {{ $key }} {{ $value }}
+                                                            </label>
+                                                        </div>
+                                                    @endforeach
                                                 @endforeach
                                             </div>
                                         </div>
