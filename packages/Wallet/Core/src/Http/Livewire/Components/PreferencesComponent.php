@@ -4,9 +4,10 @@ declare(strict_types=1);
 
 namespace Wallet\Core\Http\Livewire\Components;
 
+use Livewire\Attributes\On;
 use Livewire\Component;
 use Wallet\Core\Http\Traits\NotifyBrowser;
-use Wallet\Core\Models\SystemPreference;
+use Wallet\Core\Repositories\PreferenceRepository;
 
 class PreferencesComponent extends Component
 {
@@ -20,15 +21,7 @@ class PreferencesComponent extends Component
 
     public ?int $formId;
 
-    public ?string $title;
-
-    public ?string $slug;
-
-    public ?string $value;
-
-    public $listeners = [
-        'editFunction'
-    ];
+    public ?array $formData;
 
     public function mount()
     {
@@ -38,35 +31,14 @@ class PreferencesComponent extends Component
     private function initializeValues()
     {
         $this->content_title = "System Preferences Manager";
-
-        $this->formId = NULL;
-        $this->title = NULL;
-        $this->slug = NULL;
-        $this->value = NULL;
-    }
-
-    public function addFunction()
-    {
-        $this->add = !$this->add;
-        $this->initializeValues();
-    }
-
-    public function editFunction($id)
-    {
-        $this->formId = $id;
-
-        $item = SystemPreference::where('id', $id)->first();
-        $this->title = $item->title;
-        $this->slug = $item->slug;
-        $this->value = $item->value;
-        $this->add = true;
+        $this->resetValues();
     }
 
     public function rules()
     {
         $rules =  [
-            'title' => 'required',
-            'value' => 'required',
+            'formData.title' => 'required',
+            'formData.value' => 'required',
         ];
 
         return $rules;
@@ -74,27 +46,53 @@ class PreferencesComponent extends Component
 
     public function store()
     {
-        if ($this->formId) {
+        try {
             $this->validate();
+        } catch (\Throwable $th) {
+            $this->notify(
+                'There were validation errors. Please check the form and try again.',
+                'error'
+            );
+            return;
         }
 
-        $status = SystemPreference::updateOrCreate(["id" => $this->formId], [
-            "identifier" => generate_identifier(),
-            "title" => $this->title,
-            "slug" => Str::slug($this->title, '-'),
-            "value" => $this->value,
-        ]);
-
-        if (!$status) {
-            $message = ($this->formId) ? "The value has not been updated." : "The value has not been added";
-            $this->notify($message, "success");
+        if($this->formId === null) {
+            $preference = app(PreferenceRepository::class)->create($this->formData);
         } else {
-            $message = ($this->formId) ? "The value has been updated." : "The value has been added";
-            $this->notify($message, "success");
-
-            $this->initializeValues();
-            $this->add = false;
+            $preference = app(PreferenceRepository::class)->update($this->formId, $this->formData);
         }
+
+        if (!$preference) {
+            $this->notify('Operation not successful. Please try again.', 'error');
+            return;
+        }
+
+        $this->notify('Operation successful. Please try again.', 'success');
+        $this->initializeValues();
+    }
+
+    public function addFunction()
+    {
+        $this->resetValues();
+        $this->add = !$this->add;
+    }
+
+    #[On('editFunction')]
+    public function editFunction($id)
+    {
+        $this->formId = $id;
+        $this->formData = app(PreferenceRepository::class)->find($id)->toArray();
+        $this->add = true;
+    }
+
+    public function backAction()
+    {
+        $this->resetValues();
+    }
+
+    public function resetValues()
+    {
+        $this->reset(['formId', 'formData', 'add']);
     }
 
     public function render()

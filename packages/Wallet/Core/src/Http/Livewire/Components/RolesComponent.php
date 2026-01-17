@@ -85,13 +85,13 @@ class RolesComponent extends Component
             $result = $roleRepository->create($this->formData);
         }
 
-        if ($result) {
-            $this->notify(($this->formId) ? 'The role has been updated.' : 'The role has been created.', "success");
-            $this->resetValues();
-        } else {
-            $this->initializeValues();
-            $this->notify(($this->formId) ? 'The role has been updated.' : 'The role has not been created.', "error");
+        if (! $result) {
+            $this->notify('Operation was not successful. Please try again.', "error");
+            return;
         }
+        
+        $this->resetValues();
+        $this->notify('Operation was successful.');
     }
 
     public function toggleGroup(string $group): void

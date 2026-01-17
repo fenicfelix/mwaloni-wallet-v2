@@ -25,35 +25,22 @@
                                         <div class="row row-sm">
                                             <div class="col-sm-12">
                                                 <div class="md-form-group float-label">
-                                                    <input wire:model="title" class="md-input slugify" data-task="add"
-                                                        id="add-title" value="" required>
-                                                    <label>Title</label>
+                                                    <x-wallet::form.input label="Title" wire:model.defer="formData.title" name="title" required />
                                                 </div>
-                                                @error('title')
-                                                <small class="text-danger">{{ $message }} </small>
-                                                @enderror
                                             </div>
                                             <div class="col-sm-12 mt-4">
-                                                <div class="md-form-group float-label">
-                                                    <textarea wire:model="value" class="md-input" id="add-value"
-                                                        rows="5"></textarea>
-                                                    <label>Value</label>
-                                                </div>
-                                                @error('value')
-                                                <small class="text-danger">{{ $message }} </small>
-                                                @enderror
+                                                <x-wallet::form.input label="Value" wire:model.defer="formData.value" name="value" required />
                                             </div>
                                         </div>
                                     </div>
                                     <hr>
                                     <div class="mt-4">
-                                        <button type="button" class="btn btn-danger btn-rounded w-sm" data-dismiss="modal"
-                                            wire:click="addFunction">Cancel</button>
-                                        <button type="submit" class="btn btn-dark btn-rounded w-sm">Submit</button>
-                                        <span class="d-custom-none">
-                                            <img src="{{ asset('themes/agile/img/working.gif') }}" width="20" alt="">
-                                            <small>please wait...</small>
-                                        </span>
+                                        <x-wallet::button class="w-sm" variant="danger" wire:click.prevent="backAction">
+                                            Cancel
+                                        </x-wallet::button>
+                                        <x-wallet::button type="submit" class="w-sm" variant="dark">
+                                            Submit
+                                        </x-wallet::button>
                                     </div>
                                 </form>
                             </div>
