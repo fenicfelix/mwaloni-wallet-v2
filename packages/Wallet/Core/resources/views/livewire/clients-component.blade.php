@@ -51,7 +51,7 @@
                                     <div class="mt-4">
                                         <button type="button" class="btn btn-danger btn-rounded w-sm"
                                             wire:click="addFunction">Cancel</button>
-                                        <button type="submit" class="btn btn-dark btn-rounded w-sm">{{ ($editId) ? 'Save Changes'
+                                        <button type="submit" class="btn btn-dark btn-rounded w-sm">{{ ($formId) ? 'Save Changes'
                                             : 'Submit' }}</button>
                                         <span class="d-custom-none">
                                             <img src="{{ asset('themes/agile/img/working.gif') }}" width="20" alt="">

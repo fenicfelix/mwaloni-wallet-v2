@@ -41,7 +41,7 @@ class ProcessDarajaPaymentStatusCallback implements ShouldQueue
         $log_status = "";
         $log_status_description = "";
         $successMessage = "";
-        $successMessageTo = get_option("DARAJA-ALERT-CONTACT");
+        $successMessageTo = getOption("DARAJA-ALERT-CONTACT");
 
         $transaction = Transaction::with(["account", "service", "payload"])->where("identifier", $this->transactionId)->first();
 
@@ -58,7 +58,7 @@ class ProcessDarajaPaymentStatusCallback implements ShouldQueue
                 $log_status = "SUCCESS";
                 $log_status_description = $this->json["Result"]["TransactionID"];
 
-                $successMessage = get_option("SMS-B2C-SUCCESS-MESSAGE");
+                $successMessage = getOption("SMS-B2C-SUCCESS-MESSAGE");
                 $successMessage = str_replace("{order_number}", $transaction->order_number, $successMessage);
                 $successMessage = (isset($transaction->service)) ? str_replace("{service}", $transaction->service->name, $successMessage) : str_replace("{service}", $transaction->account->name, $successMessage);
                 $successMessage = str_replace(" Utility bal. {balance}", "", $successMessage);
@@ -88,7 +88,7 @@ class ProcessDarajaPaymentStatusCallback implements ShouldQueue
                 $log_status = "FAILED";
                 $log_status_description = $this->json["Result"]["ResultDesc"];
 
-                $successMessage = get_option("DARAJA-ERROR-MESSAGE");
+                $successMessage = getOption("DARAJA-ERROR-MESSAGE");
                 $successMessage = str_replace('{error}', $this->json["Result"]["ResultDesc"], $successMessage);
                 $successMessage = str_replace('{transaction}', $transaction->order_number, $successMessage);
             }
@@ -110,7 +110,7 @@ class ProcessDarajaPaymentStatusCallback implements ShouldQueue
             }
 
             //Send SMS
-            $this->send_sms($successMessageTo, $successMessage);
+            $this->sendSMS($successMessageTo, $successMessage);
         }
     }
 }

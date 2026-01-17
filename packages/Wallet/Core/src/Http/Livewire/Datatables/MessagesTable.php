@@ -35,28 +35,39 @@ class MessagesTable extends DataTableComponent
         return [
             Column::make('Id', 'id')
                 ->sortable()
+                ->deselected()
                 ->format(fn() => $this->counter++),
+
             Column::make("To", "to")
                 ->searchable()
-                ->sortable(),
-            Column::make("Message", "message")
-                ->searchable()
-                ->sortable(),
-            Column::make("Status", "sent")
                 ->sortable()
-                ->format(
-                    fn($value) =>  '<span class="badge badge-circle xs text-' . ($value ? 'success' : 'danger') . ' mx-1"></span>'
-                )->html(),
+                ->deselected(),
+
             Column::make("Sent On", "created_at")
                 ->sortable()
+                ->deselected()
                 ->format(
                     fn($value, $row, Column $column) => ($row->sent_at) ? date('d M, Y', strtotime($row->sent_at)) : "-"
                 ),
+
             Column::make("Sent At", "sent_at")
                 ->sortable()
+                ->deselected()
                 ->format(
                     fn($value, $row, Column $column) => ($row->sent_at) ? date('h:i A', strtotime($row->sent_at)) : "-"
                 ),
+
+            Column::make("Message", "message")
+                ->searchable()
+                ->sortable()
+                ->deselected(),
+
+            Column::make("Status", "sent")
+                ->sortable()
+                ->deselected()
+                ->format(
+                    fn($value) =>  '<span class="badge badge-circle xs text-' . ($value ? 'success' : 'danger') . ' mx-1"></span>'
+                )->html(),
         ];
     }
 }

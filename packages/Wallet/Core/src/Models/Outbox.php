@@ -10,7 +10,6 @@ class Outbox extends Model
     use HasFactory;
 
     protected $fillable = [
-        'identifier',
         'message',
         'to',
         'sent',

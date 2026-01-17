@@ -39,7 +39,7 @@ class ProcessDarajaReversalCallback implements ShouldQueue
         $log_status_description = "";
         $completed_at = date("Y-m-d H:i:s");
         $successMessage = "";
-        $successMessageTo = get_option("DARAJA-ALERT-CONTACT");
+        $successMessageTo = getOption("DARAJA-ALERT-CONTACT");
 
         // get transaction where payload->conversation_id is $this->json["Result"]["ConversationID"])
         $transaction = Transaction::with(["service.account", "payload"])
@@ -62,7 +62,7 @@ class ProcessDarajaReversalCallback implements ShouldQueue
                 $log_status = "REVERSED";
                 $log_status_description = $this->json["Result"]["TransactionID"];
 
-                $successMessage = get_option("SMS-B2C-REVERSAL-MESSAGE");
+                $successMessage = getOption("SMS-B2C-REVERSAL-MESSAGE");
                 $successMessage = str_replace("{trxid}", $this->json["Result"]["TransactionID"], $successMessage);
                 $successMessage = str_replace("{receipt_number}", $transaction->receipt_number, $successMessage);
 
@@ -82,7 +82,7 @@ class ProcessDarajaReversalCallback implements ShouldQueue
                 $log_status = "FAILED";
                 $log_status_description = $this->json["Result"]["ResultDesc"];
 
-                $successMessage = get_option("DARAJA-ERROR-MESSAGE");
+                $successMessage = getOption("DARAJA-ERROR-MESSAGE");
                 $successMessage = str_replace('{error}', $this->json["Result"]["ResultDesc"], $successMessage);
             }
 
@@ -102,7 +102,7 @@ class ProcessDarajaReversalCallback implements ShouldQueue
             }
 
             //Send SMS
-            $this->send_sms($successMessageTo, $successMessage);
+            $this->sendSMS($successMessageTo, $successMessage);
         }
     }
 }

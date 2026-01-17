@@ -15,7 +15,6 @@ class CreateOutboxesTable extends Migration
     {
         Schema::create('outboxes', function (Blueprint $table) {
             $table->id();
-            $table->uuid('identifier');
             $table->string('message', 255);
             $table->string('to', 20);
             $table->boolean("sent")->default(true);

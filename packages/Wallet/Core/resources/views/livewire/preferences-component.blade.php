@@ -11,7 +11,7 @@
                 <div class="row">
                     <div class="col-12">
                         <div class="d-flex justify-content-between p-3">
-                            <h5 class="modal-title">{{ ($add) ? ($edit_id) ? 'Update Status' : 'Add Status' : 'All
+                            <h5 class="modal-title">{{ ($add) ? ($formId) ? 'Update Status' : 'Add Status' : 'All
                                 Status' }}</h5>
                             <button class="btn btn-dark btn-rounded px-4" wire:click="addFunction">{{ ($add) ? 'Back To List' :
                                 'Add New' }}</button>

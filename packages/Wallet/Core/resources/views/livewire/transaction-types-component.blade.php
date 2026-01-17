@@ -11,7 +11,7 @@
                 <div class="row">
                     <div class="col-12">
                         <div class="d-flex justify-content-between p-3">
-                            <h5 class="modal-title">{{ ($add) ? ($edit_id) ? 'Update Transaction Type' : 'Add
+                            <h5 class="modal-title">{{ ($add) ? ($formId) ? 'Update Transaction Type' : 'Add
                                 Transaction Type' : 'All
                                 Transaction Types' }}</h5>
                             <button class="btn btn-dark btn-rounded px-4" wire:click="addFunction">{{ ($add) ? 'Back To List' :

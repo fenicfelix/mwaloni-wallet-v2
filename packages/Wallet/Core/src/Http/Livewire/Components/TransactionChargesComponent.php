@@ -22,7 +22,7 @@ class TransactionChargesComponent extends Component
 
     public ?Collection $payment_channels = null;
 
-    public ?int $edit_id = null;
+    public ?int $formId = null;
 
     public ?string $payment_channel = null;
 
@@ -47,7 +47,7 @@ class TransactionChargesComponent extends Component
         $this->content_title = "Transaction Charges Manager";
         $this->payment_channels = PaymentChannel::get();
 
-        $this->edit_id = NULL;
+        $this->formId = NULL;
         $this->payment_channel = NULL;
         $this->minimum = NULL;
         $this->maximum = NULL;
@@ -62,7 +62,7 @@ class TransactionChargesComponent extends Component
 
     public function editFunction($id)
     {
-        $this->edit_id = $id;
+        $this->formId = $id;
 
         $item = TransactionCharge::where('id', $id)->first();
         $this->payment_channel = $item->payment_channel;
@@ -85,21 +85,21 @@ class TransactionChargesComponent extends Component
 
     public function store()
     {
-        if ($this->edit_id) {
+        if ($this->formId) {
             $this->validate();
         }
 
-        $status = TransactionCharge::updateOrCreate(["id" => $this->edit_id], [
+        $status = TransactionCharge::updateOrCreate(["id" => $this->formId], [
             "name" => $this->name,
             "minimum" => $this->minimum,
             "maximum" => $this->maximum
         ]);
 
         if (!$status) {
-            $message = ($this->edit_id) ? "The charge has not been updated." : "The charge has not been added";
+            $message = ($this->formId) ? "The charge has not been updated." : "The charge has not been added";
             $this->notify($message, "success");
         } else {
-            $message = ($this->edit_id) ? "The charge has been updated." : "The charge has been added";
+            $message = ($this->formId) ? "The charge has been updated." : "The charge has been added";
             $this->notify($message, "success");
 
             $this->initializeValues();

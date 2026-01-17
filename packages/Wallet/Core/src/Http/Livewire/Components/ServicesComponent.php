@@ -28,7 +28,7 @@ class ServicesComponent extends Component
 
     public ?bool $add = false;
 
-    public ?int $editId;
+    public ?int $formId;
 
     public array $form = [];
 
@@ -67,12 +67,12 @@ class ServicesComponent extends Component
 
     public function updateUsername()
     {
-        if (!$this->editId) $this->form['username'] = Str::slug($this->form['name']);
+        if (!$this->formId) $this->form['username'] = Str::slug($this->form['name']);
     }
 
     private function initializeValues()
     {
-        $this->resetView();
+        $this->resetValues();
         $this->content_title = "Services Manager";
 
         $this->clients = Client::get();
@@ -81,11 +81,11 @@ class ServicesComponent extends Component
         $this->payment_channels = PaymentChannel::get();
     }
 
-    public function resetView()
+    public function resetValues()
     {
         $this->add = false;
         $this->withdraw = false;
-        $this->editId = NULL;
+        $this->formId = NULL;
 
         $this->reset('max_amount', 'withdraw_from', 'form');
 
@@ -98,17 +98,17 @@ class ServicesComponent extends Component
 
     public function addFunction()
     {
-        $this->resetView();
+        $this->resetValues();
         $this->add = true;
         $this->form['password'] = $this->generateRandomString('password');
     }
 
     public function editFunction($formId)
     {
-        $this->resetView();
+        $this->resetValues();
         $this->add = true;
-        $this->editId = $formId;
-        $this->form = Service::where("id", $this->editId)->first()->toArray();
+        $this->formId = $formId;
+        $this->form = Service::where("id", $this->formId)->first()->toArray();
         unset($this->form['password']);
         unset($this->form['created_at']);
         unset($this->form['updated_at']);
@@ -116,15 +116,15 @@ class ServicesComponent extends Component
 
     public function backToList()
     {
-        $this->resetView();
+        $this->resetValues();
     }
 
-    public function withdrawCharges($editId)
+    public function withdrawCharges($formId)
     {
-        $this->editId = $editId;
-        $this->resetView();
+        $this->formId = $formId;
+        $this->resetValues();
         $this->withdraw = true;
-        $this->service = Service::with(["account"])->where("id", $editId)->first();
+        $this->service = Service::with(["account"])->where("id", $formId)->first();
         $this->max_amount = (($this->service->account->utility_balance + $this->service->account->working_balance) - $this->service->revenue);
     }
 
@@ -167,10 +167,10 @@ class ServicesComponent extends Component
             if (isset($this->form['password']) && $this->form['password'] != "") {
                 $this->form['password'] = Hash::make($this->form['password']);
             }
-            if ($this->editId) {
+            if ($this->formId) {
                 $this->form['updated_by'] = $this->user->id;
                 $this->form['updated_at'] = date('Y-m-d H:i:s');
-                $update = Service::where("id", $this->editId)->update($this->form);
+                $update = Service::where("id", $this->formId)->update($this->form);
                 if (!$update) return false;
                 return true;
             } else {
@@ -192,18 +192,18 @@ class ServicesComponent extends Component
         }, 2);
 
         if ($trx) {
-            if ($this->editId) $this->notify("The service has been updated.", "success");
+            if ($this->formId) $this->notify("The service has been updated.", "success");
             else $this->notify("The service has been added.", "success");
-            $this->resetView();
+            $this->resetValues();
         } else {
-            if ($this->editId) $this->notify("The service was not updated. Please try again.", "error");
+            if ($this->formId) $this->notify("The service was not updated. Please try again.", "error");
             else $this->notify("The service could not be added. Please try again.", "error");
         }
     }
 
     public function doWithdrawCash()
     {
-        $key_block = sha1($this->withdraw_from['amount'] . $this->withdraw_from['account_number'] . $this->editId . $this->withdraw_from['channel_id'] . date('Ymd'));
+        $key_block = sha1($this->withdraw_from['amount'] . $this->withdraw_from['account_number'] . $this->formId . $this->withdraw_from['channel_id'] . date('Ymd'));
         $paymentChannel = PaymentChannel::where("slug", $this->withdraw_from['channel_id'])->first();
         $transaction_charges = get_transaction_charges($this->withdraw_from['amount'], $paymentChannel->id);
 
@@ -263,7 +263,7 @@ class ServicesComponent extends Component
         if ($transaction) {
             ProcessPayment::dispatch($transaction->id, $paymentChannel->slug)->onQueue('process-payments');
             $this->notify("Cashout is being processed.", "success");
-            $this->resetView();
+            $this->resetValues();
         } else {
             $this->notify("Cashout failed. Please try again.", "error");
         }

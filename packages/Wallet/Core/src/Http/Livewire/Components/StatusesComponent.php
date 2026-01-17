@@ -20,7 +20,7 @@ class StatusesComponent extends Component
 
     public ?Collection $items = null;
 
-    public ?int $edit_id = null;
+    public ?int $formId = null;
 
     public ?string $name = null;
 
@@ -38,7 +38,7 @@ class StatusesComponent extends Component
     {
         $this->content_title = "Statuses Manager";
 
-        $this->edit_id = NULL;
+        $this->formId = NULL;
         $this->name = NULL;
     }
 
@@ -50,7 +50,7 @@ class StatusesComponent extends Component
 
     public function editFunction($id)
     {
-        $this->edit_id = $id;
+        $this->formId = $id;
 
         $item = Status::where('id', $id)->first();
         $this->name = $item->name;
@@ -59,9 +59,9 @@ class StatusesComponent extends Component
 
     public function rules()
     {
-        if ($this->edit_id) {
+        if ($this->formId) {
             $rules =  [
-                'name' =>  'required|min:3|unique:statuses,name,' . $this->edit_id,
+                'name' =>  'required|min:3|unique:statuses,name,' . $this->formId,
             ];
         } else {
             $rules =  [
@@ -75,13 +75,13 @@ class StatusesComponent extends Component
     {
         $this->validate();
 
-        $status = Status::updateOrCreate(["id" => $this->edit_id], ["identifier" => Str::uuid(), "name" => $this->name]);
+        $status = Status::updateOrCreate(["id" => $this->formId], ["identifier" => Str::uuid(), "name" => $this->name]);
 
         if (!$status) {
-            $message = ($this->edit_id) ? "The status has not been updated." : "The status has not been added";
+            $message = ($this->formId) ? "The status has not been updated." : "The status has not been added";
             $this->notify($message, "success");
         } else {
-            $message = ($this->edit_id) ? "The status has been updated." : "The status has been added";
+            $message = ($this->formId) ? "The status has been updated." : "The status has been added";
             $this->notify($message, "success");
 
             $this->initializeValues();

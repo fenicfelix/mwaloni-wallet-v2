@@ -71,7 +71,11 @@ class RolesComponent extends Component
         try {
             $this->validate();
         } catch (\Throwable $th) {
-            //throw $th;
+            $this->notify(
+                'There were validation errors. Please check the form and try again.',
+                'error'
+            );
+            return;
         }
 
         $roleRepository = app(RoleRepository::class);

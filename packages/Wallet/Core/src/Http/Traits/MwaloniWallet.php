@@ -3,12 +3,12 @@
 namespace Wallet\Core\Http\Traits;
 
 use Akika\LaravelMpesaMultivendor\Mpesa;
-use App\Jobs\ProcessSMS;
 use Wallet\Core\Models\Outbox;
 use Wallet\Core\Models\Service;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
+use Wallet\Core\Jobs\ProcessSMS;
 
 trait MwaloniWallet
 {
@@ -154,17 +154,16 @@ trait MwaloniWallet
         return utf8_encode(trim($decrypted));
     }
 
-    private function send_sms($to, $message)
+    private function sendSMS($to, $message)
     {
         if (config('app.env') == "production") {
             $outbox = Outbox::where("message", "=", $message)->where("to", "=", $to)->first();
             if (!$outbox) {
                 $data = [
-                    "identifier" => generate_identifier(),
                     "message" => $message,
                     "to" => $to,
                     "sent" => "0",
-                    "cost" => get_option('actual-sms-cost')
+                    "cost" => getOption('actual-sms-cost')
                 ];
 
                 $outbox = Outbox::query()->create($data);

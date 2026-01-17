@@ -55,7 +55,7 @@ class ProcessComposedMessages implements ShouldQueue
                                 $messageBody = str_replace("{" . $keys[$i] . "}", $contents[$j][$i], $messageBody);
                             }
                         }
-                        $this->send_sms($phone, $messageBody);
+                        $this->sendSMS($phone, $messageBody);
                     }
                 }
             } else {
@@ -63,7 +63,7 @@ class ProcessComposedMessages implements ShouldQueue
                 for ($j = 1; $j < sizeof($contents); $j++) {
                     if (!empty($contents[$j][0])) {
                         $phone = clean_phone_number($contents[$j][0]);
-                        $this->send_sms($phone, $messageBody);
+                        $this->sendSMS($phone, $messageBody);
                     }
                 }
             }

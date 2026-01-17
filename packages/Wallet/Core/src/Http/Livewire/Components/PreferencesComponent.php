@@ -18,7 +18,7 @@ class PreferencesComponent extends Component
 
     public ?array $items;
 
-    public ?int $edit_id;
+    public ?int $formId;
 
     public ?string $title;
 
@@ -39,7 +39,7 @@ class PreferencesComponent extends Component
     {
         $this->content_title = "System Preferences Manager";
 
-        $this->edit_id = NULL;
+        $this->formId = NULL;
         $this->title = NULL;
         $this->slug = NULL;
         $this->value = NULL;
@@ -53,7 +53,7 @@ class PreferencesComponent extends Component
 
     public function editFunction($id)
     {
-        $this->edit_id = $id;
+        $this->formId = $id;
 
         $item = SystemPreference::where('id', $id)->first();
         $this->title = $item->title;
@@ -74,11 +74,11 @@ class PreferencesComponent extends Component
 
     public function store()
     {
-        if ($this->edit_id) {
+        if ($this->formId) {
             $this->validate();
         }
 
-        $status = SystemPreference::updateOrCreate(["id" => $this->edit_id], [
+        $status = SystemPreference::updateOrCreate(["id" => $this->formId], [
             "identifier" => generate_identifier(),
             "title" => $this->title,
             "slug" => Str::slug($this->title, '-'),
@@ -86,10 +86,10 @@ class PreferencesComponent extends Component
         ]);
 
         if (!$status) {
-            $message = ($this->edit_id) ? "The value has not been updated." : "The value has not been added";
+            $message = ($this->formId) ? "The value has not been updated." : "The value has not been added";
             $this->notify($message, "success");
         } else {
-            $message = ($this->edit_id) ? "The value has been updated." : "The value has been added";
+            $message = ($this->formId) ? "The value has been updated." : "The value has been added";
             $this->notify($message, "success");
 
             $this->initializeValues();

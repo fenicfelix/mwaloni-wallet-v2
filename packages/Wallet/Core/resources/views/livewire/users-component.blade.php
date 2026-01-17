@@ -18,78 +18,36 @@
                                 <form wire:submit.prevent="store">
                                     <div class="row">
                                         <div class="col-sm-6">
-                                            <div class="md-form-group float-label">
-                                                <input wire:model.lazy="form.first_name" type="text" class="md-input"
-                                                    required>
-                                                <label>First Name</label>
-                                            </div>
-                                            @error('form.first_name')
-                                            <small class="text-danger">{{ $message }} </small>
-                                            @enderror
+                                            <x-wallet::form.input label="First Name" wire:model.defer="formData.first_name" name="first_name" required />
                                         </div>
                                         <div class="col-sm-6">
-                                            <div class="md-form-group float-label">
-                                                <input wire:model="form.last_name" type="text" class="md-input"
-                                                    required>
-                                                <label>Last Name</label>
-                                            </div>
-                                            @error('form.last_name')
-                                            <small class="text-danger">{{ $message }} </small>
-                                            @enderror
+                                            <x-wallet::form.input label="Last Name" wire:model.defer="formData.last_name" name="last_name" required />
                                         </div>
                                     </div>
                                     <div class="row">
                                         <div class="col-sm-12">
-                                            <div class="md-form-group float-label">
-                                                <input wire:model="form.phone_number" type="text" class="md-input"
-                                                    required>
-                                                <label>Phone Number</label>
-                                            </div>
-                                            @error('form.phone_number')
-                                            <small class="text-danger">{{ $message }} </small>
-                                            @enderror
+                                            <x-wallet::form.input label="Phone Number" wire:model.defer="formData.phone_number" name="phone_number" required />
                                         </div>
                                     </div>
                                     <div class="row">
                                         <div class="col-sm-12">
-                                            <div class="md-form-group float-label">
-                                                <input wire:model="form.email" type="email" class="md-input" required>
-                                                <label>Email</label>
-                                            </div>
-                                            @error('form.email')
-                                            <small class="text-danger">{{ $message }} </small>
-                                            @enderror
+                                            <x-wallet::form.input label="Email" wire:model.defer="formData.email" name="email" type="email" required />
                                         </div>
                                     </div>
 
                                     <div class="row">
                                         <div class="col-sm-6">
-                                            <div class="md-form-group float-label">
-                                                <select wire:model="selectedRoles" class="md-input" name="selectedRoles"
-                                                    required>
-                                                    <option value="">Select Role</option>
-                                                    @forelse ($roles as $role)
-                                                    <option value="{{ $role->id }}">{{ $role->name }}</option>
-                                                    @empty
-
-                                                    @endforelse
-                                                </select>
-                                                <label>Role</label>
-                                            </div>
-                                            @error('selectedRoles')
-                                            <small class="text-danger">{{ $message }} </small>
-                                            @enderror
+                                            <x-wallet::form.select label="Role" wire:model.live="formData.role_id" :options="$roles->pluck('name', 'id')"
+                                                placeholder="Choose Role" />
                                         </div>
                                     </div>
                                     <div class="mt-4">
-                                        <button type="button" class="btn btn-danger btn-rounded w-sm"
-                                            wire:click="backToList">Cancel</button>
-                                        <button type="submit" class="btn btn-dark btn-rounded w-sm">{{ ($editId) ? 'Save Changes'
-                                            : 'Submit' }}</button>
-                                        <span class="d-custom-none">
-                                            <img src="{{ asset('themes/agile/img/working.gif') }}" width="20" alt="">
-                                            <small>please wait...</small>
-                                        </span>
+                                        <x-wallet::button class="w-sm" variant="danger" wire:click.prevent="backAction">
+                                            Cancel
+                                        </x-wallet::button>
+                                        <x-wallet::button type="submit" class="w-sm" variant="dark">
+                                            Submit
+                                        </x-wallet::button>
                                     </div>
                                 </form>
                             </div>
@@ -107,7 +65,7 @@
                     <div class="col-12">
                         <div class="">
                             <p><strong>Username:</strong> {{ $user->username }}</p>
-                            <p><strong>Password:</strong> {{ $form["password"] }}</p>
+                            <p><strong>Password:</strong> {{ $formData["password"] }}</p>
                             <p><strong>API Key:</strong> {{ $user->api_key }}</p>
                             <button type="button" class="btn btn-danger btn-rounded w-sm" wire:click="backToList">Cancel</button>
                         </div>

@@ -58,7 +58,7 @@ class TransactionsComponent extends Component
     public function mount()
     {
         $this->initializeValues();
-        $this->resetView();
+        $this->resetValues();
         $this->list = true;
     }
 
@@ -73,7 +73,7 @@ class TransactionsComponent extends Component
         // }
     }
 
-    public function resetView()
+    public function resetValues()
     {
         $this->view = false;
         $this->edit = false;
@@ -84,14 +84,14 @@ class TransactionsComponent extends Component
 
     public function viewFunction($form_id)
     {
-        $this->resetView();
+        $this->resetValues();
         $this->view = true;
         $this->transaction = Transaction::where("id", $form_id)->first();
     }
 
     public function editFunction($form_id = NULL)
     {
-        $this->resetView();
+        $this->resetValues();
         $this->edit = true;
         $this->transaction = Transaction::where("id", $form_id)->first();
         if ($this->transaction) {
@@ -103,7 +103,7 @@ class TransactionsComponent extends Component
 
     public function cancelEdit()
     {
-        $this->resetView();
+        $this->resetValues();
         $this->list = true;
     }
 
@@ -139,7 +139,7 @@ class TransactionsComponent extends Component
 
     public function paidOffline($form_id)
     {
-        $this->resetView();
+        $this->resetValues();
         $this->transaction = Transaction::where("id", $form_id)->first();
         $this->pay_offline = true;
     }
@@ -154,7 +154,7 @@ class TransactionsComponent extends Component
 
             if ($this->transaction->save()) {
                 $this->notify("The transaction has been updated.", "success");
-                $this->resetView();
+                $this->resetValues();
                 $this->list = true;
             } else {
                 $this->notify("The transaction has not been updated.", "error");
@@ -170,7 +170,7 @@ class TransactionsComponent extends Component
             //Check status only for Daraja
             if ($transaction->account->account_type_id == 1) ProcessDarajaPaymentStatusCheck::dispatch($transaction->identifier);
             $this->notify("The transaction has been updated.", "success");
-            $this->resetView();
+            $this->resetValues();
             $this->list = true;
         }
     }
@@ -187,7 +187,7 @@ class TransactionsComponent extends Component
         } else {
             $this->notify("No request made.", "warning");
         }
-        $this->resetView();
+        $this->resetValues();
         $this->list = true;
     }
 
@@ -230,7 +230,7 @@ class TransactionsComponent extends Component
         if (!$this->transaction->save()) $this->notify("The transaction has not been updated.", "success");
         else {
             $this->notify("The transaction has been updated.", "success");
-            $this->resetView();
+            $this->resetValues();
             $this->list = true;
         }
     }

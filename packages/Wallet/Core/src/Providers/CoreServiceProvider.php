@@ -18,7 +18,10 @@ class CoreServiceProvider extends ServiceProvider
      *
      * @return void
      */
-    public function register() {}
+    public function register()
+    {
+        require_once __DIR__ . '/../Helpers/helpers.php';
+    }
 
     /**
      * Bootstrap services.
@@ -58,7 +61,7 @@ class CoreServiceProvider extends ServiceProvider
         );
 
         // Register views
-        $this->loadViewsFrom(__DIR__.'/../../resources/views', 'wallet');
+        $this->loadViewsFrom(__DIR__ . '/../../resources/views', 'wallet');
 
         // (Optional but recommended) auto-discover blade components
         Blade::componentNamespace('Wallet\\Core\\View\\Components', 'wallet');

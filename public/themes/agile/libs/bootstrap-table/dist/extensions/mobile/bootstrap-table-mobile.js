@@ -4,35 +4,44 @@
  * @version: v1.1.0
  */
 
-!function ($) {
-
-    'use strict';
+!(function ($) {
+    "use strict";
 
     var showHideColumns = function (that, checked) {
-        if (that.options.columnsHidden.length > 0 ) {
+        if (that.options.columnsHidden.length > 0) {
             $.each(that.columns, function (i, column) {
                 if (that.options.columnsHidden.indexOf(column.field) !== -1) {
                     if (column.visible !== checked) {
-                        that.toggleColumn(that.fieldsColumnsIndex[column.field], checked, true);
+                        that.toggleColumn(
+                            that.fieldsColumnsIndex[column.field],
+                            checked,
+                            true
+                        );
                     }
                 }
             });
         }
     };
 
-    var resetView = function (that) {
+    var resetValues = function (that) {
         if (that.options.height || that.options.showFooter) {
-            setTimeout(function(){
-                that.resetView.call(that);
+            setTimeout(function () {
+                that.resetValues.call(that);
             }, 1);
         }
     };
 
     var changeView = function (that, width, height) {
         if (that.options.minHeight) {
-            if ((width <= that.options.minWidth) && (height <= that.options.minHeight)) {
+            if (
+                width <= that.options.minWidth &&
+                height <= that.options.minHeight
+            ) {
                 conditionCardView(that);
-            } else if ((width > that.options.minWidth) && (height > that.options.minHeight)) {
+            } else if (
+                width > that.options.minWidth &&
+                height > that.options.minHeight
+            ) {
                 conditionFullView(that);
             }
         } else {
@@ -43,7 +52,7 @@
             }
         }
 
-        resetView(that);
+        resetValues(that);
     };
 
     var conditionCardView = function (that) {
@@ -61,14 +70,14 @@
         that.toggleView();
     };
 
-    var debounce = function(func,wait) {
+    var debounce = function (func, wait) {
         var timeout;
-        return function() {
+        return function () {
             var context = this,
                 args = arguments;
-            var later = function() {
+            var later = function () {
                 timeout = null;
-                func.apply(context,args);
+                func.apply(context, args);
             };
             clearTimeout(timeout);
             timeout = setTimeout(later, wait);
@@ -81,7 +90,7 @@
         minHeight: undefined,
         heightThreshold: 100, // just slightly larger than mobile chrome's auto-hiding toolbar
         checkOnInit: true,
-        columnsHidden: []
+        columnsHidden: [],
     });
 
     var BootstrapTable = $.fn.bootstrapTable.Constructor,
@@ -99,29 +108,38 @@
         }
 
         if (this.options.minWidth < 100 && this.options.resizable) {
-            console.log("The minWidth when the resizable extension is active should be greater or equal than 100");
+            console.log(
+                "The minWidth when the resizable extension is active should be greater or equal than 100"
+            );
             this.options.minWidth = 100;
         }
 
         var that = this,
             old = {
                 width: $(window).width(),
-                height: $(window).height()
+                height: $(window).height(),
             };
 
-        $(window).on('resize orientationchange',debounce(function (evt) {
-            // reset view if height has only changed by at least the threshold.
-            var height = $(this).height(),
-                width = $(this).width();
+        $(window).on(
+            "resize orientationchange",
+            debounce(function (evt) {
+                // reset view if height has only changed by at least the threshold.
+                var height = $(this).height(),
+                    width = $(this).width();
 
-            if (Math.abs(old.height - height) > that.options.heightThreshold || old.width != width) {
-                changeView(that, width, height);
-                old = {
-                    width: width,
-                    height: height
-                };
-            }
-        },200));
+                if (
+                    Math.abs(old.height - height) >
+                        that.options.heightThreshold ||
+                    old.width != width
+                ) {
+                    changeView(that, width, height);
+                    old = {
+                        width: width,
+                        height: height,
+                    };
+                }
+            }, 200)
+        );
 
         if (this.options.checkOnInit) {
             var height = $(window).height(),
@@ -129,8 +147,8 @@
             changeView(this, width, height);
             old = {
                 width: width,
-                height: height
+                height: height,
             };
         }
     };
-}(jQuery);
+})(jQuery);

@@ -25,7 +25,7 @@ class AccountsComponent extends Component
 {
     use NotifyBrowser, MwaloniWallet;
 
-    public ?int $editId = null;
+    public ?int $formId = null;
 
     public array $form = [];
 
@@ -64,7 +64,7 @@ class AccountsComponent extends Component
         $this->editWithheldAmount = false;
         $this->add = false;
         $this->cashout = false;
-        $this->editId = null;
+        $this->formId = null;
         $this->account = new Account();
 
         $this->reset("form");
@@ -106,7 +106,7 @@ class AccountsComponent extends Component
     public function editFunction($id)
     {
         $this->content_title = "Update Account";
-        $this->editId = $id;
+        $this->formId = $id;
         $this->add = true;
         $this->editWithheldAmount = false;
         $this->account = Account::where("id", $id)->first();
@@ -157,7 +157,7 @@ class AccountsComponent extends Component
     public function updateWithheldAmount($id)
     {
         $this->content_title = "Update Withheld Amount";
-        $this->editId = $id;
+        $this->formId = $id;
         $this->add = false;
         $this->editWithheldAmount = true;
         $this->account = Account::where("id", $id)->first();
@@ -168,7 +168,7 @@ class AccountsComponent extends Component
     {
         $this->validate();
 
-        $account = Account::where("id", $this->editId)->first();
+        $account = Account::where("id", $this->formId)->first();
         $account->withheld_amount = $this->form['withheld_amount'];
         $account->updated_by = Auth::id();
 
@@ -185,8 +185,8 @@ class AccountsComponent extends Component
         $this->content_title = "Cashout";
         $this->add = false;
         $this->cashout = true;
-        $this->editId = $id;
-        $this->account = Account::with(['accountType'])->where("id", $this->editId)->first();
+        $this->formId = $id;
+        $this->account = Account::with(['accountType'])->where("id", $this->formId)->first();
         $this->cashout_form = [
             'channel_id' => $this->account->channel_id
         ];
@@ -232,14 +232,14 @@ class AccountsComponent extends Component
 
         $paymentChannel = PaymentChannel::find($this->cashout_form['channel_id'])->first();
         $transaction_charges = get_transaction_charges($this->cashout_form['amount'], $paymentChannel->id);
-        $key_block = sha1($this->cashout_form['amount'] . $this->cashout_form['account_number'] . $this->editId . $this->cashout_form['channel_id'] . date('Ymd'));
+        $key_block = sha1($this->cashout_form['amount'] . $this->cashout_form['account_number'] . $this->formId . $this->cashout_form['channel_id'] . date('Ymd'));
 
         $transaction = DB::transaction(
             function () use ($key_block, $paymentChannel, $transaction_charges) {
 
                 $request = [
                     "type" => "revenue",
-                    "id" => $this->editId,
+                    "id" => $this->formId,
                     "account_number" => $this->cashout_form['account_number'],
                     "account_name" => $this->cashout_form['account_name'],
                     "channel_id" => $this->cashout_form['channel_id'],
@@ -259,7 +259,7 @@ class AccountsComponent extends Component
                     "key_block" => $key_block,
                     "reference" => $payload["reference"] ?? date('ymdhis'),
                     "description" => "Revenue Cashout",
-                    "account_id" => $this->editId,
+                    "account_id" => $this->formId,
                     "channel_id" => $paymentChannel->id,
                     "service_id" => NULL, //Check this out
                     "type_id" => 8,
@@ -310,8 +310,8 @@ class AccountsComponent extends Component
 
             $this->form["updated_by"] = $userId;
             $this->form['updated_at'] = date('Y-m-d H:i:s');
-            if ($this->editId) {
-                $account = Account::where("id", $this->editId)->update($this->form);
+            if ($this->formId) {
+                $account = Account::where("id", $this->formId)->update($this->form);
             } else {
                 $this->form['identifier'] = generate_identifier();
                 $this->form["added_by"] = $userId;
@@ -324,7 +324,7 @@ class AccountsComponent extends Component
             return true;
         }, 2);
 
-        $task = ($this->editId) ? "updated" : "created";
+        $task = ($this->formId) ? "updated" : "created";
 
         if ($transaction) {
             $this->notify("Account has been " . $task . " successfully", "success");

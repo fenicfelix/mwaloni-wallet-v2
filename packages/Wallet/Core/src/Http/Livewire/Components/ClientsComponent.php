@@ -19,7 +19,7 @@ class ClientsComponent extends Component
 
     public bool $add = false;
 
-    public ?int $editId = null;
+    public ?int $formId = null;
 
     public ?Client $client;
 
@@ -57,7 +57,7 @@ class ClientsComponent extends Component
     public function editFunction($id)
     {
         $this->add = !$this->add;
-        $this->editId = $id;
+        $this->formId = $id;
         $this->client = Client::find($id);
 
         $this->name = $this->client->name;
@@ -71,8 +71,8 @@ class ClientsComponent extends Component
             'account_manager' => 'required',
         ];
 
-        if ($this->editId) {
-            $rules["name"] = 'required|unique:clients,name,' . $this->editId;
+        if ($this->formId) {
+            $rules["name"] = 'required|unique:clients,name,' . $this->formId;
         }
 
         return $rules;
@@ -84,7 +84,7 @@ class ClientsComponent extends Component
 
         $user_id = Auth::id();
 
-        if ($this->editId) {
+        if ($this->formId) {
             $update = $this->client->update(
                 [
                     "name" => $this->name,

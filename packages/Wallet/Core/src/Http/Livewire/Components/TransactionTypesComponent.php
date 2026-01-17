@@ -20,7 +20,7 @@ class TransactionTypesComponent extends Component
 
     public ?Collection $items = null;
 
-    public ?int $edit_id = null;
+    public ?int $formId = null;
 
     public ?string $name = null;
 
@@ -40,7 +40,7 @@ class TransactionTypesComponent extends Component
     {
         $this->content_title = "Transaction Types";
 
-        $this->edit_id = NULL;
+        $this->formId = NULL;
         $this->name = NULL;
         $this->description = NULL;
     }
@@ -53,7 +53,7 @@ class TransactionTypesComponent extends Component
 
     public function editFunction($id)
     {
-        $this->edit_id = $id;
+        $this->formId = $id;
 
         $item = TransactionType::where('id', $id)->first();
         $this->name = $item->name;
@@ -63,9 +63,9 @@ class TransactionTypesComponent extends Component
 
     public function rules()
     {
-        if ($this->edit_id) {
+        if ($this->formId) {
             $rules =  [
-                'name' =>  'required|min:3|unique:transaction_types,name,' . $this->edit_id,
+                'name' =>  'required|min:3|unique:transaction_types,name,' . $this->formId,
             ];
         } else {
             $rules =  [
@@ -80,13 +80,13 @@ class TransactionTypesComponent extends Component
     {
         $this->validate();
 
-        $item = TransactionType::updateOrCreate(["id" => $this->edit_id], ["identifier" => Str::uuid(), "name" => $this->name, "description" => $this->description]);
+        $item = TransactionType::updateOrCreate(["id" => $this->formId], ["identifier" => Str::uuid(), "name" => $this->name, "description" => $this->description]);
 
         if (!$item) {
-            $message = ($this->edit_id) ? "The transaction type has not been updated." : "The transaction type has not been added";
+            $message = ($this->formId) ? "The transaction type has not been updated." : "The transaction type has not been added";
             $this->notify($message, "success");
         } else {
-            $message = ($this->edit_id) ? "The transaction type has been updated." : "The transaction type has been added";
+            $message = ($this->formId) ? "The transaction type has been updated." : "The transaction type has been added";
             $this->notify($message, "success");
 
             $this->initializeValues();

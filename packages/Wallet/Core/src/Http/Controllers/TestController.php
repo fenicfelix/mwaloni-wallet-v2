@@ -11,7 +11,7 @@ use Wallet\Core\Models\Account;
 class TestController extends Controller
 {
     use MwaloniWallet;
-    
+
     public function index($module)
     {
 
@@ -197,7 +197,7 @@ class TestController extends Controller
         $message = "Hello test message from WWT " . date('d M, Y H:i:s');
         $to = clean_phone_number($request->get('phone'));
 
-        $this->send_sms($to, $message);
+        $this->sendSMS($to, $message);
 
         return response()->json(['status' => status_success, 'message' => "Message Scheculed."], Response::HTTP_OK);
     }

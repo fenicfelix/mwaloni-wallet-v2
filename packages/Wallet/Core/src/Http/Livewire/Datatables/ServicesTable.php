@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\Auth;
 class ServicesTable extends DataTableComponent
 {
     protected $model = Service::class;
-    protected $counter = 0;
+    protected $counter = 1;
 
     public function configure(): void
     {

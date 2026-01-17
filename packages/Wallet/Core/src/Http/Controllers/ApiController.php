@@ -16,7 +16,8 @@ class ApiController extends Controller
 {
     use MwaloniWallet;
 
-    public function __construct(protected PaymentService $paymentService) {
+    public function __construct(protected PaymentService $paymentService)
+    {
         $this->middleware('auth:api');
     }
 
@@ -102,7 +103,6 @@ class ApiController extends Controller
             ProcessPayment::dispatch($transaction->id, $transaction->paymentChannel->slug)->onQueue('process-payments');
 
             return $this->success(['message' => 'Cashout was successful.', 'reference' => $transaction->identifier]);
-
         } catch (\DomainException $e) {
             return $this->error($e->getMessage());
         } catch (\Throwable $e) {
@@ -140,9 +140,9 @@ class ApiController extends Controller
      | SEND SMS
      |-----------------------------------------------------------------*/
 
-    public function api_send_sms(Request $request)
+    public function api_sendSMS(Request $request)
     {
-        $this->send_sms(
+        $this->sendSMS(
             $request->post('phoneNumber'),
             $request->post('message')
         );

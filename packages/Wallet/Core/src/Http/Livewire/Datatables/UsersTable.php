@@ -38,18 +38,27 @@ class UsersTable extends DataTableComponent
                 ->format(fn() => $this->counter++),
             Column::make("First Name", "first_name")
                 ->sortable()
-                ->searchable(),
+                ->searchable()
+                ->deselected(),
             Column::make("Last Name", "last_name")
                 ->sortable()
-                ->searchable(),
+                ->searchable()
+                ->deselected(),
             Column::make("Phone", "phone_number")
                 ->sortable()
-                ->searchable(),
+                ->searchable()
+                ->deselected(),
             Column::make("Email", "email")
                 ->sortable()
-                ->searchable(),
+                ->searchable()
+                ->deselected(),
+            Column::make("Role", "role.name")
+                ->sortable()
+                ->searchable()
+                ->deselected(),
             Column::make("Status", "active")
                 ->sortable()
+                ->deselected()
                 ->format(
                     fn($value) =>  '<span class="badge badge-circle xs text-' . ($value ? 'success' : 'danger') . ' mx-1"></span>'
                 )->html(),
@@ -67,6 +76,7 @@ class UsersTable extends DataTableComponent
                         $html .= '<a href="#" class="dropdown-item" wire:click="showApiDetails(' . $row->id . ')">API Details</a>';
                         $html .= '<a href="#" class="dropdown-item" wire:click="editFunction(' . $row->id . ')">Edit</a>';
                         $html .= '<a href="#" class="dropdown-item"wire:click="resetPasswordFunction(' . $row->id . ')">Reset Password</a>';
+                    $html .= '<a href="#" class="dropdown-item"wire:click="deleteAccountFunction(' . $row->id . ')">Delete Account</a>';
                         $html .= '</div></div>';
                         return $html;
                     }
@@ -88,5 +98,10 @@ class UsersTable extends DataTableComponent
     public function resetPasswordFunction($form_id)
     {
         $this->dispatch('resetPasswordFunction', $form_id);
+    }
+
+    public function deleteAccountFunction($form_id)
+    {
+        $this->dispatch('deleteAccountFunction', $form_id);
     }
 }

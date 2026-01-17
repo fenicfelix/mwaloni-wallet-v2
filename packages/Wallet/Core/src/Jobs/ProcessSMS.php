@@ -28,9 +28,9 @@ class ProcessSMS implements ShouldQueue
 
     public function handle()
     {
-        $username = get_option('AT-USERNAME');
-        $apiKey = get_option('AT-KEY');
-        $from = get_option('AT-FROM');
+        $username = getOption('AT-USERNAME');
+        $apiKey = getOption('AT-KEY');
+        $from = getOption('AT-FROM');
 
         $AT = new AfricasTalking($username, $apiKey);
         $sms = $AT->sms();

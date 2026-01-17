@@ -20,7 +20,7 @@ class AccountTypesComponent extends Component
 
     public ?Collection $items = null;
 
-    public ?int $edit_id = null;
+    public ?int $formId = null;
 
     public ?string $account_type = null;
 
@@ -40,7 +40,7 @@ class AccountTypesComponent extends Component
     {
         $this->content_title = "Account Types";
 
-        $this->edit_id = NULL;
+        $this->formId = NULL;
         $this->account_type = NULL;
         $this->slug = NULL;
     }
@@ -53,7 +53,7 @@ class AccountTypesComponent extends Component
 
     public function editFunction($id)
     {
-        $this->edit_id = $id;
+        $this->formId = $id;
 
         $item = AccountType::where('id', $id)->first();
         $this->account_type = $item->account_type;
@@ -63,9 +63,9 @@ class AccountTypesComponent extends Component
 
     public function rules()
     {
-        if ($this->edit_id) {
+        if ($this->formId) {
             $rules =  [
-                'account_type' =>  'required|min:3|unique:account_types,account_type,' . $this->edit_id,
+                'account_type' =>  'required|min:3|unique:account_types,account_type,' . $this->formId,
             ];
         } else {
             $rules =  [
@@ -80,13 +80,13 @@ class AccountTypesComponent extends Component
     {
         $this->validate();
 
-        $item = AccountType::updateOrCreate(["id" => $this->edit_id], ["identifier" => Str::uuid(), "account_type" => $this->account_type, "slug" => Str::slug($this->account_type)]);
+        $item = AccountType::updateOrCreate(["id" => $this->formId], ["identifier" => Str::uuid(), "account_type" => $this->account_type, "slug" => Str::slug($this->account_type)]);
 
         if (!$item) {
-            $message = ($this->edit_id) ? "The account type has not been updated." : "The account type has not been added";
+            $message = ($this->formId) ? "The account type has not been updated." : "The account type has not been added";
             $this->notify($message, "success");
         } else {
-            $message = ($this->edit_id) ? "The account type has been updated." : "The account type has been added";
+            $message = ($this->formId) ? "The account type has been updated." : "The account type has been added";
             $this->notify($message, "success");
 
             $this->initializeValues();
