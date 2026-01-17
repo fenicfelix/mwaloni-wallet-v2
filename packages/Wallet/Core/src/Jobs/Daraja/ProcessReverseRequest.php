@@ -4,13 +4,13 @@ namespace App\Jobs\Daraja;
 
 use Akika\LaravelMpesaMultivendor\Mpesa;
 use Wallet\Core\Models\Transaction;
-use Wallet\Core\Models\TransactionType;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Auth;
+use Wallet\Core\Http\Enums\TransactionType;
 
 class ProcessReverseRequest implements ShouldQueue
 {
@@ -64,7 +64,7 @@ class ProcessReverseRequest implements ShouldQueue
                 }
 
                 $client_id = ($transaction->service_id) ? $transaction->service->client_id : NULL;
-                log_transaction($transaction->account->id, TransactionType::TYPE_REVERSAL, $client_id, $transaction->service_id, floor($transaction->disbursed_amount), $payment_results_status, $payment_results_desc, $transaction->order_number . ' - ' . $transaction->account_number, $initiatedBy);
+                log_transaction($transaction->account->id, TransactionType::REVERSAL, $client_id, $transaction->service_id, floor($transaction->disbursed_amount), $payment_results_status, $payment_results_desc, $transaction->order_number . ' - ' . $transaction->account_number, $initiatedBy);
             }
         }
     }

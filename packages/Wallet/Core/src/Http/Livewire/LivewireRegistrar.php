@@ -14,10 +14,8 @@ use Wallet\Core\Http\Livewire\Components\PreferencesComponent;
 use Wallet\Core\Http\Livewire\Components\ProfileComponent;
 use Wallet\Core\Http\Livewire\Components\RolesComponent;
 use Wallet\Core\Http\Livewire\Components\ServicesComponent;
-use Wallet\Core\Http\Livewire\Components\StatusesComponent;
 use Wallet\Core\Http\Livewire\Components\TransactionChargesComponent;
 use Wallet\Core\Http\Livewire\Components\TransactionsComponent;
-use Wallet\Core\Http\Livewire\Components\TransactionTypesComponent;
 use Wallet\Core\Http\Livewire\Components\UsersComponent;
 
 final class LivewireRegistrar
@@ -34,10 +32,7 @@ final class LivewireRegistrar
         Livewire::component('core.preferences-component', PreferencesComponent::class);
         Livewire::component('core.roles-component', RolesComponent::class);
         Livewire::component('core.transaction-charges-component', TransactionChargesComponent::class);
-        Livewire::component('core.transaction-types-component', TransactionTypesComponent::class);
         Livewire::component('core.users-component', UsersComponent::class);
-        Livewire::component('core.statuses-component', StatusesComponent::class);
         Livewire::component('core.account-types-component', AccountTypesComponent::class);
-
     }
 }

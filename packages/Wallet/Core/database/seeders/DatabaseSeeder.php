@@ -22,7 +22,6 @@ class DatabaseSeeder extends Seeder
             // CurrencySeeder::class,
             // StatusSeeder::class,
             // TransactionChargeSeeder::class,
-            // TransactionTypesSeeder::class,
             // PreferencesSeeder::class,
         ]);
     }

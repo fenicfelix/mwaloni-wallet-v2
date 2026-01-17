@@ -17,12 +17,17 @@ enum PermissionType: string
         );
     }
 
+    public static function labels(): array
+    {
+        return [
+            self::ALL->value => 'All Permissions',
+            self::CUSTOM->value => 'Custom Permissions',
+        ];
+    }
+
     public function label(): string
     {
-        return match ($this) {
-            self::ALL => 'All Permissions',
-            self::CUSTOM => 'Custom Permissions',
-        };
+        return self::labels()[$this->value];
     }
 
     public static function fromValue(string $value): self

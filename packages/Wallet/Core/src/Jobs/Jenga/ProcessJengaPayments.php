@@ -4,13 +4,13 @@ namespace App\Jobs\Jenga;
 
 use App\Jobs\PushTransactionCallback;
 use Wallet\Core\Models\Transaction;
-use Wallet\Core\Models\TransactionType;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Log;
+use Wallet\Core\Http\Enums\TransactionType;
 
 class ProcessJengaPayments implements ShouldQueue
 {
@@ -72,7 +72,7 @@ class ProcessJengaPayments implements ShouldQueue
                     if (!$transaction->save()) {
                         throw new \Exception("JENGA Payment Failed to save " . $transaction->id);
                     } else {
-                        log_transaction($transaction->account->id, TransactionType::TYPE_PAYMENTS, $transaction->service->client_id, $transaction->service_id, floor($transaction->disbursed_amount), $result_status, $result->message, $transaction->order_number . ' - ' . $transaction->account_number, $transaction->requested_by);
+                        log_transaction($transaction->account->id, TransactionType::PAYMENTS, $transaction->service->client_id, $transaction->service_id, floor($transaction->disbursed_amount), $result_status, $result->message, $transaction->order_number . ' - ' . $transaction->account_number, $transaction->requested_by);
                         if ($transaction->service->callback_url != NULL) {
                             PushTransactionCallback::dispatch($data, $transaction->service->callback_url);
                         }

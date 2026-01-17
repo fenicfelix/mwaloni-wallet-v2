@@ -183,19 +183,31 @@ class UsersComponent extends Component
         }
     }
 
-    public function addFunction()
+    #[On("generateApiDetails")]
+    public function generateApiDetails($id)
     {
-        $this->resetValues();
-        $this->add = !$this->add;
+        $this->formId = $id;
+        $this->confirm(
+            'Confirm Action',
+            'This action will generate new API credentials for this user and all associated services will require an update. Do you want to continue?',
+            'warning',
+            'Yes, Generate',
+            'confirmedGenerateApiDetails'
+        );
     }
 
-    #[On("showApiDetails")]
-    public function showApiDetails($id)
+    #[On("confirmedGenerateApiDetails")]
+    public function confirmedGenerateApiDetails()
     {
-        $this->user = User::find($id);
-        $this->formData['password'] = $this->generateRandomString("password");
-        $this->user->update(['password' => Hash::make($this->formData['password'])]);
+        $password = $this->generateRandomString("password");
+        $this->user = app(UserRepository::class)->update($this->formId, [
+            'password' => Hash::make($password),
+        ]);
+        if (!$this->user) {
+            $this->notify("Failed to generate API credentials. Please try again.", "error");
+        }
         $this->displayApiDetails = true;
+        $this->notify("API credentials have been generated.", "success");
     }
 
     #[On("editFunction")]
@@ -204,8 +216,13 @@ class UsersComponent extends Component
         $this->resetValues();
         $this->formId = $id;
         $this->add = !$this->add;
-        $this->user = User::with('role')->where("id", $id)->first();
-        $this->formData = $this->user->toArray();
+        $this->formData = app(UserRepository::class)->find($this->formId)->toArray();
+    }
+
+    public function addFunction()
+    {
+        $this->resetValues();
+        $this->add = !$this->add;
     }
 
     public function backAction()

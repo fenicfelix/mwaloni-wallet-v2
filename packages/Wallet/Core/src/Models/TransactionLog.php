@@ -26,11 +26,6 @@ class TransactionLog extends Model
 
     public $timestamps = false;
 
-    public function type()
-    {
-        return $this->belongsTo(TransactionType::class, "type_id");
-    }
-
     public function service()
     {
         return $this->belongsTo(Service::class, "service_id");

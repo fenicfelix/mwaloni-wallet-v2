@@ -10,10 +10,8 @@ use Wallet\Core\Http\Livewire\Components\PreferencesComponent;
 use Wallet\Core\Http\Livewire\Components\ProfileComponent;
 use Wallet\Core\Http\Livewire\Components\RolesComponent;
 use Wallet\Core\Http\Livewire\Components\ServicesComponent;
-use Wallet\Core\Http\Livewire\Components\StatusesComponent;
 use Wallet\Core\Http\Livewire\Components\TransactionChargesComponent;
 use Wallet\Core\Http\Livewire\Components\TransactionsComponent;
-use Wallet\Core\Http\Livewire\Components\TransactionTypesComponent;
 use Wallet\Core\Http\Livewire\Components\UsersComponent;
 
 Route::middleware(['auth', 'web'])->group(function () {
@@ -33,8 +31,6 @@ Route::middleware(['auth', 'web'])->group(function () {
     Route::prefix('technical')->as('technical.')->group(function () {
         Route::get('roles', RolesComponent::class)->name('roles');
         Route::get('account-types', AccountTypesComponent::class)->name('account_types');
-        Route::get('statuses', StatusesComponent::class)->name('statuses');
-        Route::get('transaction-types', TransactionTypesComponent::class)->name('transaction_types');
         Route::get('transaction-charges', TransactionChargesComponent::class)->name("transaction_charges");
         Route::get('preferences', PreferencesComponent::class)->name('preferences');
     });

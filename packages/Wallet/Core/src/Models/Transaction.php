@@ -10,16 +10,6 @@ class Transaction extends Model
 {
     use HasFactory;
 
-    public const STATUS_SUBMITTED = 1;
-    public const STATUS_SUCCESS = 2;
-    public const STATUS_FAILED = 3;
-    public const STATUS_CANCELLED = 4;
-    public const STATUS_REVERSING = 5;
-    public const STATUS_PENDING = 6;
-    public const STATUS_REVERSED = 7;
-    public const STATUS_QUERING_STATUS = 8;
-    public const STATUS_REVERSING_FAILED = 9;
-
     protected $fillable = [
         'identifier',
         'account_number',
@@ -29,7 +19,7 @@ class Transaction extends Model
         'description',
         'account_id',
         'service_id',
-        'type_id',
+        'transaction_type',
         'transaction_date',
         'order_number',
         'message_id',
@@ -59,7 +49,7 @@ class Transaction extends Model
         'requested_on' => 'datetime',
         'reversed_on' => 'datetime',
         'completed_at' => 'datetime',
-        'status' => TransactionStatus::class
+        'status' => TransactionStatus::class,
     ];
 
     public function payload()
@@ -90,11 +80,6 @@ class Transaction extends Model
     public function service()
     {
         return $this->belongsTo(Service::class, "service_id");
-    }
-
-    public function type()
-    {
-        return $this->belongsTo(TransactionType::class, "type_id");
     }
 
     public function account()

@@ -3,7 +3,6 @@
 namespace Wallet\Core\Http\Livewire\Datatables;
 
 use Wallet\Core\Models\Service;
-use Wallet\Core\Models\Status;
 use Rappasoft\LaravelLivewireTables\Views\Filters\DateFilter;
 use Rappasoft\LaravelLivewireTables\Views\Filters\SelectFilter;
 use Rappasoft\LaravelLivewireTables\DataTableComponent;
@@ -68,11 +67,6 @@ class TransactionsTable extends DataTableComponent
                     fn($value) => date('h:i A', strtotime($value))
                 ),
 
-            Column::make("TRX. Type", 'type.name')
-                ->excludeFromColumnSelect()
-                ->searchable()
-                ->sortable(),
-
             Column::make("Service", 'service.name')
                 ->excludeFromColumnSelect()
                 ->searchable()
@@ -119,19 +113,15 @@ class TransactionsTable extends DataTableComponent
                 ->sortable()
                 ->label(function ($row, Column $column) {
                     return number_format($row->disbursed_amount + $row->system_charges + $row->sms_charges);
-                })
-                ->deselected(),
+                }),
 
             Column::make("Revenue", "revenue")
-                ->sortable()
-                ->deselected(),
+                ->sortable(),
 
             Column::make("Status", "status")
                 ->sortable()
-                ->deselected()
                 ->format(function ($value) {
-                    // return '<span class="badge bg-' . TransactionStatus::from($value->value())->backgroundColor() . '">' . TransactionStatus::from($value)->label() . '</span>';
-                return '<span class="badge bg-'.$value->backgroundColor().'">' . $value->label() . '</span>';
+                    return '<span class="badge bg-' . $value->backgroundColor() . '">' . $value->label() . '</span>';
                 })
                 ->html(),
 

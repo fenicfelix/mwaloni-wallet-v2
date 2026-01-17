@@ -67,7 +67,9 @@
                             <p><strong>Username:</strong> {{ $user->username }}</p>
                             <p><strong>Password:</strong> {{ $formData["password"] }}</p>
                             <p><strong>API Key:</strong> {{ $user->api_key }}</p>
-                            <button type="button" class="btn btn-danger btn-rounded w-sm" wire:click="backToList">Cancel</button>
+                            <x-wallet::button class="w-sm" variant="danger" wire:click.prevent="backAction">
+                                Cancel
+                            </x-wallet::button>
                         </div>
                     </div>
                 </div>
@@ -106,13 +108,12 @@
                                     </div>
                                     <hr>
                                     <div class="mt-4">
-                                        <button type="button" class="btn btn-danger btn-rounded w-sm" data-dismiss="modal"
-                                            wire:click="addFunction">Cancel</button>
-                                        <button type="submit" class="btn btn-dark btn-rounded w-sm">Submit</button>
-                                        <span class="d-custom-none">
-                                            <img src="{{ asset('themes/agile/img/working.gif') }}" width="20" alt="">
-                                            <small>please wait...</small>
-                                        </span>
+                                        <x-wallet::button class="w-sm" variant="danger" wire:click.prevent="backAction">
+                                            Cancel
+                                        </x-wallet::button>
+                                        <x-wallet::button type="submit" class="w-sm" variant="dark">
+                                            Submit
+                                        </x-wallet::button>
                                     </div>
                                 </form>
                                 @else
