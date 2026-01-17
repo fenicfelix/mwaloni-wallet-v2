@@ -17,11 +17,8 @@ class AccountSeeder extends Seeder
         if (!Account::where("id", "=", "1")->exists()) {
             Account::query()->create([
                 "id" => 1,
-                "identifier" => generate_identifier(),
                 "name" => "WWT Test",
                 "account_number" => "000001",
-                "added_by" => 1,
-                "updated_by" => 1,
             ]);
         }
     }

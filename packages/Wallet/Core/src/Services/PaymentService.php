@@ -2,12 +2,13 @@
 
 namespace Wallet\Core\Services;
 
-use App\Http\Traits\MwaloniWallet;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Wallet\Core\Models\Service;
 use Wallet\Core\Models\Transaction;
+use Illuminate\Support\Str;
+use Wallet\Core\Http\Traits\MwaloniWallet;
 
 class PaymentService
 {
@@ -49,7 +50,7 @@ class PaymentService
             );
         }
 
-        $paymentChannel = get_payment_channel($service->account, $request->post('channel'));
+        $paymentChannel = $this->getPaymentChannel($service->account, $request->post('channel'));
 
         if (! $paymentChannel) {
             throw new \RuntimeException('Invalid payment channel.');
@@ -58,7 +59,7 @@ class PaymentService
         /* -------------------- CALCULATIONS -------------------- */
 
         $amountToSend        = (int) ceil($amountRequested);
-        $transactionCharges  = get_transaction_charges($amountToSend, $paymentChannel->id);
+        $transactionCharges  = $this->getTransactionCharges($amountToSend, $paymentChannel->id);
         $expenses            = (float) ($service->system_charges + $service->sms_charges);
         $revenue             = max(0, $expenses - $transactionCharges);
 
@@ -93,7 +94,7 @@ class PaymentService
 
         /* -------------------- PAYMENT PAYLOAD -------------------- */
 
-        $payload = $this->generate_payload($paymentChannel, $request->post(), $amountToSend);
+        $payload = app(PayloadGeneratorService::class)->generatePayload($paymentChannel, $request->post(), $amountToSend);
 
         if (! $payload) {
             throw new \RuntimeException('Failed to generate payment payload.');
@@ -112,7 +113,7 @@ class PaymentService
             $keyBlock
         ) {
             $transaction = Transaction::create([
-                'identifier'          => generate_identifier(),
+                'identifier'          => Str::uuid(),
                 'account_name'        => $request->post('account_name'),
                 'account_number'      => $request->post('account_number'),
                 'account_reference'   => $request->post('account_reference'),

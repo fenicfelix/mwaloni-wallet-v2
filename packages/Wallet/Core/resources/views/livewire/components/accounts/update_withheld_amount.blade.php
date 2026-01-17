@@ -15,22 +15,15 @@
                         <div class="card-body">
                             <form wire:submit.prevent="saveWithheldAmount">
                                 <div class="col-12">
-                                    <div class="md-form-group float-label">
-                                        <input type="text" class="md-input" wire:model="form.withheld_amount" required>
-                                        <label>Withheld Amount</label>
-                                    </div>
-                                    @error('form.withheld_amount')
-                                    <small class="text-danger">{{ $message }} </small>
-                                    @enderror
+                                    <x-wallet::form.input label="Withheld Amount" wire:model.defer="formData.withheld_amount" name="withheld_amount" required />
                                 </div>
                                 <div class="mt-4">
-                                    <button type="button" class="btn btn-danger btn-rounded w-sm"
-                                        wire:click="backToList">Cancel</button>
-                                    <button type="submit" class="btn btn-dark btn-rounded w-sm">Update Withheld Amount</button>
-                                    <span class="d-custom-none">
-                                        <img src="{{ asset('themes/agile/img/working.gif') }}" width="20" alt="">
-                                        <small>please wait...</small>
-                                    </span>
+                                    <x-wallet::button class="w-sm" variant="danger" wire:click.prevent="backAction">
+                                        Cancel
+                                    </x-wallet::button>
+                                    <x-wallet::button type="submit" class="w-sm" variant="dark">
+                                        Update Withheld Amount
+                                    </x-wallet::button>
                                 </div>
                             </form>
                         </div>

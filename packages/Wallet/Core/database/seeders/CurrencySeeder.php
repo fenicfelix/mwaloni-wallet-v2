@@ -28,7 +28,6 @@ class CurrencySeeder extends Seeder
         foreach ($currencies as $currency) {
             if (!Currency::where("code", $currency["code"])->exists()) {
                 Currency::query()->create([
-                    "identifier" => generate_identifier(),
                     "name" => $currency["name"],
                     "code" => $currency["code"],
                     "active" => "1"

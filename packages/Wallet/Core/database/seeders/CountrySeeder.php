@@ -24,7 +24,6 @@ class CountrySeeder extends Seeder
         foreach ($countries as $country) {
             if (!Country::where("code", $country["code"])->exists()) {
                 Country::query()->create([
-                    "identifier" => generate_identifier(),
                     "name" => $country["name"],
                     "code" => $country["code"],
                     "active" => "1"

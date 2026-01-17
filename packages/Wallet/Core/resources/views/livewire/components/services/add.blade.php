@@ -16,102 +16,43 @@
                     <div class="card card-border">
                         <div class="card-body">
                             <form wire:submit.prevent="store">
-                                    <div class="col-sm-12">
-                                    <div class="md-form-group float-label">
-                                        <input type="text" class="md-input" wire:model="form.name" id="add-name" wire:keyup="updateUsername" required>
-                                        <label>Service Name</label>
-                                    </div>
-                                    @error('form.name')
-                                        <small class="text-danger">{{ $message }} </small>
-                                    @enderror
+                                <div class="col-sm-12">
+                                    <x-wallet::form.input label="Name" wire:model.defer="formData.name" name="name" required />
                                 </div>
                                 <div class="col-sm-12">
-                                    <div class="md-form-group float-label">
-                                        <textarea class="md-input" wire:model.lazy="form.description" rows="3"></textarea>
-                                        <label>Service Description</label>
-                                    </div>
-                                    @error('form.description')
-                                        <small class="text-danger">{{ $message }} </small>
-                                    @enderror
+                                    <x-wallet::form.textarea label="Description" wire:model.lazy="formData.description" rows="3" />
                                 </div>
                                 <div class="col-sm-12">
                                     <div class="row">
                                         <div class="col-6">
-                                            <div class="md-form-group float-label">
-                                                <select class="md-input" wire:model="form.client_id" id="add-client_id" >
-                                                    <option value="">Select Client</option>
-                                                    @forelse ($clients as $client)
-                                                        <option value="{{ $client->id }}">{{ $client->name }}</option>
-                                                    @empty
-                                                        
-                                                    @endforelse
-                                                </select>
-                                            </div>
-                                            @error('form.client_id')
-                                                <small class="text-danger">{{ $message }} </small>
-                                            @enderror
+                                            <x-wallet::form.select label="Client" wire:model.live="formData.client_id" :options="$clients->pluck('name', 'id')" placeholder="Choose Client" />
                                         </div>
                                         <div class="col-6">
-                                            <div class="md-form-group float-label">
-                                                <select class="md-input" wire:model="form.account_id" id="add-account_id" >
-                                                <option value="">Select Account</option>
-                                                    @forelse ($accounts as $account)
-                                                        <option value="{{ $account->id }}">{{ $account->name }}</option>
-                                                    @empty
-                                                        
-                                                    @endforelse
-                                                </select>
-                                            </div>
-                                            @error('form.account_id')
-                                                <small class="text-danger">{{ $message }} </small>
-                                            @enderror
+                                            <x-wallet::form.select label="Account" wire:model.live="formData.account_id" :options="$accounts->pluck('name', 'id')" placeholder="Choose Account" />
                                         </div>
                                     </div>
                                 </div>
                                 <div class="col-sm-12">
-                                    <div class="md-form-group float-label">
-                                        <input type="url" class="md-input" wire:model.lazy="form.callback_url" id="add-callback_url" >
-                                        <label>Callback URL</label>
-                                    </div>
-                                    @error('form.callback_url')
-                                        <small class="text-danger">{{ $message }} </small>
-                                    @enderror
+                                    <x-wallet::form.input type="url" label="Callback URL" wire:model.lazy="formData.callback_url"/>
                                 </div>
                                 <div class="row px-3">
                                     <div class="col-sm-6">
-                                        <div class="md-form-group float-label">
-                                            <input type="number" class="md-input" wire:model.lazy="form.system_charges" id="add-system_charges" required>
-                                            <label>System Charges</label>
-                                        </div>
-                                        @error('form.system_charges')
-                                            <small class="text-danger">{{ $message }} </small>
-                                        @enderror
+                                        <x-wallet::form.input type="number" label="System Charges" wire:model.lazy="formData.system_charges" id="add-system_charges" required/>
                                     </div>
                                     <div class="col-sm-6">
-                                        <div class="md-form-group float-label">
-                                            <input type="number" class="md-input" wire:model.lazy="form.sms_charges" id="add-sms_charges" required>
-                                            <label>SMS Charges</label>
-                                        </div>
-                                        @error('form.sms_charges')
-                                            <small class="text-danger">{{ $message }} </small>
-                                        @enderror
+                                        <x-wallet::form.input type="number" label="SMS Charges" wire:model.lazy="formData.sms_charges" id="add-sms_charges" required/>
                                     </div>
                                 </div>
                                 <div class="col-sm-12">
-                                    <div class="md-form-group float-label">
-                                        <input type="number" class="md-input" wire:model.lazy="form.max_trx_amount" id="add-max_trx_amount" required>
-                                        <label for="add-max_trx_amount">Max Transaction Amount</label>
-                                    </div>
-                                    @error('form.max_trx_amount')
-                                        <small class="text-danger">{{ $message }} </small>
-                                    @enderror
+                                    <x-wallet::form.input type="number" label="Max Transaction Amount" wire:model.lazy="formData.max_trx_amount" id="add-max_trx_amount" required/>
                                 </div>
                                 <div class="mt-4">
-                                    <button type="button" class="btn btn-danger btn-rounded w-sm" wire:click="backToList">Cancel</button>
-                                    <button type="submit" wire:loading.attr="disabled" class="btn btn-dark btn-rounded w-sm">{{ ($formId) ? 'Save Changes' : 'Submit' }}</button>
-                                    <span class="d-custom-none">
-                                        <img src="{{ asset('themes/agile/img/working.gif') }}" width="20" alt=""> <small>please wait...</small>
-                                    </span>
+                                    <x-wallet::button class="w-sm" variant="danger" wire:click.prevent="backAction">
+                                        Cancel
+                                    </x-wallet::button>
+                                    <x-wallet::button type="submit" class="w-sm" variant="dark">
+                                        Submit
+                                    </x-wallet::button>
                                 </div>
                             </form>
                         </div>

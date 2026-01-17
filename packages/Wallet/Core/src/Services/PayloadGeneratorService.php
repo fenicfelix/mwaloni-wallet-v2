@@ -1,27 +1,10 @@
 <?php
 
-namespace Wallet\Core\Http\Traits;
+namespace Wallet\Core\Services;
 
-use Akika\LaravelMpesaMultivendor\Mpesa;
-use Wallet\Core\Models\Outbox;
-use Wallet\Core\Models\Service;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Log;
-use Wallet\Core\Http\Enums\TransactionType;
-use Wallet\Core\Jobs\ProcessSMS;
-use Wallet\Core\Models\PaymentChannel;
+class PayloadGeneratorService {
 
-trait MwaloniWallet
-{
-    private function generate_reference($prefix = "FK")
-    {
-        $reference = $prefix . date('ymdHis') . rand(1000, 9999);
-        return $reference;
-    }
-
-    private function generate_payload($channel, $data, $amount)
+    public function generatePayload($channel, $data, $amount): ?array
     {
         // if $channel like ncba-ift, ncba-*
         $payload = [];
@@ -138,120 +121,5 @@ trait MwaloniWallet
         }
 
         return $payload;
-    }
-
-    private function authenticate_service(Request $request)
-    {
-        $password = $this->decrypt($request->post("password"), $request->post("key"));
-        $service = Service::with(["client", "account"])->where("service_id", $request->post('service_id'))->where("username", "=", $request->post("username"))->first();
-
-        if (!$service) return false;
-        if (!Hash::check($password, $service->password)) return false;
-
-        return $service;
-    }
-
-    private function decrypt($encrypted, $key)
-    {
-        $decrypted = openssl_decrypt(hex2bin($encrypted), 'AES-256-CTR', $key, OPENSSL_RAW_DATA, config('wallet.ewallet_encryption_salt'));
-        return utf8_encode(trim($decrypted));
-    }
-
-    private function sendSMS($to, $message)
-    {
-        if (config('app.env') == "production") {
-            $outbox = Outbox::where("message", "=", $message)->where("to", "=", $to)->first();
-            if (!$outbox) {
-                $data = [
-                    "message" => $message,
-                    "to" => $to,
-                    "sent" => "0",
-                    "cost" => getOption('actual-sms-cost')
-                ];
-
-                $outbox = Outbox::query()->create($data);
-                ProcessSMS::dispatch($to, $message, $outbox->id)->onQueue("outbox");
-            }
-        } else {
-            Log::warning($to . " | " . $message);
-        }
-    }
-
-    private function generateRandomString($strl_type = "", $length = 10)
-    {
-        $characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
-        if ($strl_type == "pin") $characters = '0123456789';
-        if ($strl_type == "password") $characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ@%^&()';
-        $randomString = '';
-        $charactersLength = strlen($characters);
-        for ($i = 0; $i < $length; $i++) {
-            $randomString .= $characters[rand(0, $charactersLength - 1)];
-        }
-        return $randomString;
-    }
-
-    private function daraja_account_balance($account)
-    {
-        $mpesaShortCode = $account->account_number;
-        $consumerKey = $account->consumer_key;
-        $consumerSecret = $account->consumer_secret;
-        $apiUsername = $account->api_username;
-        $apiPassword = $account->api_password;
-        $mpesa = new Mpesa($mpesaShortCode, $consumerKey, $consumerSecret, $apiUsername, $apiPassword);
-        return $mpesa->getBalance(route('balance_result_url', $account->identifier), route('balance_timeout_url'));
-    }
-
-    private function daraja_transaction_status($transaction)
-    {
-        $account = $transaction->account;
-        $mpesaShortCode = $account->account_number;
-        $consumerKey = $account->consumer_key;
-        $consumerSecret = $account->consumer_secret;
-        $apiUsername = $account->api_username;
-        $apiPassword = $account->api_password;
-        $mpesa = new Mpesa($mpesaShortCode, $consumerKey, $consumerSecret, $apiUsername, $apiPassword);
-        return $mpesa->getTransactionStatus($transaction->receipt_number, "shortcode", $transaction->description, route('trx_status_result_url'), route('trx_status_timeout_url'), $transaction->payload?->original_conversation_id);
-    }
-
-    private function getTransactionCharges($amount, $paymentChannelId)
-    {
-        $sql = "select * from transaction_charges where payment_channel_id = '" . $paymentChannelId . "' and " . ceil($amount) . " between minimum and maximum";
-        $charge = DB::select($sql);
-        if ($charge) return $charge[0]->charge;
-        return 0;
-    }
-
-    private function generateOrderNumber($type_id)
-    {
-        $sql = "select max(order_number) AS order_number from transactions where type_id = " . $type_id;
-        $trx = DB::select($sql)[0];
-        $order_number = "";
-        if ($trx->order_number) {
-            $order_number = $trx->order_number;
-            $order_number++;
-        } else {
-            if ($type_id == TransactionType::CASHOUT) $order_number = "CSHT0001";
-            else if ($type_id == TransactionType::REVENUE_TRANSFER) $order_number = "REV0001";
-            else $order_number = TransactionType::SERVICE_CHARGE;
-        }
-        return $order_number;
-    }
-
-    function getPaymentChannel($account, $channel)
-    {
-        $channel_slug = "";
-        if (in_array($channel, ["ift", "eft", "rtgs", "pesalink"])) {
-            $channel_slug = $account->accountType->slug . "-" . $channel;
-        } else {
-            $channel_slug = $channel;
-        }
-
-        if ($channel_slug) {
-            return PaymentChannel::where("slug", $channel_slug)
-                ->where('account_type_id', $account->account_type_id)
-                ->first();
-        } else {
-            return false;
-        }
     }
 }

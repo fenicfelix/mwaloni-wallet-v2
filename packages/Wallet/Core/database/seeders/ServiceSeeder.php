@@ -18,7 +18,6 @@ class ServiceSeeder extends Seeder
         if (!Service::where("id", "=", "1")->exists()) {
             Service::query()->create([
                 "id" => 1,
-                "identifier" => generate_identifier(),
                 "name" => str_replace(" ", "-", config("app.name")),
                 "service_id" => "SRV-00001",
                 "description" => "Default Payment Service",

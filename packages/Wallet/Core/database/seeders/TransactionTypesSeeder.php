@@ -29,7 +29,6 @@ class TransactionTypesSeeder extends Seeder
             foreach ($types as $type) {
                 if (!TransactionType::where("name", "=", $type["name"])->exists()) {
                     $data = [
-                        "identifier" => generate_identifier(),
                         "name" => $type["name"],
                         "description" => $type["description"]
                     ];

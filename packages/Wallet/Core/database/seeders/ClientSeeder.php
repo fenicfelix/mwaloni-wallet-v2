@@ -17,7 +17,6 @@ class ClientSeeder extends Seeder
         if (!Client::where("id", "=", "1")->exists()) {
             Client::query()->create([
                 "id" => 1,
-                "identifier" => generate_identifier(),
                 "name" => config("app.name"),
                 "client_id" => "CLI-00001",
                 "account_manager" => 1,

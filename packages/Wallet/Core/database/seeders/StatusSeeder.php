@@ -18,7 +18,6 @@ class StatusSeeder extends Seeder
         foreach ($statuses as $status) {
             if (!Status::where("name", "=", $status)->exists()) {
                 Status::query()->create([
-                    "identifier" => generate_identifier(),
                     "name" => $status
                 ]);
             }

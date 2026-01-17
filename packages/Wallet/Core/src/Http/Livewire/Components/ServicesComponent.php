@@ -19,6 +19,8 @@ use Wallet\Core\Models\Service;
 use Illuminate\Support\Str;
 use Wallet\Core\Jobs\ProcessPayment;
 use Wallet\Core\Models\Transaction;
+use Wallet\Core\Repositories\ServiceRepository;
+use Wallet\Core\Services\WithdrawService;
 
 class ServicesComponent extends Component
 {
@@ -28,13 +30,11 @@ class ServicesComponent extends Component
 
     public ?bool $add = false;
 
-    public ?int $formId;
+    public ?int $formId = null;
 
-    public array $form = [];
+    public array $formData = [];
 
     public ?bool $withdraw = false;
-
-    public ?User $user;
 
     public ?Collection $clients = null;
 
@@ -42,11 +42,7 @@ class ServicesComponent extends Component
 
     public ?Collection $payment_channels = null;
 
-    public array $withdraw_from = [];
-
-    public string $country_code = '';
-
-    public string $bank_code = '';
+    public ?array $withdraw_from = [];
 
     public ?Service $service = null;
 
@@ -59,7 +55,6 @@ class ServicesComponent extends Component
         'withdrawCharges'
     ];
 
-
     public function mount()
     {
         $this->initializeValues();
@@ -67,7 +62,7 @@ class ServicesComponent extends Component
 
     public function updateUsername()
     {
-        if (!$this->formId) $this->form['username'] = Str::slug($this->form['name']);
+        if (!$this->formId) $this->formData['username'] = Str::slug($this->formData['name']);
     }
 
     private function initializeValues()
@@ -77,46 +72,7 @@ class ServicesComponent extends Component
 
         $this->clients = Client::get();
         $this->accounts = Account::get();
-        $this->user = Auth::user();
         $this->payment_channels = PaymentChannel::get();
-    }
-
-    public function resetValues()
-    {
-        $this->add = false;
-        $this->withdraw = false;
-        $this->formId = NULL;
-
-        $this->reset('max_amount', 'withdraw_from', 'form');
-
-        $this->service = null;
-
-        $this->form = [
-            'active' => 1,
-        ];
-    }
-
-    public function addFunction()
-    {
-        $this->resetValues();
-        $this->add = true;
-        $this->form['password'] = $this->generateRandomString('password');
-    }
-
-    public function editFunction($formId)
-    {
-        $this->resetValues();
-        $this->add = true;
-        $this->formId = $formId;
-        $this->form = Service::where("id", $this->formId)->first()->toArray();
-        unset($this->form['password']);
-        unset($this->form['created_at']);
-        unset($this->form['updated_at']);
-    }
-
-    public function backToList()
-    {
-        $this->resetValues();
     }
 
     public function withdrawCharges($formId)
@@ -134,12 +90,12 @@ class ServicesComponent extends Component
 
         if ($this->add) {
             $rules =  [
-                'form.name' => 'required',
-                'form.description' => 'required',
-                'form.client_id' => 'required:exists,clients,status_id',
-                'form.account_id' => 'required:exists,accounts,status_id',
-                'form.system_charges' => 'required',
-                'form.max_trx_amount' => 'required|min:2',
+                'formData.name' => 'required',
+                'formData.description' => 'required',
+                'formData.client_id' => 'required:exists,clients,status_id',
+                'formData.account_id' => 'required:exists,accounts,status_id',
+                'formData.system_charges' => 'required',
+                'formData.max_trx_amount' => 'required|min:2',
             ];
         } else if ($this->withdraw) {
             $rules = [
@@ -161,112 +117,78 @@ class ServicesComponent extends Component
 
     public function store()
     {
-        $this->validate();
-
-        $trx = DB::transaction(function () {
-            if (isset($this->form['password']) && $this->form['password'] != "") {
-                $this->form['password'] = Hash::make($this->form['password']);
-            }
-            if ($this->formId) {
-                $this->form['updated_by'] = $this->user->id;
-                $this->form['updated_at'] = date('Y-m-d H:i:s');
-                $update = Service::where("id", $this->formId)->update($this->form);
-                if (!$update) return false;
-                return true;
-            } else {
-                $this->form['identifier'] = generate_identifier();
-                $this->form['added_by'] = $this->user->id;
-                $this->form['updated_by'] = $this->user->id;
-                $this->form['active'] = 1;
-                $service = Service::query()->create($this->form);
-
-                if (!$service) return false;
-
-                // Generate Service ID
-                $service_id = str_pad($service->id, 5, "0", STR_PAD_LEFT);
-                $service->service_id = "SRV-" . $service_id;
-                if (!$service->save()) return false;
-            }
-
-            return true;
-        }, 2);
-
-        if ($trx) {
-            if ($this->formId) $this->notify("The service has been updated.", "success");
-            else $this->notify("The service has been added.", "success");
-            $this->resetValues();
-        } else {
-            if ($this->formId) $this->notify("The service was not updated. Please try again.", "error");
-            else $this->notify("The service could not be added. Please try again.", "error");
+        try {
+            $this->validate();
+        } catch (\Throwable $th) {
+            $this->notify(
+                'There were validation errors. Please check the form and try again.',
+                'error'
+            );
+            return;
         }
+
+        if (isset($this->formData['password']) && $this->formData['password'] != "") {
+            $this->formData['password'] = Hash::make($this->formData['password']);
+        }
+
+        if ($this->formId === null) {
+            $service = app(ServiceRepository::class)->create($this->formData);
+        } else {
+            $service = app(ServiceRepository::class)->update($this->formId, $this->formData);
+        }
+
+        if (!$service) {
+            $this->notify("Operation failed. Please try again.", "error");
+            return;
+        }
+
+        $this->notify('Operation successful. Please try again.', 'success');
+        $this->resetValues();
     }
 
     public function doWithdrawCash()
     {
-        $key_block = sha1($this->withdraw_from['amount'] . $this->withdraw_from['account_number'] . $this->formId . $this->withdraw_from['channel_id'] . date('Ymd'));
-        $paymentChannel = PaymentChannel::where("slug", $this->withdraw_from['channel_id'])->first();
-        $transaction_charges = get_transaction_charges($this->withdraw_from['amount'], $paymentChannel->id);
-
-        $request = [
-            "type" => "withdraw",
-            "id" => $this->service->id,
-            "account_number" => $this->withdraw_from['account_number'],
-            "account_name" => $this->withdraw_from['account_name'],
-            "channel_id" => $this->withdraw_from['channel_id'],
-            "account_reference" => $this->withdraw_from['account_reference'] ?? null,
-            "amount" => $this->withdraw_from['amount'],
-        ];
-
-        $transaction = DB::transaction(
-            function () use ($request, $key_block, $paymentChannel, $transaction_charges) {
-                $payload = $this->generate_payload($paymentChannel, $request, $this->amount);
-                if (!$payload) return false;
-
-                $transaction = Transaction::query()->create([
-                    "identifier" => generate_identifier(),
-                    "account_name" => $this->withdraw_from['account_name'],
-                    "account_number" => $this->withdraw_from['account_number'],
-                    'account_reference' => $this->withdraw_from['account_reference'] ?? null,
-                    "requested_amount" => $this->withdraw_from['amount'],
-                    "disbursed_amount" => $this->withdraw_from['amount'],
-                    "key_block" => $key_block,
-                    "reference" => $payload["reference"],
-                    "description" => "Service Charge",
-                    "account_id" => $this->service->account_id,
-                    "channel_id" => $paymentChannel->id,
-                    "service_id" => $this->service->id,
-                    "type_id" => 5,
-                    "order_number" => generate_order_number(5),
-                    "status_id" => "6",
-                    "system_charges" => 0,
-                    "sms_charges" => 0,
-                    "revenue" => 0,
-                    "transaction_charges" => $transaction_charges,
-                    "requested_by" => Auth::id(),
-                    "requested_on" => date('Y-m-d H:i:s'),
-                    "transaction_date" => date('Y-m-d H:i:s'),
-                    "payment_channel_id" => $paymentChannel->id,
-                ]);
-
-                $transaction->payload()->create([
-                    "raw_request" => json_encode($request),
-                    "trx_payload" => json_encode($payload)
-                ]);
-
-                if (!$transaction) return false;
-
-                return $transaction;
-            },
-            2
-        );
-
+        $transaction = app(WithdrawService::class)->processWithdrawal($this->service->id, $this->withdraw_from);
         if ($transaction) {
-            ProcessPayment::dispatch($transaction->id, $paymentChannel->slug)->onQueue('process-payments');
+            ProcessPayment::dispatch($transaction->id, $transaction->payment_channel->slug)->onQueue('process-payments');
             $this->notify("Cashout is being processed.", "success");
             $this->resetValues();
         } else {
             $this->notify("Cashout failed. Please try again.", "error");
         }
+    }
+
+    public function addFunction()
+    {
+        $this->resetValues();
+        $this->add = !$this->add;
+        $this->formData['password'] = $this->generateRandomString('password');
+    }
+
+    public function editFunction($formId)
+    {
+        $this->resetValues();
+        $this->add = true;
+        $this->formId = $formId;
+        $this->formData = Service::where("id", $this->formId)->first()->toArray();
+        unset($this->formData['password']);
+        unset($this->formData['created_at']);
+        unset($this->formData['updated_at']);
+    }
+
+    public function backToList()
+    {
+        $this->resetValues();
+    }
+
+    public function backAction()
+    {
+        $this->resetValues();
+    }
+
+    public function resetValues()
+    {
+        $this->reset('add', 'formId', 'withdraw', 'service', 'max_amount', 'withdraw_from', 'formData');
     }
 
     public function render()

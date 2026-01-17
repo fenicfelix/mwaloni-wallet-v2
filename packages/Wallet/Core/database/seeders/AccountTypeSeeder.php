@@ -19,7 +19,6 @@ class AccountTypeSeeder extends Seeder
         foreach ($accountTypes as $accountType) {
             if (!AccountType::where("account_type", "=", $accountType)->exists()) {
                 AccountType::query()->create([
-                    "identifier" => generate_identifier(),
                     "account_type" => $accountType,
                     "slug" => Str::slug($accountType)
                 ]);

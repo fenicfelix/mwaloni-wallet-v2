@@ -35,7 +35,6 @@ class TransactionChargeSeeder extends Seeder
                 if (!TransactionCharge::where("id", "=", $charge["id"])->exists()) {
                     $data = [
                         "id" => $charge["id"],
-                        "identifier" => generate_identifier(),
                         "payment_channel_id" => $charge["payment_channel_id"],
                         "minimum" => $charge["minimum"],
                         "maximum" => $charge["maximum"],

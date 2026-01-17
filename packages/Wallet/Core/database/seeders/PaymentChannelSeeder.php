@@ -98,7 +98,6 @@ class PaymentChannelSeeder extends Seeder
         foreach ($paymentChannels as $paymentChannel) {
             if (!PaymentChannel::where("slug", $paymentChannel["slug"])->exists()) {
                 PaymentChannel::query()->create([
-                    "identifier" => generate_identifier(),
                     "name" => $paymentChannel["name"],
                     "slug" => $paymentChannel["slug"],
                     "description" => $paymentChannel["description"],

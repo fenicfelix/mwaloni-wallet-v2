@@ -16,22 +16,10 @@
                                     <div class="col-sm-12">
                                         <div class="row">
                                             <div class="col-6">
-                                                <div class="md-form-group float-label">
-                                                    <input type="text" class="md-input" wire:model="cashout_form.account_number" value="" required>
-                                                    <label for="account_number">Account Number</label>
-                                                </div>
-                                                @error('cashout_form.account_number')
-                                                    <small class="text-danger">{{ $message }} </small>
-                                                @enderror
+                                                <x-wallet::form.input label="Account Number" wire:model.defer="cashout_form.account_number" name="account_number" required />
                                             </div>
                                             <div class="col-6">
-                                                <div class="md-form-group float-label">
-                                                    <input type="text" class="md-input" wire:model="cashout_form.account_name" value="" required>
-                                                    <label for="account_name">Account Name</label>
-                                                </div>
-                                                @error('cashout_form.account_name')
-                                                    <small class="text-danger">{{ $message }} </small>
-                                                @enderror
+                                                <x-wallet::form.input label="Account Name" wire:model.defer="cashout_form.account_name" name="account_name" required />
                                             </div>
                                         </div>
                                     </div>
@@ -57,89 +45,49 @@
                                     </div>
                                     @if ($cashout_form['channel_id'] == "daraja-paybill")
                                         <div id="paybill-option" class="col-sm-6">
-                                            <div class="md-form-group float-label">
-                                                <input type="text" class="md-input" wire:model="cashout_form.account_reference" max="0" value="">
-                                                <label for="account_reference">Account Reference</label>
-                                                <small class="float-left"><code>Only for Daraja Paybill</code></small>
-                                            </div>
-                                            @error('cashout_form.account_reference')
-                                                <small class="text-danger">{{ $message }} </small>
-                                            @enderror
+                                            <x-wallet::form.input label="Account Reference" wire:model.defer="cashout_form.account_reference" name="account_reference" help="Only for Daraja Paybill" required />
                                         </div>
                                     @endif
                                 </div>
                                 @if ($account->accountType->slug != 'daraja')
                                     <div class="row">
                                         <div class="col-12 col-md-6">
-                                            <div class="md-form-group float-label">
-                                                <input type="text" maxlength="3" class="md-input" wire:model="cashout_form.country_code" value="" required>
-                                                <label for="country_code">Country Code</label>
-                                            </div>
-                                            @error('cashout_form.country_code')
-                                                <small class="text-danger">{{ $message }} </small>
-                                            @enderror
+                                            <x-wallet::form.input label="Country Code" wire:model.defer="cashout_form.country_code"
+                                                name="country_code" maxlength="3" required />
                                         </div>
                                         <div class="col-12 col-md-6">
-                                            <div class="md-form-group float-label">
-                                                <input type="number" class="md-input" wire:model="cashout_form.bank_code" value="">
-                                                <label for="amount">Bank Code</label>
-                                            </div>
-                                            @error('cashout_form.bank_code')
-                                                <small class="text-danger">{{ $message }} </small>
-                                            @enderror
-                                            <small class="float-left"><code>Leave blank is sending to mobile.</code></small>
+                                            <x-wallet::form.input label="Bank Code" wire:model.defer="cashout_form.bank_code" name="bank_code"
+                                                type="number" help="Leave blank is sending to mobile." required />
                                         </div>
                                     </div>
                                     <div class="row">
                                         <div class="col-12 col-md-6">
-                                            <div class="md-form-group float-label">
-                                                <input type="text" class="md-input" wire:model="cashout_form.bank_name" value="" required>
-                                                <label for="bank_name">Nank Name</label>
-                                            </div>
-                                            @error('cashout_form.bank_name')
-                                            <small class="text-danger">{{ $message }} </small>
-                                            @enderror
+                                            <x-wallet::form.input label="Bank Name" wire:model.defer="cashout_form.bank_name"
+                                                name="bank_name" required />
                                         </div>
                                         <div class="col-12 col-md-6">
-                                            <div class="md-form-group float-label">
-                                                <input type="number" class="md-input" wire:model="cashout_form.bank_cif" value="">
-                                                <label for="bank_cif">Bank CIF</label>
-                                            </div>
-                                            @error('cashout_form.bank_cif')
-                                            <small class="text-danger">{{ $message }} </small>
-                                            @enderror
+                                            <x-wallet::form.input label="Bank CIF" wire:model.defer="cashout_form.bank_cif" name="bank_cif" type="number" required />
                                         </div>
                                     </div>
                                     <div class="row">
                                         <div class="col-sm-12">
-                                            <div class="md-form-group float-label">
-                                                <input type="text" class="md-input" wire:model="cashout_form.address" value="" required>
-                                                <label for="amount">Beneficiary Address</label>
-                                            </div>
-                                            @error('cashout_form.address')
-                                            <small class="text-danger">{{ $message }} </small>
-                                            @enderror
+                                            <x-wallet::form.input label="Beneficiary Address" wire:model.defer="cashout_form.address" name="address" required />
                                         </div>
                                     </div>
                                 @endif
                                 <div class="row">
                                     <div class="col-sm-12">
-                                        <div class="md-form-group float-label">
-                                            <input type="number" class="md-input" wire:model="cashout_form.amount" value="" required>
-                                            <label for="amount">Amount</label>
-                                        </div>
-                                        @error('cashout_form.amount')
-                                            <small class="text-danger">{{ $message }} </small>
-                                        @enderror
+                                        <x-wallet::form.input label="Amount" wire:model.defer="cashout_form.amount" name="amount" type="number" required />
                                         <small class="float-left"><code>Should not exceed <span wire:model="amount-hint">{{ number_format($account->revenue) }}</span></code></small>
                                     </div>
                                 </div>
                                 <div class="mt-4">
-                                    <button type="button" class="btn btn-danger btn-rounded w-sm" wire:click="backToList">Cancel</button>
-                                    <button type="submit" class="btn btn-dark btn-rounded w-sm">Submit</button>
-                                    <span class="d-custom-none">
-                                        <img src="{{ asset('themes/agile/img/working.gif') }}" width="20" alt=""> <small>please wait...</small>
-                                    </span>
+                                    <x-wallet::button class="w-sm" variant="danger" wire:click.prevent="backAction">
+                                        Cancel
+                                    </x-wallet::button>
+                                    <x-wallet::button type="submit" class="w-sm" variant="dark">
+                                        Submit Cashout
+                                    </x-wallet::button>
                                 </div>
                             </form>
                         </div>

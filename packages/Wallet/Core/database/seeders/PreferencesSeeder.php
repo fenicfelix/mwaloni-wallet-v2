@@ -80,7 +80,6 @@ class PreferencesSeeder extends Seeder
         foreach ($preferences as $preference) {
             if (!SystemPreference::where("slug", $preference["slug"])->exists()) {
                 SystemPreference::query()->create([
-                    "identifier" => generate_identifier(),
                     "title" => $preference["title"],
                     "slug" => $preference["slug"],
                     "value" => $preference["value"],

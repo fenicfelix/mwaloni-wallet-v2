@@ -7,7 +7,7 @@ namespace Wallet\Core\Http\Livewire\Components;
 use App\Jobs\Jenga\QueryJengaBalance;
 use App\Jobs\Ncba\QueryNcbaBalance;
 use App\Models\User;
-use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Livewire\Component;
@@ -20,6 +20,10 @@ use Wallet\Core\Models\AccountType;
 use Wallet\Core\Models\Currency;
 use Wallet\Core\Models\PaymentChannel;
 use Wallet\Core\Models\Transaction;
+use Wallet\Core\Services\PayloadGeneratorService;
+use Illuminate\Support\Str;
+use Wallet\Core\Repositories\AccountRepository;
+use Wallet\Core\Services\CashoutService;
 
 class AccountsComponent extends Component
 {
@@ -80,7 +84,13 @@ class AccountsComponent extends Component
     {
         $this->content_title = "Accounts Manager";
 
-        $this->account_managers = User::get();
+        $this->account_managers = User::orderBy("first_name", "ASC")->get();
+        // concatenate first_name and last_name
+        $this->account_managers = $this->account_managers->mapWithKeys(function ($manager) {
+            return [
+                $manager->id => trim("{$manager->first_name} {$manager->last_name}"),
+            ];
+        });
 
         $this->form = [
             "account_type_id" => "",
@@ -166,7 +176,7 @@ class AccountsComponent extends Component
 
     public function saveWithheldAmount()
     {
-        $this->validate();
+        $this->customValidate();
 
         $account = Account::where("id", $this->formId)->first();
         $account->withheld_amount = $this->form['withheld_amount'];
@@ -227,72 +237,12 @@ class AccountsComponent extends Component
 
     public function doCashout()
     {
+        $this->customValidate();
 
-        $this->validate();
+        $cashoutTransaction = app(CashoutService::class)->processCashout($this->cashout_form, $this->formId);
 
-        $paymentChannel = PaymentChannel::find($this->cashout_form['channel_id'])->first();
-        $transaction_charges = get_transaction_charges($this->cashout_form['amount'], $paymentChannel->id);
-        $key_block = sha1($this->cashout_form['amount'] . $this->cashout_form['account_number'] . $this->formId . $this->cashout_form['channel_id'] . date('Ymd'));
-
-        $transaction = DB::transaction(
-            function () use ($key_block, $paymentChannel, $transaction_charges) {
-
-                $request = [
-                    "type" => "revenue",
-                    "id" => $this->formId,
-                    "account_number" => $this->cashout_form['account_number'],
-                    "account_name" => $this->cashout_form['account_name'],
-                    "channel_id" => $this->cashout_form['channel_id'],
-                    "account_reference" => $this->cashout_form['account_reference'] ?? NULL,
-                    "amount" => $this->cashout_form['amount'],
-                ];
-
-                $orderNumber = generate_order_number(9);
-                $payload = $this->generate_payload($paymentChannel, $request, $this->cashout_form['amount']);
-                $transaction = Transaction::query()->create([
-                    "identifier" => generate_identifier(),
-                    "account_name" => $this->cashout_form['account_name'],
-                    "account_number" => $this->cashout_form['account_number'],
-                    'account_reference' => $this->cashout_form['account_reference'] ?? null,
-                    "requested_amount" => $this->cashout_form['amount'],
-                    "disbursed_amount" => $this->cashout_form['amount'],
-                    "key_block" => $key_block,
-                    "reference" => $payload["reference"] ?? date('ymdhis'),
-                    "description" => "Revenue Cashout",
-                    "account_id" => $this->formId,
-                    "channel_id" => $paymentChannel->id,
-                    "service_id" => NULL, //Check this out
-                    "type_id" => 8,
-                    "order_number" => $orderNumber,
-                    "status_id" => "6",
-                    "system_charges" => 0,
-                    "sms_charges" => 0,
-                    "revenue" => 0,
-                    "transaction_charges" => $transaction_charges,
-                    "requested_by" => Auth::id(),
-                    "requested_on" => date('Y-m-d H:i:s'),
-                    "transaction_date" => date('Y-m-d H:i:s'),
-                    "payment_channel_id" => $paymentChannel->id,
-                ]);
-
-                $transaction->payload()->create([
-                    "raw_request" => json_encode($request),
-                    "trx_payload" => json_encode($payload)
-                ]);
-
-                if (!$transaction) return false;
-
-                //Add to revenue
-                $this->account->revenue -= $this->cashout_form['amount'];
-                if (!$this->account->save()) return false;
-
-                return $transaction;
-            },
-            2
-        );
-
-        if ($transaction) {
-            ProcessPayment::dispatch($transaction->id, $paymentChannel->slug)->onQueue('process-payments');
+        if ($cashoutTransaction) {
+            ProcessPayment::dispatch($cashoutTransaction->id, $cashoutTransaction->payment_channel->slug)->onQueue('process-payments');
             $this->notify("Cashout request has been placed successfully", "success");
             $this->resetVariables();
         } else {
@@ -302,35 +252,32 @@ class AccountsComponent extends Component
 
     public function store()
     {
-        $this->validate();
+        $this->customValidate();
 
-        $userId = Auth::id();
-
-        $transaction = DB::transaction(function () use ($userId) {
-
-            $this->form["updated_by"] = $userId;
-            $this->form['updated_at'] = date('Y-m-d H:i:s');
-            if ($this->formId) {
-                $account = Account::where("id", $this->formId)->update($this->form);
-            } else {
-                $this->form['identifier'] = generate_identifier();
-                $this->form["added_by"] = $userId;
-                $this->form['created_at'] = date('Y-m-d H:i:s');
-                $account = Account::create($this->form);
-            }
-
-            if (!$account) return false;
-
-            return true;
-        }, 2);
-
-        $task = ($this->formId) ? "updated" : "created";
-
-        if ($transaction) {
-            $this->notify("Account has been " . $task . " successfully", "success");
-            $this->resetVariables();
+        if($this->formId === null) {
+            $account = app(AccountRepository::class)->create($this->form);
         } else {
-            $this->notify("Account could not be " . $task . ". Please try again later.", "error");
+            $account = app(AccountRepository::class)->update($this->formId, $this->form);
+        }
+
+        if (!$account) {
+            $this->notify('Operation not successful. Please try again.', 'error');
+            return;
+        }
+
+        $this->notify('Operation successful. Please try again.', 'success');
+        $this->resetValues();
+    }
+
+    public function customValidate() {
+        try {
+            $this->validate();
+        } catch (\Throwable $th) {
+            $this->notify(
+                'There were validation errors. Please check the form and try again.',
+                'error'
+            );
+            return;
         }
     }
 
