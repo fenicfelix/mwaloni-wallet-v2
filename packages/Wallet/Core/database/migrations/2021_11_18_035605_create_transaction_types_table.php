@@ -15,7 +15,6 @@ class CreateTransactionTypesTable extends Migration
     {
         Schema::create('transaction_types', function (Blueprint $table) {
             $table->id();
-            $table->uuid('identifier');
             $table->string('name', 20)->unique();
             $table->string('description', 255)->unique();
         });

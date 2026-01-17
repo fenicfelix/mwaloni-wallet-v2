@@ -9,5 +9,9 @@ class SystemPreference extends Model
 {
     use HasFactory;
 
-    public $fillable = ["identifier", "title", "slug", "value", "updated_at", "updated_by"];
+    public $fillable = [
+        "title",
+        "slug",
+        "value",
+    ];
 }

@@ -15,7 +15,6 @@ class CreateServicesTable extends Migration
     {
         Schema::create('services', function (Blueprint $table) {
             $table->id();
-            $table->uuid('identifier');
             $table->string('name', 30)->unique();
             $table->string('service_id', 10)->unique()->nullable();
             $table->string('description', 255)->nullable();
@@ -29,8 +28,6 @@ class CreateServicesTable extends Migration
             $table->string('callback_url')->nullable();
             $table->double('revenue')->default(0);
             $table->foreignId('account_id')->nullable()->references("id")->on("accounts")->onDelete("set null");
-            $table->foreignId('added_by')->nullable()->references("id")->on("users")->onDelete("set null");
-            $table->foreignId('updated_by')->nullable()->references("id")->on("users")->onDelete("set null");
             $table->timestamps();
         });
     }

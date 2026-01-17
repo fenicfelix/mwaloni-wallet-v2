@@ -15,12 +15,9 @@ class CreateWithdrawalChargesTable extends Migration
     {
         Schema::create('withdrawal_charges', function (Blueprint $table) {
             $table->id();
-            $table->uuid('identifier');
             $table->double("minimum")->default(0);
             $table->double("maximum")->default(0);
             $table->double("charge")->default(0);
-            $table->foreignId('added_by')->nullable()->references("id")->on("users")->onDelete("set null");
-            $table->foreignId('updated_by')->nullable()->references("id")->on("users")->onDelete("set null");
             $table->timestamps();
         });
     }

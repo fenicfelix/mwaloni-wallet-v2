@@ -11,14 +11,11 @@ class Client extends Model
     use HasFactory;
 
     protected $fillable = [
-        'identifier',
         'name',
         'client_id',
         'account_manager',
         'balance',
         'active',
-        'added_by',
-        'updated_by'
     ];
 
     // cast
@@ -29,11 +26,6 @@ class Client extends Model
     public function manager()
     {
         return $this->belongsTo(User::class, "account_manager");
-    }
-
-    public function registrar()
-    {
-        return $this->belongsTo(User::class, "added_by");
     }
 
     public function scopeIsActive($query)

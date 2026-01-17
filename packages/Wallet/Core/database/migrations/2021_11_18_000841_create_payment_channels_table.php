@@ -15,7 +15,6 @@ class CreatePaymentChannelsTable extends Migration
     {
         Schema::create('payment_channels', function (Blueprint $table) {
             $table->id();
-            $table->uuid('identifier');
             $table->string("name", 50)->unique();
             $table->string("slug", 50)->unique();
             $table->string("description")->nullable();

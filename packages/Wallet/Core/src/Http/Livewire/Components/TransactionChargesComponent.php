@@ -5,10 +5,11 @@ declare(strict_types=1);
 namespace Wallet\Core\Http\Livewire\Components;
 
 use Illuminate\Database\Eloquent\Collection;
+use Livewire\Attributes\On;
 use Livewire\Component;
 use Wallet\Core\Http\Traits\NotifyBrowser;
 use Wallet\Core\Models\PaymentChannel;
-use Wallet\Core\Models\TransactionCharge;
+use Wallet\Core\Repositories\TransactionChargeRepository;
 
 class TransactionChargesComponent extends Component
 {
@@ -18,27 +19,14 @@ class TransactionChargesComponent extends Component
 
     public ?bool $add = false;
 
-    public ?Collection $items = null;
+    public ?int $formId = null;
+
+    public ?array $formData = [];
 
     public ?Collection $payment_channels = null;
 
-    public ?int $formId = null;
-
-    public ?string $payment_channel = null;
-
-    public ?float $minimum = null;
-
-    public ?float $maximum = null;
-
-    public ?float $charge = null;
-
-    public $listeners = [
-        'editFunction'
-    ];
-
     public function mount()
     {
-        $this->items = TransactionCharge::get();
         $this->initializeValues();
     }
 
@@ -46,38 +34,16 @@ class TransactionChargesComponent extends Component
     {
         $this->content_title = "Transaction Charges Manager";
         $this->payment_channels = PaymentChannel::get();
-
-        $this->formId = NULL;
-        $this->payment_channel = NULL;
-        $this->minimum = NULL;
-        $this->maximum = NULL;
-        $this->charge = NULL;
-    }
-
-    public function addFunction()
-    {
-        $this->add = !$this->add;
-        $this->initializeValues();
-    }
-
-    public function editFunction($id)
-    {
-        $this->formId = $id;
-
-        $item = TransactionCharge::where('id', $id)->first();
-        $this->payment_channel = $item->payment_channel;
-        $this->minimum = $item->minimum;
-        $this->maximum = $item->maximum;
-        $this->charge = $item->charge;
-        $this->add = true;
+        $this->resetValues();
     }
 
     public function rules()
     {
         $rules =  [
-            'name' => 'required',
-            'minimum' => 'required',
-            'maximum' => 'required'
+            'formData.minimum' => 'required',
+            'formData.maximum' => 'required',
+            'formData.payment_channel_id' => 'required|exists:payment_channels,id',
+            'formData.charge' => 'required|numeric|min:0'
         ];
 
         return $rules;
@@ -85,26 +51,54 @@ class TransactionChargesComponent extends Component
 
     public function store()
     {
-        if ($this->formId) {
+        try {
             $this->validate();
+        } catch (\Throwable $th) {
+            $this->notify(
+                'There were validation errors. Please check the form and try again.',
+                'error'
+            );
+            return;
         }
 
-        $status = TransactionCharge::updateOrCreate(["id" => $this->formId], [
-            "name" => $this->name,
-            "minimum" => $this->minimum,
-            "maximum" => $this->maximum
-        ]);
-
-        if (!$status) {
-            $message = ($this->formId) ? "The charge has not been updated." : "The charge has not been added";
-            $this->notify($message, "success");
+        if ($this->formId === null) {
+            $preference = app(TransactionChargeRepository::class)->create($this->formData);
         } else {
-            $message = ($this->formId) ? "The charge has been updated." : "The charge has been added";
-            $this->notify($message, "success");
-
-            $this->initializeValues();
-            $this->add = false;
+            $preference = app(TransactionChargeRepository::class)->update($this->formId, $this->formData);
         }
+
+        if (!$preference) {
+            $this->notify('Operation not successful. Please try again.', 'error');
+            return;
+        }
+
+        $this->notify('Operation successful. Please try again.', 'success');
+        $this->initializeValues();
+    }
+
+    public function addFunction()
+    {
+        $this->resetValues();
+        $this->add = !$this->add;
+    }
+
+    #[On('editFunction')]
+    public function editFunction($id)
+    {
+        $this->resetValues();
+        $this->formId = $id;
+        $this->formData = app(TransactionChargeRepository::class)->find($id)->toArray();
+        $this->add = true;
+    }
+
+    public function backAction()
+    {
+        $this->resetValues();
+    }
+
+    public function resetValues()
+    {
+        $this->reset(['formId', 'formData', 'add']);
     }
 
     public function render()

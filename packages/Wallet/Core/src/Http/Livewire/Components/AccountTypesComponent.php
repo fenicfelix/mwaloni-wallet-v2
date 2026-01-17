@@ -9,6 +9,8 @@ use Livewire\Component;
 use Wallet\Core\Http\Traits\NotifyBrowser;
 use Wallet\Core\Models\AccountType;
 use Illuminate\Support\Str;
+use Livewire\Attributes\On;
+use Wallet\Core\Repositories\AccountTypeRepository;
 
 class AccountTypesComponent extends Component
 {
@@ -18,80 +20,80 @@ class AccountTypesComponent extends Component
 
     public ?bool $add = false;
 
-    public ?Collection $items = null;
-
     public ?int $formId = null;
 
-    public ?string $account_type = null;
-
-    public ?string $slug = null;
-
-    public $listeners = [
-        'editFunction'
-    ];
+    public ?array $formData = [];
 
     public function mount()
     {
-        $this->items = AccountType::get();
         $this->initializeValues();
     }
 
     private function initializeValues()
     {
         $this->content_title = "Account Types";
-
-        $this->formId = NULL;
-        $this->account_type = NULL;
-        $this->slug = NULL;
-    }
-
-    public function addFunction()
-    {
-        $this->add = !$this->add;
-        $this->initializeValues();
-    }
-
-    public function editFunction($id)
-    {
-        $this->formId = $id;
-
-        $item = AccountType::where('id', $id)->first();
-        $this->account_type = $item->account_type;
-        $this->slug = $item->slug;
-        $this->add = true;
     }
 
     public function rules()
     {
-        if ($this->formId) {
-            $rules =  [
-                'account_type' =>  'required|min:3|unique:account_types,account_type,' . $this->formId,
-            ];
-        } else {
-            $rules =  [
-                'account_type' => 'required|min:3|unique:account_types',
-            ];
-        }
-
-        return $rules;
+        return  [
+            'formData.account_type' =>  'required|min:3',
+            'formData.slug' => 'required|min:3|unique:account_types,slug,' . $this->formId,
+        ];
     }
 
     public function store()
     {
-        $this->validate();
+        if ($this->formId === null) $this->formData['slug'] = Str::slug($this->formData['account_type']);
 
-        $item = AccountType::updateOrCreate(["id" => $this->formId], ["identifier" => Str::uuid(), "account_type" => $this->account_type, "slug" => Str::slug($this->account_type)]);
-
-        if (!$item) {
-            $message = ($this->formId) ? "The account type has not been updated." : "The account type has not been added";
-            $this->notify($message, "success");
-        } else {
-            $message = ($this->formId) ? "The account type has been updated." : "The account type has been added";
-            $this->notify($message, "success");
-
-            $this->initializeValues();
-            $this->add = false;
+        try {
+            $this->validate();
+        } catch (\Throwable $th) {
+            $this->notify(
+                'There were validation errors. Please check the form and try again.',
+                'error'
+            );
+            return;
         }
+
+        if ($this->formId === null) {
+            $preference = app(AccountTypeRepository::class)->create($this->formData);
+        } else {
+            $preference = app(AccountTypeRepository::class)->update($this->formId, $this->formData);
+        }
+
+        if (!$preference) {
+            $this->notify('Operation not successful. Please try again.', 'error');
+            return;
+        }
+
+        $this->notify('Operation successful. Please try again.', 'success');
+        $this->resetValues();
+    }
+
+    public function addFunction()
+    {
+        $this->resetValues();
+        $this->add = !$this->add;
+    }
+
+    #[On('editFunction')]
+    public function editFunction($id)
+    {
+        $this->resetValues();
+        $this->formId = $id;
+        $this->formData = app(AccountTypeRepository::class)->find($id)->toArray();
+        $this->add = true;
+    }
+
+    public function backAction()
+    {
+        $this->resetValues();
+    }
+
+    public function resetValues()
+    {
+        $this->reset(['formId', 'formData', 'add']);
     }
 
     public function render()

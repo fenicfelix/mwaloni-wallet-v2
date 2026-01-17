@@ -17,11 +17,9 @@ class PreferencesComponent extends Component
 
     public ?bool $add = false;
 
-    public ?array $items;
+    public ?int $formId = null;
 
-    public ?int $formId;
-
-    public ?array $formData;
+    public ?array $formData = [];
 
     public function mount()
     {
@@ -80,6 +78,7 @@ class PreferencesComponent extends Component
     #[On('editFunction')]
     public function editFunction($id)
     {
+        $this->resetValues();
         $this->formId = $id;
         $this->formData = app(PreferenceRepository::class)->find($id)->toArray();
         $this->add = true;

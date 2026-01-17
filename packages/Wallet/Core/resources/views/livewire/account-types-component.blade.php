@@ -11,10 +11,8 @@
                 <div class="row">
                     <div class="col-12">
                         <div class="d-flex justify-content-between p-3">
-                            <h5 class="modal-title">{{ ($add) ? ($formId) ? 'Update Transaction Type' : 'Add
-                                Transaction Type' : 'All Transaction Types' }}</h5>
-                            <button class="btn btn-dark btn-rounded px-4" wire:click="addFunction">{{ ($add) ? 'Back
-                                To List' : 'Add New' }}</button>
+                            <h5 class="modal-title">{{ ($add) ? ($formId) ? 'Update Account Type' : 'Add Account Type' : 'All Account Types' }}</h5>
+                            <button class="btn btn-dark btn-rounded px-4" wire:click="{{ ($add) ? 'backAction' : 'addFunction' }}">{{ ($add) ? 'Back To List' : 'Add New' }}</button>
                         </div>
                         @if ($add)
                         <div class="card">
@@ -23,26 +21,18 @@
                                     <div class="p-lg">
                                         <div class="row row-sm">
                                             <div class="col-sm-12">
-                                                <div class="md-form-group float-label">
-                                                    <input wire:model.lazy="account_type" class="md-input"
-                                                        name="account_type" value="" required>
-                                                    <label>Type Name</label>
-                                                </div>
-                                                @error('account_type')
-                                                <small class="text-danger">{{ $message }} </small>
-                                                @enderror
+                                                <x-wallet::form.input label="Account Type" wire:model.defer="formData.account_type" name="account_type" required />
                                             </div>
                                         </div>
                                     </div>
                                     <hr>
                                     <div class="mt-4">
-                                        <button type="button" class="btn btn-danger btn-rounded w-sm" data-dismiss="modal"
-                                            wire:click="addFunction">Cancel</button>
-                                        <button type="submit" class="btn btn-dark btn-rounded w-sm">Submit</button>
-                                        <span class="d-custom-none">
-                                            <img src="{{ asset('themes/agile/img/working.gif') }}" width="20" alt="">
-                                            <small>please wait...</small>
-                                        </span>
+                                        <x-wallet::button class="w-sm" variant="danger" wire:click.prevent="backAction">
+                                            Cancel
+                                        </x-wallet::button>
+                                        <x-wallet::button type="submit" class="w-sm" variant="dark">
+                                            Submit
+                                        </x-wallet::button>
                                     </div>
                                 </form>
                             </div>

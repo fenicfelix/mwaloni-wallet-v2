@@ -10,7 +10,6 @@ class Service extends Model
     use HasFactory;
 
     protected $fillable = [
-        'identifier',
         'name',
         'service_id',
         'description',
@@ -21,8 +20,6 @@ class Service extends Model
         'max_trx_amount',
         'username',
         'password',
-        'added_by',
-        'updated_by',
         'callback_url',
         'account_id'
     ];

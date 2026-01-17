@@ -15,7 +15,6 @@ class CreateAccountsTable extends Migration
     {
         Schema::create('accounts', function (Blueprint $table) {
             $table->id();
-            $table->uuid('identifier');
             $table->string("name", 100);
             $table->string('country_code', 5)->default('KE');
             $table->string('country_name')->nullable();
@@ -37,9 +36,6 @@ class CreateAccountsTable extends Migration
             $table->double("revenue")->default(0);
             $table->boolean("active")->default(true);
             $table->boolean("auto_fetch_balance")->default(true);
-            $table->foreignId('managed_by')->nullable()->references("id")->on("users")->onDelete("set null");
-            $table->foreignId('added_by')->nullable()->references("id")->on("users")->onDelete("set null");
-            $table->foreignId('updated_by')->nullable()->references("id")->on("users")->onDelete("set null");
             $table->timestamps();
         });
     }

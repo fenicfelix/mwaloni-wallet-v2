@@ -14,7 +14,7 @@
                             <h5 class="modal-title">{{ ($add) ? ($formId) ? 'Update Charges' : 'Add Transaction Charge'
                                 : 'All Transaction
                                 Charges' }}</h5>
-                            <button class="btn btn-dark btn-rounded px-4" wire:click="addFunction">{{ ($add) ? 'Back To List' :
+                            <button class="btn btn-dark btn-rounded px-4" wire:click="{{ ($add) ? 'backAction' : 'addFunction' }}">{{ ($add) ? 'Back To List' :
                                 'Add New' }}</button>
                         </div>
 
@@ -26,56 +26,35 @@
                                         <div class="row row-sm">
                                             <div class="col-sm-12">
                                                 <div class="md-form-group float-label">
-                                                    <select wire:model='payment_channel' class="md-input"
-                                                        name="payment_channel" id="add-payment_channel" required>
-                                                        <option value="">Transfer Channel</option>
-                                                        @forelse ($payment_channels as $channel)
-                                                        <option value="{{ $channel->slug }}">{{ $channel->name }}
-                                                        </option>
-                                                        @empty
-
-                                                        @endforelse
-                                                    </select>
-                                                    <label>Cashout Reason</label>
+                                                    <x-wallet::form.select label="Payment Channel" wire:model.defer="formData.payment_channel_id" :options="$payment_channels->pluck('name', 'id')"
+                                                        placeholder="Choose Channel" />
                                                 </div>
                                             </div>
                                             <div class="col-sm-12">
                                                 <div class="row">
                                                     <div class="col-sm-6">
-                                                        <div class="md-form-group float-label">
-                                                            <input wire:model='minimum' type="number" class="md-input"
-                                                                id="add-minimum" name="minimum" min="0" value=""
-                                                                required>
-                                                            <label>Minimum Value</label>
-                                                        </div>
+                                                        <x-wallet::form.input type="number" label="Minimum" wire:model.defer="formData.minimum" name="title" required />
                                                     </div>
                                                     <div class="col-sm-6">
-                                                        <div class="md-form-group float-label">
-                                                            <input wire:model='maximum' type="number" class="md-input"
-                                                                id="add-maximum" name="maximum" value="" required>
-                                                            <label>Maximum Value</label>
-                                                        </div>
+                                                        <x-wallet::form.input type="number" label="Maximum" wire:model.defer="formData.maximum" name="maximum" required />
                                                     </div>
                                                 </div>
                                             </div>
                                             <div class="col-sm-12">
                                                 <div class="md-form-group float-label">
-                                                    <input wire:model='charge' type="text" class="md-input"
-                                                        id="add-charge" name="charge" value="" required>
-                                                    <label>Charges</label>
+                                                    <x-wallet::form.input type="number" label="Charges" wire:model.defer="formData.charge" name="charge" required />
                                                 </div>
                                             </div>
                                         </div>
                                     </div>
                                     <hr>
                                     <div class="mt-4">
-                                        <button type="button" class="btn btn-danger btn-rounded w-sm" data-dismiss="modal"
-                                            wire:click="addFunction">Cancel</button>
-                                        <button type="submit" class="btn btn-dark btn-rounded w-sm">Submit</button>
-                                        <span class="d-custom-none">
-                                            <img src="{{ asset('themes/agile/img/working.gif') }}" width="20" alt="">
-                                            <small>please wait...</small>
-                                        </span>
+                                        <x-wallet::button class="w-sm" variant="danger" wire:click.prevent="backAction">
+                                            Cancel
+                                        </x-wallet::button>
+                                        <x-wallet::button type="submit" class="w-sm" variant="dark">
+                                            Submit
+                                        </x-wallet::button>
                                     </div>
                                 </form>
                             </div>
