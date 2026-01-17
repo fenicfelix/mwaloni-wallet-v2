@@ -4,6 +4,7 @@ namespace Wallet\Core\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Wallet\Core\Http\Enums\TransactionStatus;
 
 class Transaction extends Model
 {
@@ -33,7 +34,7 @@ class Transaction extends Model
         'order_number',
         'message_id',
         'key_block',
-        'status_id',
+        'status',
         'requested_amount',
         'disbursed_amount',
         'transaction_charges',
@@ -51,6 +52,15 @@ class Transaction extends Model
     ];
 
     public $timestamps = false;
+
+    // cast
+    protected $casts = [
+        'transaction_date' => 'datetime',
+        'requested_on' => 'datetime',
+        'reversed_on' => 'datetime',
+        'completed_at' => 'datetime',
+        'status' => TransactionStatus::class
+    ];
 
     public function payload()
     {

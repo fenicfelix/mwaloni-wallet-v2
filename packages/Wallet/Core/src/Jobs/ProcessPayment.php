@@ -5,7 +5,6 @@ namespace Wallet\Core\Jobs;
 use App\Jobs\Daraja\ProcessDarajaB2BPayment;
 use App\Jobs\Daraja\ProcessDarajaB2CPayment;
 use App\Jobs\Jenga\ProcessJengaPayments;
-use App\Jobs\Ncba\ProcessNcbaPayments;
 use Wallet\Core\Models\Transaction;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -13,6 +12,7 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Log;
+use Wallet\Core\Jobs\Ncba\ProcessNcbaPayments;
 
 class ProcessPayment implements ShouldQueue
 {
@@ -45,35 +45,22 @@ class ProcessPayment implements ShouldQueue
             return;
         }
 
-        info('Channel: ' . $this->channel);
+        // convert the above cases to use a mapping
+        $channelMap = [
+            'daraja-mobile' => ProcessDarajaB2CPayment::class,
+            'daraja-paybill' => ProcessDarajaB2BPayment::class,
+            'daraja-till' => ProcessDarajaB2BPayment::class,
+            'daraja-transfer' => ProcessDarajaB2BPayment::class,
+            'jenga-pesalink-bank' => ProcessJengaPayments::class,
+            'jenga-ift' => ProcessJengaPayments::class,
+            'stanbic' => ProcessStanbicPayment::class,
+        ];
 
-        switch ($this->channel) {
-            case 'daraja-mobile':
-                ProcessDarajaB2CPayment::dispatch($this->transactionId);
-                break;
-            case 'daraja-paybill':
-                ProcessDarajaB2BPayment::dispatch($this->transactionId);
-                break;
-            case 'daraja-till':
-                ProcessDarajaB2BPayment::dispatch($this->transactionId);
-                break;
-            case 'daraja-transfer':
-                ProcessDarajaB2BPayment::dispatch($this->transactionId);
-                break;
-            case 'jenga-pesalink-bank':
-                ProcessJengaPayments::dispatch($this->transactionId);
-                break;
-            case 'jenga-ift':
-                ProcessJengaPayments::dispatch($this->transactionId);
-                break;
-            case 'stanbic':
-                ProcessStanbicPayment::dispatch($this->transactionId);
-                break;
-
-            default:
-                Log::warning("Transaction Channel not specified");
-                $this->unknownChannel($this->transactionId);
-                break;
+        if (array_key_exists($this->channel, $channelMap)) {
+            $channelMap[$this->channel]::dispatch($this->transactionId);
+        } else {
+            Log::warning("Transaction Channel not specified");
+            $this->unknownChannel($this->transactionId);
         }
     }
 

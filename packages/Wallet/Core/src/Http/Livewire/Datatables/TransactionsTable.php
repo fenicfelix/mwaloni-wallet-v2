@@ -13,6 +13,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Auth;
 use App\Exports\TransactionsExport;
 use Maatwebsite\Excel\Facades\Excel;
+use Wallet\Core\Http\Enums\TransactionStatus;
 
 class TransactionsTable extends DataTableComponent
 {
@@ -44,20 +45,6 @@ class TransactionsTable extends DataTableComponent
             'queryMultipleStatus' => 'Check Status',
             'export' => 'Export to CSV'
         ]);
-    }
-
-
-
-    public function builder(): Builder
-    {
-        // return Transaction::query()->with(['status']);
-        // use joins
-        return Transaction::query()
-            ->join('statuses', 'transactions.status_id', '=', 'statuses.id')
-            ->select(
-                'transactions.*',
-                'statuses.name as status_name'
-            );
     }
 
     public function columns(): array
@@ -139,14 +126,14 @@ class TransactionsTable extends DataTableComponent
                 ->sortable()
                 ->deselected(),
 
-            Column::make("Status")
+            Column::make("Status", "status")
                 ->sortable()
-                ->label(function ($row, Column $column) {
-                    $status = '<span class="badge bg-warning-lt">' . $row->status_name . '</span>';
-                    if ($row->status_id == 2) $status = '<span class="badge bg-success-lt">' . $row->status_name . '</span>';
-                    else if (in_array($row->status_id, [3, 4])) $status = '<span class="badge bg-danger-lt">' . $row->status_name . '</span>';
-                    return $status;
-                })->html(),
+                ->deselected()
+                ->format(function ($value) {
+                    // return '<span class="badge bg-' . TransactionStatus::from($value->value())->backgroundColor() . '">' . TransactionStatus::from($value)->label() . '</span>';
+                return '<span class="badge bg-'.$value->backgroundColor().'">' . $value->label() . '</span>';
+                })
+                ->html(),
 
             Column::make('Action')
                 ->label(
@@ -156,14 +143,14 @@ class TransactionsTable extends DataTableComponent
                         $html .= '<a href="#" data-toggle="dropdown"><img height="16" src="' . asset('themes/agile/img/icon_more.png') . '" alt=""></a>';
                         $html .= '<div class="dropdown-menu bg-light" role="menu">';
                         $html .= '<a href="#" class="dropdown-item" wire:click="viewFunction(' . $row->id . ')">View Details</a>';
-                        if ($row->status_id != 2) {
-                            if ($row->status_id == 3) $html .= '<a href="#" class="dropdown-item" wire:click="editFunction(' . $row->id . ')">Edit Details</a>';
-                            if ($row->status_id == 3) $html .= '<a href="#" class="dropdown-item" wire:click="retryPayment(' . $row->id . ')">Retry Payment</a>';
+                        if ($row->status != TransactionStatus::SUCCESS) {
+                            if ($row->status == TransactionStatus::FAILED) $html .= '<a href="#" class="dropdown-item" wire:click="editFunction(' . $row->id . ')">Edit Details</a>';
+                            if ($row->status == TransactionStatus::FAILED) $html .= '<a href="#" class="dropdown-item" wire:click="retryPayment(' . $row->id . ')">Retry Payment</a>';
                             $html .= '<a href="#" class="dropdown-item" wire:click="paidOffline(' . $row->id . ')">Paid Offline</a>';
-                            if (in_array($row->status_id, [1, 3])) $html .= '<a href="#" class="dropdown-item" wire:click="queryStatus(' . $row->id . ')">Query Status</a>';
+                            if (in_array($row->status, [TransactionStatus::SUBMITTED, TransactionStatus::FAILED])) $html .= '<a href="#" class="dropdown-item" wire:click="queryStatus(' . $row->id . ')">Query Status</a>';
                         }
 
-                        if ($row->status_id == 2) $html .= '<a href="#" class="dropdown-item" wire:click="reverse(' . $row->id . ')">Reverse</a>';
+                        if ($row->status == TransactionStatus::SUCCESS) $html .= '<a href="#" class="dropdown-item" wire:click="reverse(' . $row->id . ')">Reverse</a>';
                         $html .= '</div></div>';
                         return $html;
                     }
@@ -173,8 +160,6 @@ class TransactionsTable extends DataTableComponent
             Column::make("System charges", "system_charges")->deselected(),
 
             Column::make("SMS Charges", "sms_charges")->deselected(),
-
-            Column::make("Status Id", "status_id")->deselected(),
         ];
 
         return $columns;
@@ -190,10 +175,10 @@ class TransactionsTable extends DataTableComponent
                         ->where('transactions.service_id', $value);
                 }),
             SelectFilter::make('Status', 'status')
-                ->options(['' => 'All Status'] + Status::all()->pluck('name', 'id',)->toArray())
+                ->options(['' => 'All Status'] + TransactionStatus::labels())
                 ->filter(function (Builder $builder, string $value) {
                     $builder
-                        ->where('transactions.status_id', $value);
+                        ->where('transactions.status', $value);
                 }),
             DateFilter::make('Start Date', 'start_date')
                 ->filter(function (Builder $builder, string $value) {

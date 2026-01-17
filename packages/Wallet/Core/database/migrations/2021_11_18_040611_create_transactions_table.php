@@ -50,9 +50,6 @@ class CreateTransactionsTable extends Migration
             $table->timestamp('requested_on')->nullable()->useCurrent();
             $table->timestamp('reversed_on')->nullable();
             $table->timestamp('completed_at')->nullable();
-            
-            // Composite indexes for performance
-            $table->index(['status_id', 'transaction_date']);
         });
     }
 
