@@ -37,6 +37,12 @@ class ServiceRepository implements ServiceRepositoryContract
         return Service::find($id);
     }
 
+    public function findWithAccount(int $id): ?Service
+    {
+        // Implementation for finding a Service by ID with Account
+        return Service::with('account')->find($id);
+    }
+
     public function update(int $id, array $data): ?Service
     {
         // Implementation for updating a Service

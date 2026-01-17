@@ -77,8 +77,7 @@
                                 @endif
                                 <div class="row">
                                     <div class="col-sm-12">
-                                        <x-wallet::form.input label="Amount" wire:model.defer="cashout_form.amount" name="amount" type="number" required />
-                                        <small class="float-left"><code>Should not exceed <span wire:model="amount-hint">{{ number_format($account->revenue) }}</span></code></small>
+                                        <x-wallet::form.input label="Amount" wire:model.defer="cashout_form.amount" name="amount" type="number" help="Should not exceed {{ number_format($account->revenue) }}" required />
                                     </div>
                                 </div>
                                 <div class="mt-4">

@@ -67,10 +67,20 @@ class TransactionsTable extends DataTableComponent
                     fn($value) => date('h:i A', strtotime($value))
                 ),
 
+            Column::make("Type", 'transaction_type')
+                ->searchable()
+                ->sortable()
+                ->format(function ($value) {
+                return $value->label();
+            }),
+
             Column::make("Service", 'service.name')
                 ->excludeFromColumnSelect()
                 ->searchable()
-                ->sortable(),
+                ->sortable()
+                ->format(
+                    fn($value) => $value ?? '-'
+                ),
 
             Column::make("Channel", 'paymentChannel.name')
                 ->excludeFromColumnSelect()
@@ -84,7 +94,10 @@ class TransactionsTable extends DataTableComponent
 
             Column::make("Receipt No.", "receipt_number")
                 ->sortable()
-                ->searchable(),
+                ->searchable()
+                ->format(
+                    fn($value) => $value ?? '-'
+                ),
 
             Column::make("Account No.", "account_number")
                 ->sortable()

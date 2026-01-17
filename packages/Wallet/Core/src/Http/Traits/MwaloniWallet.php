@@ -221,17 +221,18 @@ trait MwaloniWallet
         return 0;
     }
 
-    private function generateOrderNumber($type_id)
+    private function generateOrderNumber(TransactionType $transactionType)
     {
-        $sql = "select max(order_number) AS order_number from transactions where type_id = " . $type_id;
-        $trx = DB::select($sql)[0];
-        $order_number = "";
-        if ($trx->order_number) {
-            $order_number = $trx->order_number;
+        $order_number = DB::table('transactions')
+            ->where('transaction_type', $transactionType->value)
+            ->orderByDesc('order_number')
+            ->pluck('order_number')
+            ->first();
+        if ($order_number) {
             $order_number++;
         } else {
-            if ($type_id == TransactionType::CASHOUT) $order_number = "CSHT0001";
-            else if ($type_id == TransactionType::REVENUE_TRANSFER) $order_number = "REV0001";
+            if ($transactionType == TransactionType::CASHOUT) $order_number = "CSHT0001";
+            else if ($transactionType == TransactionType::REVENUE_TRANSFER) $order_number = "REV0001";
             else $order_number = TransactionType::SERVICE_CHARGE;
         }
         return $order_number;

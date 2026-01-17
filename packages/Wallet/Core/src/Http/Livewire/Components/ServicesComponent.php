@@ -17,6 +17,7 @@ use Wallet\Core\Models\Client;
 use Wallet\Core\Models\PaymentChannel;
 use Wallet\Core\Models\Service;
 use Illuminate\Support\Str;
+use Livewire\Attributes\On;
 use Wallet\Core\Jobs\ProcessPayment;
 use Wallet\Core\Models\Transaction;
 use Wallet\Core\Repositories\ServiceRepository;
@@ -30,11 +31,13 @@ class ServicesComponent extends Component
 
     public ?bool $add = false;
 
+    public ?bool $withdraw = false;
+
     public ?int $formId = null;
 
     public array $formData = [];
 
-    public ?bool $withdraw = false;
+    public ?array $withdrawalForm = [];
 
     public ?Collection $clients = null;
 
@@ -42,18 +45,9 @@ class ServicesComponent extends Component
 
     public ?Collection $payment_channels = null;
 
-    public ?array $withdraw_from = [];
-
     public ?Service $service = null;
 
     public ?float $max_amount = null;
-
-    public $listeners = [
-        'addFunction',
-        'editFunction',
-        'backToList',
-        'withdrawCharges'
-    ];
 
     public function mount()
     {
@@ -75,12 +69,13 @@ class ServicesComponent extends Component
         $this->payment_channels = PaymentChannel::get();
     }
 
+    #[On('withdrawCharges')]
     public function withdrawCharges($formId)
     {
-        $this->formId = $formId;
         $this->resetValues();
+        $this->formId = $formId;
         $this->withdraw = true;
-        $this->service = Service::with(["account"])->where("id", $formId)->first();
+        $this->service = app(ServiceRepository::class)->findWithAccount($this->formId);
         $this->max_amount = (($this->service->account->utility_balance + $this->service->account->working_balance) - $this->service->revenue);
     }
 
@@ -99,11 +94,11 @@ class ServicesComponent extends Component
             ];
         } else if ($this->withdraw) {
             $rules = [
-                'withdraw_from.account_number' => 'required',
-                'withdraw_from.channel_id' => 'required|exists:payment_channels,slug',
-                'withdraw_from.amount' => 'required',
-                'withdraw_from.account_name' => 'required',
-                'withdraw_from.account_reference' => 'required_if:channel_id,==,daraja-paybill',
+                'withdrawalForm.account_number' => 'required',
+                'withdrawalForm.channel_id' => 'required|exists:payment_channels,slug',
+                'withdrawalForm.amount' => 'required',
+                'withdrawalForm.account_name' => 'required',
+                'withdrawalForm.account_reference' => 'required_if:channel_id,==,daraja-paybill',
             ];
         }
 
@@ -132,6 +127,7 @@ class ServicesComponent extends Component
         }
 
         if ($this->formId === null) {
+            $this->formData['username'] = Str::slug($this->formData['name']);
             $service = app(ServiceRepository::class)->create($this->formData);
         } else {
             $service = app(ServiceRepository::class)->update($this->formId, $this->formData);
@@ -146,11 +142,11 @@ class ServicesComponent extends Component
         $this->resetValues();
     }
 
-    public function doWithdrawCash()
+    public function submitWithdrawCash()
     {
-        $transaction = app(WithdrawService::class)->processWithdrawal($this->service->id, $this->withdraw_from);
+        $transaction = app(WithdrawService::class)->processWithdrawal($this->service->id, $this->withdrawalForm);
         if ($transaction) {
-            ProcessPayment::dispatch($transaction->id, $transaction->payment_channel->slug)->onQueue('process-payments');
+            ProcessPayment::dispatch($transaction->id, $transaction->paymentChannel->slug)->onQueue('process-payments');
             $this->notify("Cashout is being processed.", "success");
             $this->resetValues();
         } else {
@@ -158,6 +154,7 @@ class ServicesComponent extends Component
         }
     }
 
+    #[On('addFunction')]
     public function addFunction()
     {
         $this->resetValues();
@@ -165,6 +162,7 @@ class ServicesComponent extends Component
         $this->formData['password'] = $this->generateRandomString('password');
     }
 
+    #[On('editFunction')]
     public function editFunction($formId)
     {
         $this->resetValues();
@@ -188,7 +186,7 @@ class ServicesComponent extends Component
 
     public function resetValues()
     {
-        $this->reset('add', 'formId', 'withdraw', 'service', 'max_amount', 'withdraw_from', 'formData');
+        $this->reset('add', 'formId', 'withdraw', 'service', 'max_amount', 'withdrawalForm', 'formData');
     }
 
     public function render()

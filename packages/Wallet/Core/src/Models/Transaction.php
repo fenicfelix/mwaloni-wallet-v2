@@ -5,6 +5,7 @@ namespace Wallet\Core\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Wallet\Core\Http\Enums\TransactionStatus;
+use Wallet\Core\Http\Enums\TransactionType;
 
 class Transaction extends Model
 {
@@ -50,6 +51,7 @@ class Transaction extends Model
         'reversed_on' => 'datetime',
         'completed_at' => 'datetime',
         'status' => TransactionStatus::class,
+        'transaction_type' => TransactionType::class
     ];
 
     public function payload()
@@ -59,22 +61,22 @@ class Transaction extends Model
 
     public function scopeSuccessful($query)
     {
-        return $query->where("status_id", self::STATUS_SUCCESS);
+        return $query->where("status", TransactionStatus::SUCCESS);
     }
 
     public function scopeUnsuccessful($query)
     {
-        return $query->whereNotIn("status_id", [self::STATUS_SUCCESS, self::STATUS_CANCELLED]);
+        return $query->whereNotIn("status", [TransactionStatus::SUCCESS, TransactionStatus::CANCELLED]);
     }
 
     public function scopeFailed($query)
     {
-        return $query->where("status_id", self::STATUS_FAILED);
+        return $query->where("status", TransactionStatus::FAILED);
     }
 
     public function scopePending($query)
     {
-        return $query->where("status_id", self::STATUS_PENDING);
+        return $query->where("status", TransactionStatus::PENDING);
     }
 
     public function service()
