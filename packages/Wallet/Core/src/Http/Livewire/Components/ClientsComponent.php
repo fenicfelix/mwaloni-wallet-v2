@@ -5,11 +5,11 @@ declare(strict_types=1);
 namespace Wallet\Core\Http\Livewire\Components;
 
 use App\Models\User;
-use Illuminate\Database\Eloquent\Collection;
-use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Collection;
+use Livewire\Attributes\On;
 use Livewire\Component;
 use Wallet\Core\Http\Traits\NotifyBrowser;
-use Wallet\Core\Models\Client;
+use Wallet\Core\Repositories\ClientRepository;
 
 class ClientsComponent extends Component
 {
@@ -21,104 +21,88 @@ class ClientsComponent extends Component
 
     public ?int $formId = null;
 
-    public ?Client $client;
+    public ?array $formData = [];
 
-    public ?string $name, $account_manager;
-
-    public Collection $managers;
-
-    public $listeners = [
-        'editFunction'
-    ];
+    public ?Collection $managers;
 
     public function mount()
     {
+        $this->managers = User::orderBy("first_name", "ASC")->get();
+        // concatenate first_name and last_name
+        $this->managers = $this->managers->mapWithKeys(function ($manager) {
+            return [
+                $manager->id => trim("{$manager->first_name} {$manager->last_name}"),
+            ];
+        });
+
         $this->initializeVariables();
     }
 
     private function initializeVariables()
     {
+        $this->resetValues();
         $this->content_title = "Clients Manager";
         $this->add = false;
-
-        $this->managers = User::orderBy("first_name", "ASC")->get();
-    }
-
-    private function clearVariables()
-    {
-        $this->add = false;
-        $this->client = NULL;
-    }
-
-    public function addFunction()
-    {
-        $this->add = !$this->add;
-    }
-    public function editFunction($id)
-    {
-        $this->add = !$this->add;
-        $this->formId = $id;
-        $this->client = Client::find($id);
-
-        $this->name = $this->client->name;
-        $this->account_manager = $this->client->account_manager;
     }
 
     public function rules()
     {
-        $rules =  [
-            'name' => 'required|unique:clients',
-            'account_manager' => 'required',
+        return  [
+            'formData.name' => 'required|unique:clients,name,' . $this->formId,
+            'formData.account_manager' => 'required|exists:users,id',
         ];
-
-        if ($this->formId) {
-            $rules["name"] = 'required|unique:clients,name,' . $this->formId;
-        }
-
-        return $rules;
     }
 
     public function store()
     {
-        $this->validate();
-
-        $user_id = Auth::id();
-
-        if ($this->formId) {
-            $update = $this->client->update(
-                [
-                    "name" => $this->name,
-                    "account_manager" => $this->account_manager,
-                ]
+        try {
+            $this->validate();
+        } catch (\Throwable $th) {
+            $this->notify(
+                'There were validation errors. Please check the form and try again.',
+                'error'
             );
-            if ($update) {
-                $this->clearVariables();
-                $this->notify("The client has been updated.", "success");
-            } else {
-                $this->notify("The client has not been updated.", "error");
-            }
-        } else {
-            $this->client = Client::create([
-                "identifier" => generate_identifier(),
-                "name" => $this->name,
-                "account_manager" => $this->account_manager,
-                "balance" => 0,
-                "active" => 1,
-                "added_by" => $user_id,
-                "updated_by" => $user_id,
-            ]);
-
-            if ($this->client) {
-                $client_id = str_pad($this->client->id, 5, "0", STR_PAD_LEFT);
-                $this->client->client_id = "CLT-" . $client_id;
-                $this->client->save();
-                $this->notify("The client has been added successfully.", "success");
-
-                $this->clearVariables();
-            } else {
-                $this->notify("Client could not be added.", "error");
-            }
+            return;
         }
+
+        if ($this->formId === null) {
+            $client = app(ClientRepository::class)->create($this->formData);
+        } else {
+            $client = app(ClientRepository::class)->update($this->formId, $this->formData);
+        }
+
+        if (!$client) {
+            $this->notify('Operation not successful. Please try again.', 'error');
+            return;
+        }
+
+        $this->notify('Operation successful. Please try again.', 'success');
+        $this->resetValues();
+    }
+
+    public function addFunction()
+    {
+        $this->resetValues();
+        $this->add = !$this->add;
+    }
+
+    #[On('editFunction')]
+    public function editFunction($id)
+    {
+        $this->resetValues();
+        $this->formId = $id;
+        $this->formData = app(ClientRepository::class)->find($id)->toArray();
+        $this->add = true;
+    }
+
+    public function backAction()
+    {
+        $this->resetValues();
+    }
+
+    public function resetValues()
+    {
+        $this->reset(['formId', 'formData', 'add']);
     }
 
     public function render()

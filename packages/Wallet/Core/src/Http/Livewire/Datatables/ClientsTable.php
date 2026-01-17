@@ -2,10 +2,10 @@
 
 namespace Wallet\Core\Http\Livewire\Datatables;
 
+use Illuminate\Database\Eloquent\Builder;
 use Rappasoft\LaravelLivewireTables\DataTableComponent;
 use Rappasoft\LaravelLivewireTables\Views\Column;
 use Wallet\Core\Models\Client;
-use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Auth;
 
 class ClientsTable extends DataTableComponent
@@ -15,8 +15,17 @@ class ClientsTable extends DataTableComponent
 
     public function builder(): Builder
     {
-        return Client::query()
-            ->with('manager');
+        $query = Client::join('users', 'clients.account_manager', '=', 'users.id')
+            ->select(
+                'clients.id',
+                'clients.name',
+                'clients.active',
+                'clients.created_at',
+                'users.first_name',
+                'users.last_name'
+            );
+
+        return $query;
     }
 
     public function configure(): void
@@ -47,13 +56,10 @@ class ClientsTable extends DataTableComponent
             Column::make("Name", "name")
                 ->sortable()
                 ->searchable(),
-            Column::make("Client ID", "client_id")
-                ->sortable(),
-            Column::make("Account manager", 'manager.phone_number')
+            Column::make("Account manager", 'manager.id')
                 ->sortable()
-                ->searchable(),
-            Column::make("Balance", "balance")
-                ->sortable(),
+                ->searchable()
+                ->label(fn($row) => $row->first_name . ' ' . $row->last_name),
             Column::make("Active", "active")
                 ->sortable()
                 ->format(

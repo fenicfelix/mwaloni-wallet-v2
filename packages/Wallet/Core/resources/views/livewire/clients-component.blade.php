@@ -18,45 +18,22 @@
                                 <form wire:submit.prevent="store">
                                     <div class="row">
                                         <div class="col-sm-12">
-                                            <div class="md-form-group float-label">
-                                                <input wire:model="name" type="text" class="md-input" name="name"
-                                                    value="" required>
-                                                <label>Client Name</label>
-                                            </div>
-                                            @error('name')
-                                            <small class="text-danger">{{ $message }} </small>
-                                            @enderror
+                                            <x-wallet::form.input label="Name" wire:model.defer="formData.name" name="name" required />
                                         </div>
                                     </div>
                                     <div class="row">
                                         <div class="col-sm-12">
-                                            <div class="md-form-group float-label">
-                                                <select wire:model="account_manager" class="md-input"
-                                                    name="account_manager" required>
-                                                    <option value="">Select Account Manager</option>
-                                                    @forelse ($managers as $manager)
-                                                    <option value="{{ $manager->id }}">{{ $manager->first_name."
-                                                        ".$manager->last_name }}</option>
-                                                    @empty
-
-                                                    @endforelse
-                                                </select>
-                                                <label>Role</label>
-                                            </div>
-                                            @error('account_manager')
-                                            <small class="text-danger">{{ $message }} </small>
-                                            @enderror
+                                            <x-wallet::form.select label="Account Manager" wire:model.live="formData.account_manager" :options="$managers"
+                                                placeholder="Choose Account Manager" />
                                         </div>
                                     </div>
                                     <div class="mt-4">
-                                        <button type="button" class="btn btn-danger btn-rounded w-sm"
-                                            wire:click="addFunction">Cancel</button>
-                                        <button type="submit" class="btn btn-dark btn-rounded w-sm">{{ ($formId) ? 'Save Changes'
-                                            : 'Submit' }}</button>
-                                        <span class="d-custom-none">
-                                            <img src="{{ asset('themes/agile/img/working.gif') }}" width="20" alt="">
-                                            <small>please wait...</small>
-                                        </span>
+                                        <x-wallet::button class="w-sm" variant="danger" wire:click.prevent="backAction">
+                                            Cancel
+                                        </x-wallet::button>
+                                        <x-wallet::button type="submit" class="w-sm" variant="dark">
+                                            Submit
+                                        </x-wallet::button>
                                     </div>
                                 </form>
                             </div>
