@@ -11,7 +11,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Livewire\Component;
 use Wallet\Core\Http\Traits\MwaloniWallet;
-use Wallet\Core\Http\Traits\WalletEvents;
+use Wallet\Core\Http\Traits\NotifyBrowser;
 use Wallet\Core\Models\Account;
 use Wallet\Core\Models\Client;
 use Wallet\Core\Models\PaymentChannel;
@@ -22,7 +22,7 @@ use Wallet\Core\Models\Transaction;
 
 class ServicesComponent extends Component
 {
-    use WalletEvents, MwaloniWallet;
+    use NotifyBrowser, MwaloniWallet;
 
     public ?string $content_title = "Services Manager";
 

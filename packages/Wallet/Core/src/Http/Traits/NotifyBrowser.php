@@ -2,10 +2,10 @@
 
 namespace Wallet\Core\Http\Traits;
 
-trait WalletEvents
+trait NotifyBrowser
 {
     public function notify($message, $type = 'success')
     {
-        $this->dispatchBrowserEvent('alert', ['message' => $message, 'type' => $type]);
+        $this->dispatch('alert', ['message' => $message, 'type' => $type]);
     }
 }

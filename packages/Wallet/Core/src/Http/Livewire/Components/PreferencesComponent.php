@@ -5,12 +5,12 @@ declare(strict_types=1);
 namespace Wallet\Core\Http\Livewire\Components;
 
 use Livewire\Component;
-use Wallet\Core\Http\Traits\WalletEvents;
+use Wallet\Core\Http\Traits\NotifyBrowser;
 use Wallet\Core\Models\SystemPreference;
 
 class PreferencesComponent extends Component
 {
-    use WalletEvents;
+    use NotifyBrowser;
 
     public ?string $content_title;
 
@@ -96,7 +96,7 @@ class PreferencesComponent extends Component
             $this->add = false;
         }
     }
-    
+
     public function render()
     {
         return view('core::livewire.preferences-component')

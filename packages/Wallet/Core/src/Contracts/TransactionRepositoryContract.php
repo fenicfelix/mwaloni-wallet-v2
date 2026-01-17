@@ -5,7 +5,7 @@ namespace Wallet\Core\Contracts;
 use Illuminate\Database\Eloquent\Collection;
 use Wallet\Core\Models\Transaction;
 
-interface TransactionsRepositoryContract
+interface TransactionRepositoryContract
 {
     public function create(array $transactionData, array $payloadData): ?Transaction;
 

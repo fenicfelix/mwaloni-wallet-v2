@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "963705f0a131f8800fc9288a8984f867",
+    "content-hash": "625e1e7991ce0f630b5201240b2ec88d",
     "packages": [
         {
             "name": "blade-ui-kit/blade-heroicons",
@@ -6317,11 +6317,10 @@
             "dist": {
                 "type": "path",
                 "url": "packages/Wallet/Core",
-                "reference": "d688f5c390285c588cd4747869ecedb00abe836f"
+                "reference": "c4593638a84dfef66c0977f57c65ce696cb4413f"
             },
             "require": {
                 "illuminate/support": "^8.0|^9.0|^10.0|^11.0|^12.0",
-                "livewire/livewire": "^3.7",
                 "php": "^8.0",
                 "rappasoft/laravel-livewire-tables": "^3.7"
             },

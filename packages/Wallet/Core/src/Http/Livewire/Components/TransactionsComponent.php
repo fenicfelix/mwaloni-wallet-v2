@@ -9,7 +9,7 @@ use App\Models\User;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Component;
-use Wallet\Core\Http\Traits\WalletEvents;
+use Wallet\Core\Http\Traits\NotifyBrowser;
 use Wallet\Core\Jobs\ProcessPayment;
 use Wallet\Core\Models\Status;
 use Wallet\Core\Models\Transaction;
@@ -17,7 +17,7 @@ use Wallet\Core\Models\TransactionMetric;
 
 class TransactionsComponent extends Component
 {
-    use WalletEvents;
+    use NotifyBrowser;
 
     public ?string $content_title;
 
@@ -68,8 +68,8 @@ class TransactionsComponent extends Component
         $this->user = Auth::user();
         $this->statuses = Status::get();
         // if ($this->user->hasRole(['Admin', 'Technical'])) {
-            // count transactions.id
-            $this->analytics = TransactionMetric::first();
+        // count transactions.id
+        $this->analytics = TransactionMetric::first();
         // }
     }
 
@@ -234,7 +234,7 @@ class TransactionsComponent extends Component
             $this->list = true;
         }
     }
-    
+
     public function render()
     {
         return view('core::livewire.transactions-component')

@@ -38,7 +38,8 @@ class RolesTable extends DataTableComponent
                 ->format(fn() => $this->counter++),
             Column::make("Name", "name")
                 ->searchable()
-                ->sortable(),
+                ->sortable()
+                ->deselected(),
             Column::make('Action')
                 ->label(
                     function ($row, Column $column) {

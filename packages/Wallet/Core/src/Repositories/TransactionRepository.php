@@ -3,11 +3,11 @@
 namespace Wallet\Core\Repositories;
 
 use Illuminate\Database\Eloquent\Collection;
-use Wallet\Core\Contracts\TransactionsRepositoryContract;
+use Wallet\Core\Contracts\TransactionRepositoryContract;
 use Wallet\Core\Models\Transaction;
 use Illuminate\Support\Facades\DB;
 
-class TransactionsRepository implements TransactionsRepositoryContract
+class TransactionRepository implements TransactionRepositoryContract
 {
     public function create(array $transactionData, array $payloadData): ?Transaction
     {

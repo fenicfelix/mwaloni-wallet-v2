@@ -13,11 +13,11 @@ use Illuminate\Support\Facades\Hash;
 use Livewire\Component;
 use Wallet\Core\Http\Traits\MwaloniAuth;
 use Wallet\Core\Http\Traits\MwaloniWallet;
-use Wallet\Core\Http\Traits\WalletEvents;
+use Wallet\Core\Http\Traits\NotifyBrowser;
 
 class UsersComponent extends Component
 {
-    use WalletEvents, MwaloniWallet, MwaloniAuth;
+    use NotifyBrowser, MwaloniWallet, MwaloniAuth;
 
     public ?string $content_title;
 
@@ -185,7 +185,7 @@ class UsersComponent extends Component
             else $this->notify("The user could not be added. Please try again.", "error");
         }
     }
-    
+
     public function render()
     {
         return view('core::livewire.users-component')

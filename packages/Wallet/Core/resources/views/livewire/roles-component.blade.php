@@ -11,7 +11,7 @@
                 <div class="row">
                     <div class="col-12">
                         <div class="d-flex justify-content-between p-3">
-                            <h5 class="modal-title">{{ ($add) ? ($edit_id) ? 'Update Role' : 'Add Role' : 'All Roles' }}
+                            <h5 class="modal-title">{{ ($add) ? ($formId) ? 'Update Role' : 'Add Role' : 'All Roles' }}
                             </h5>
                             <button class="btn btn-dark btn-rounded px-4" wire:click="addFunction">{{ ($add) ? 'Back To List' :
                                 'Add New' }}</button>
@@ -24,51 +24,49 @@
                                     <div class="p-lg">
                                         <div class="row row-sm">
                                             <div class="col-sm-12">
-                                                <div class="md-form-group float-label">
-                                                    <input wire:model.defer="formData.name" class="md-input" name="name" value=""
-                                                        required>
-                                                    <label>Role Name</label>
-                                                </div>
-                                                @error('formData.name')
-                                                <small class="text-danger">{{ $message }} </small>
-                                                @enderror
+                                                <x-wallet::form.input label="Role Name" wire:model.defer="formData.name" name="name" required />
                                             </div>
-                                            <div class="row row-sm">
-                                                @foreach ($permissionsConfig as $group => $permissions)
+                                            <div class="col-12">
+                                                <x-wallet::form.textarea label="Description" wire:model.lazy="formData.description" rows="3" />
+                                            </div>
+                                            <div class="col-12">
+                                                <x-wallet::form.select label="Permission Type" wire:model.live="formData.permission_type" :options="$permissionTypes"
+                                                    placeholder="Choose Type" />
+                                            </div>
+                                            <hr>
+                                            @if (isset($formData['permission_type']) && $formData['permission_type'] === 'all')
+                                                <div class="alert alert-info">
+                                                    This role has full access. Individual permissions are not required.
+                                                </div>
+                                            @elseif (isset($formData['permission_type']) && $formData['permission_type'] !== 'all')
+                                                <div class="row row-sm">
+                                                    @foreach ($permissionsConfig as $group => $permissions)
                                                     <div class="col-12 col-md-3 mb-3">
                                                         <div class="mb-2">
-                                                            <label class="md-switch">
-                                                                <input type="checkbox" value="{{ $group }}"
-                                                                    wire:click.prevent="toggleGroup('{{ $group }}')"
-                                                                > <i
-                                                                    class="blue"></i>
-                                                                <strong>{{ $group }}</strong>
-                                                            </label>
+                                                            <x-wallet::form.switch :label="$group" wire:click.prevent="toggleGroup('{{ $group }}')"/>
                                                         </div>
                                                         <div class="row row-sm">
                                                             @foreach ($permissions as $key => $value)
                                                             <div class="col-12 mb-3 ml-3">
-                                                                <label class="md-switch">
-                                                                    <input type="checkbox" wire:model.defer="formData.permissions.{{ $key }}" value="{{ $key }}"> <i class="blue"></i>
-                                                                    {{ $value }}
-                                                                </label>
+                                                                <x-wallet::form.switch :label="$value" :value="$key" wire:model.defer="formData.permissions" />
                                                             </div>
                                                             @endforeach
                                                         </div>
                                                     </div>
-                                                @endforeach
-                                            </div>
+                                                    @endforeach
+                                                </div>
+                                            @endif
+                                            
                                         </div>
                                     </div>
                                     <hr>
                                     <div class="mt-4">
-                                        <button type="button" class="btn btn-danger btn-rounded w-sm" data-dismiss="modal"
-                                            wire:click="addFunction">Cancel</button>
-                                        <button type="submit" class="btn btn-dark btn-rounded w-sm">Submit</button>
-                                        <span class="d-custom-none">
-                                            <img src="{{ asset('themes/agile/img/working.gif') }}" width="20" alt="">
-                                            <small>please wait...</small>
-                                        </span>
+                                        <x-wallet::button class="w-sm" variant="danger" wire:click.prevent="backAction">
+                                            Cancel
+                                        </x-wallet::button>
+                                        <x-wallet::button type="submit" class="w-sm" variant="dark">
+                                            Submit
+                                        </x-wallet::button>
                                     </div>
                                 </form>
                             </div>

@@ -8,12 +8,12 @@ use App\Models\User;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Component;
-use Wallet\Core\Http\Traits\WalletEvents;
+use Wallet\Core\Http\Traits\NotifyBrowser;
 use Wallet\Core\Models\Client;
 
 class ClientsComponent extends Component
 {
-    use WalletEvents;
+    use NotifyBrowser;
 
     public ?string $content_title;
 
@@ -120,7 +120,7 @@ class ClientsComponent extends Component
             }
         }
     }
-    
+
     public function render()
     {
         return view('core::livewire.clients-component')

@@ -8,22 +8,23 @@ use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\DB;
 use Livewire\Component;
 use Wallet\Core\Http\Enums\PermissionType;
-use Wallet\Core\Http\Traits\WalletEvents;
+use Wallet\Core\Http\Traits\NotifyBrowser;
 use Wallet\Core\Models\Role;
+use Wallet\Core\Repositories\RoleRepository;
 
 class RolesComponent extends Component
 {
-    use WalletEvents;
+    use NotifyBrowser;
 
     public ?string $content_title;
 
     public ?bool $add = false;
 
-    public ?int $edit_id;
+    public ?int $formId = null;
 
     public ?array $formData = [];
 
-    public ?array $permissionTypes = [];
+    public $permissionTypes;
 
     public ?array $permissionsConfig = [];
 
@@ -35,7 +36,10 @@ class RolesComponent extends Component
 
     public function mount()
     {
-        $this->permissionTypes = PermissionType::cases();
+        $this->permissionTypes = collect(PermissionType::cases())
+            ->mapWithKeys(fn($case) => [
+                $case->value => $case->label(), // or $case->name
+            ]);
         $this->permissionsConfig = config('core.acl.permissions');
         $this->initializeValues();
     }
@@ -43,30 +47,14 @@ class RolesComponent extends Component
     private function initializeValues()
     {
         $this->content_title = "System Roles";
-
-        $this->edit_id = NULL;
-        $this->name = NULL;
-    }
-
-    public function addFunction()
-    {
-        $this->add = !$this->add;
-        $this->initializeValues();
-    }
-
-    public function editFunction($id)
-    {
-        $this->edit_id = $id;
-
-        $role = Role::where('id', $id)->first();
-        $this->formData = $role->toArray();
-        $this->add = true;
+        $this->resetValues();
     }
 
     public function rules()
     {
         $rules =  [
             'formData.name' => 'required',
+            'formData.permission_type' => 'required|in:' . implode(',', PermissionType::values()),
         ];
 
         return $rules;
@@ -74,40 +62,31 @@ class RolesComponent extends Component
 
     public function store()
     {
-        dd($this->formData);
-
-        $update = false;
-        if ($this->edit_id) {
-            $this->validate();
+        // Update permissiions
+        if ($this->formData['permission_type'] !== 'all') {
+            $permissions = array_values($this->formData['permissions'] ?? []);
+            $this->formData['permissions'] = $permissions;
         }
 
-        if ($this->edit_id) $update = true;
+        try {
+            $this->validate();
+        } catch (\Throwable $th) {
+            //throw $th;
+        }
 
-        $transaction = DB::transaction(function () {
+        $roleRepository = app(RoleRepository::class);
+        if ($this->formId) {
+            $result = $roleRepository->update($this->formId, $this->formData);
+        } else {
+            $result = $roleRepository->create($this->formData);
+        }
 
-            if ($this->edit_id) {
-                $role = Role::where("id", $this->edit_id)->first();
-                $role->name = $this->name;
-                $role->save();
-
-                if (!$role->save()) return false;
-            } else {
-                $role = Role::create(['name' => $this->name]);
-            }
-
-            $role->syncPermissions($this->selectedPermissions);
-
-            return true;
-        }, 2);
-
-        if ($transaction) {
-            $this->initializeValues();
-            $this->add = false;
-            $this->notify(($update) ? 'The role has been updated.' : 'The role has been created.', "success");
+        if ($result) {
+            $this->notify(($this->formId) ? 'The role has been updated.' : 'The role has been created.', "success");
+            $this->resetValues();
         } else {
             $this->initializeValues();
-            $this->add = false;
-            $this->notify(($update) ? 'The role has been updated.' : 'The role has not been created.', "error");
+            $this->notify(($this->formId) ? 'The role has been updated.' : 'The role has not been created.', "error");
         }
     }
 
@@ -129,6 +108,35 @@ class RolesComponent extends Component
                 array_unique(array_merge($current, $groupPermissions))
             );
         }
+    }
+
+    public function addFunction()
+    {
+        $this->resetValues();
+        $this->formData['permission_type'] = PermissionType::CUSTOM->value;
+        $this->formData['permissions'] = [];
+        $this->add = !$this->add;
+    }
+
+    public function editFunction($id)
+    {
+        $this->formId = $id;
+
+        $role = Role::where('id', $id)->first();
+        $this->formData = $role->toArray();
+        $this->add = true;
+    }
+
+    public function backAction()
+    {
+        $this->resetValues();
+    }
+
+    public function resetValues()
+    {
+        $this->formId = null;
+        $this->formData = [];
+        $this->add = false;
     }
 
     public function render()

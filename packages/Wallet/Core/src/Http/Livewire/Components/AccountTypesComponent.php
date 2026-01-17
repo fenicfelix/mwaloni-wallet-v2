@@ -6,13 +6,13 @@ namespace Wallet\Core\Http\Livewire\Components;
 
 use Illuminate\Database\Eloquent\Collection;
 use Livewire\Component;
-use Wallet\Core\Http\Traits\WalletEvents;
+use Wallet\Core\Http\Traits\NotifyBrowser;
 use Wallet\Core\Models\AccountType;
 use Illuminate\Support\Str;
 
 class AccountTypesComponent extends Component
 {
-    use WalletEvents;
+    use NotifyBrowser;
 
     public ?string $content_title = null;
 
@@ -93,7 +93,7 @@ class AccountTypesComponent extends Component
             $this->add = false;
         }
     }
-    
+
     public function render()
     {
         return view('core::livewire.account-types-component')

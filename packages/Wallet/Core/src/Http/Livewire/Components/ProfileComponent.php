@@ -8,11 +8,11 @@ use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Livewire\Component;
-use Wallet\Core\Http\Traits\WalletEvents;
+use Wallet\Core\Http\Traits\NotifyBrowser;
 
 class ProfileComponent extends Component
 {
-    use WalletEvents;
+    use NotifyBrowser;
 
     public string $content_title = "My Profile";
 
@@ -80,7 +80,7 @@ class ProfileComponent extends Component
             $this->resetVariables();
         }
     }
-    
+
     public function render()
     {
         return view('core::livewire.profile-component')

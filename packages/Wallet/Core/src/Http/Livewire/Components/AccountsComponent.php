@@ -12,7 +12,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Livewire\Component;
 use Wallet\Core\Http\Traits\MwaloniWallet;
-use Wallet\Core\Http\Traits\WalletEvents;
+use Wallet\Core\Http\Traits\NotifyBrowser;
 use Wallet\Core\Jobs\FetchAccountBalance;
 use Wallet\Core\Jobs\ProcessPayment;
 use Wallet\Core\Models\Account;
@@ -23,7 +23,7 @@ use Wallet\Core\Models\Transaction;
 
 class AccountsComponent extends Component
 {
-    use WalletEvents, MwaloniWallet;
+    use NotifyBrowser, MwaloniWallet;
 
     public ?int $editId = null;
 
@@ -333,7 +333,7 @@ class AccountsComponent extends Component
             $this->notify("Account could not be " . $task . ". Please try again later.", "error");
         }
     }
-    
+
     public function render()
     {
         return view('core::livewire.accounts-component')

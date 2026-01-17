@@ -6,13 +6,13 @@ namespace Wallet\Core\Http\Livewire\Components;
 
 use Illuminate\Database\Eloquent\Collection;
 use Livewire\Component;
-use Wallet\Core\Http\Traits\WalletEvents;
+use Wallet\Core\Http\Traits\NotifyBrowser;
 use Wallet\Core\Models\TransactionType;
 use Illuminate\Support\Str;
 
 class TransactionTypesComponent extends Component
 {
-    use WalletEvents;
+    use NotifyBrowser;
 
     public ?string $content_title = "";
 
@@ -93,7 +93,7 @@ class TransactionTypesComponent extends Component
             $this->add = false;
         }
     }
-    
+
     public function render()
     {
         return view('core::livewire.transaction-types-component')

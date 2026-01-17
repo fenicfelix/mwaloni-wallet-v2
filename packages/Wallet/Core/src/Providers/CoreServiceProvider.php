@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Wallet\Core\Providers;
 
+use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\ServiceProvider;
 use Livewire\Livewire;
@@ -55,6 +56,12 @@ class CoreServiceProvider extends ServiceProvider
             __DIR__ . '/../Acl/permissions.php',
             'core.acl.permissions'
         );
+
+        // Register views
+        $this->loadViewsFrom(__DIR__.'/../../resources/views', 'wallet');
+
+        // (Optional but recommended) auto-discover blade components
+        Blade::componentNamespace('Wallet\\Core\\View\\Components', 'wallet');
     }
 
     protected function registerLivewireComponents(
