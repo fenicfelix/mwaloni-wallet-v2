@@ -4,12 +4,12 @@ namespace Wallet\Core\Jobs\Daraja;
 
 use Akika\LaravelMpesaMultivendor\Mpesa;
 use Wallet\Core\Models\Transaction;
-use Wallet\Core\Models\TransactionLog;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
+use Wallet\Core\Http\Enums\TransactionStatus;
 
 class ProcessDarajaPaymentStatusCheck implements ShouldQueue
 {
@@ -41,13 +41,7 @@ class ProcessDarajaPaymentStatusCheck implements ShouldQueue
         /// Only update the transaction if status has been queried successfully
         if ($response) {
             if (isset($response->ResponseCode) && $response->ResponseCode == 0) {
-                $transaction->status_id = Transaction::STATUS_QUERING_STATUS;
-
-                $log = TransactionLog::where("status_description", "=", $originalConversationID)->first();
-                if ($log) {
-                    $log->status_description = $response->ConversationID;
-                    $log->save();
-                }
+                $transaction->status = TransactionStatus::QUERYING_STATUS;
 
                 $transaction->save();
 

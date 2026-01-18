@@ -10,6 +10,7 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Auth;
+use Wallet\Core\Http\Enums\TransactionStatus;
 use Wallet\Core\Http\Enums\TransactionType;
 
 class ProcessReverseRequest implements ShouldQueue
@@ -49,7 +50,7 @@ class ProcessReverseRequest implements ShouldQueue
                     $payment_results_status = "SUBMITTED";
                     $payment_results_desc = $response->ConversationID;
 
-                    $transaction->status_id = Transaction::STATUS_REVERSING;
+                    $transaction->status = TransactionStatus::REVERSING;
                     $transaction->result_description = $response->ResponseDescription;
                     $transaction->reversed_by = $initiatedBy;
                     $transaction->save();

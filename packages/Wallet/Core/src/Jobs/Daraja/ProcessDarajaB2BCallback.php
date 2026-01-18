@@ -2,15 +2,15 @@
 
 namespace Wallet\Core\Jobs\Daraja;
 
-use App\Http\Traits\MwaloniWallet;
-use App\Jobs\PushTransactionCallback;
 use Wallet\Core\Models\Transaction;
-use Wallet\Core\Models\TransactionLog;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
+use Wallet\Core\Http\Enums\TransactionStatus;
+use Wallet\Core\Http\Traits\MwaloniWallet;
+use Wallet\Core\Jobs\PushTransactionCallback;
 
 class ProcessDarajaB2BCallback implements ShouldQueue
 {
@@ -46,13 +46,13 @@ class ProcessDarajaB2BCallback implements ShouldQueue
         $successMessageTo = getOption("DARAJA-ALERT-CONTACT");
         $transaction = Transaction::with(["account", "service", "payload"])->where("identifier", $this->transactionId)->first();
 
-        if ($transaction && $transaction->status_id != Transaction::STATUS_SUCCESS) {
+        if ($transaction && $transaction->status != TransactionStatus::SUCCESS) {
             $account = $transaction->account;
             $transaction->receipt_number = $this->json["Result"]["TransactionID"];
             $transaction->result_description = $this->json["Result"]["ResultDesc"];
 
             if ($this->json["Result"]["ResultCode"] == 0) {
-                $transaction->status_id = Transaction::STATUS_SUCCESS;
+                $transaction->status = TransactionStatus::SUCCESS;
                 $log_status = "SUCCESS";
                 $log_status_description = $this->json["Result"]["TransactionID"];
 
@@ -74,12 +74,12 @@ class ProcessDarajaB2BCallback implements ShouldQueue
                         $successMessage = str_replace('{datetime}', date("Y-m-d", strtotime($completed_at)) . " at " . date("H:i:s", strtotime($completed_at)), $successMessage);
                     }
                     if ($parameter["Key"] == "DebitPartyAffectedAccountBalance") {
-                        $balance = get_balance($parameter["Value"], "Working Account");
+                        $balance = getBalance($parameter["Value"], "Working Account");
                         $successMessage = str_replace('{balance}', number_format($balance), $successMessage);
                     }
                 }
             } else {
-                $transaction->status_id = Transaction::STATUS_FAILED;
+                $transaction->status = TransactionStatus::FAILED;
                 $transaction->completed_at = $completed_at;
 
                 $log_status = "FAILED";
@@ -100,13 +100,6 @@ class ProcessDarajaB2BCallback implements ShouldQueue
             if ($this->json["Result"]["ResultCode"] == 0 && $balance) {
                 $account->utility_balance = $balance;
                 $account->save();
-            }
-
-            $log = TransactionLog::where("status_description", "=", $this->json["Result"]["ConversationID"])->first();
-            if ($log) {
-                $log->status = $log_status;
-                $log->status_description = $log_status_description;
-                $log->save();
             }
 
             if (isset($transaction->service) && $transaction->service->callback_url != NULL) {

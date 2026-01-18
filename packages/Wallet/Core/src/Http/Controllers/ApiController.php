@@ -3,7 +3,7 @@
 namespace Wallet\Core\Http\Controllers;
 
 use App\Http\Controllers\Controller;
-use App\Http\Traits\MwaloniWallet;
+use Wallet\Core\Http\Traits\MwaloniWallet;
 use App\Jobs\ProcessPayment;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;

@@ -3,7 +3,7 @@
 namespace Wallet\Core\Http\Controllers;
 
 use App\Http\Controllers\Controller;
-use App\Http\Traits\MwaloniWallet;
+use Wallet\Core\Http\Traits\MwaloniWallet;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Wallet\Core\Models\Account;
@@ -195,7 +195,7 @@ class TestController extends Controller
         if (!$request->get('phone')) return response()->json(['status' => status_error, 'message' => "Missing Phone Number."], Response::HTTP_OK);
 
         $message = "Hello test message from WWT " . date('d M, Y H:i:s');
-        $to = clean_phone_number($request->get('phone'));
+        $to = cleanPhoneNumber($request->get('phone'));
 
         $this->sendSMS($to, $message);
 

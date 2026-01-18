@@ -12,6 +12,7 @@ enum TransactionStatus: string
     case PENDING = 'pending';
     case REVERSED = 'reversed';
     case QUERYING_STATUS = 'querying_status';
+    case REVERSING_FAILED = 'reversing_failed';
 
     public static function values(): array
     {
@@ -32,6 +33,7 @@ enum TransactionStatus: string
             self::PENDING->value => 'Pending',
             self::REVERSED->value => 'Reversed',
             self::QUERYING_STATUS->value => 'Querying Status',
+            self::REVERSING_FAILED->value => 'Reversing Failed',
         ];
     }
 
@@ -51,6 +53,7 @@ enum TransactionStatus: string
             'pending' => self::PENDING,
             'reversed' => self::REVERSED,
             'querying_status' => self::QUERYING_STATUS,
+            'reversing_failed' => self::REVERSING_FAILED,
             default => throw new \InvalidArgumentException("Invalid transaction status: $value"),
         };
     }
@@ -66,6 +69,7 @@ enum TransactionStatus: string
             self::REVERSING => 'primary-lt',
             self::REVERSED => 'dark-lt',
             self::QUERYING_STATUS => 'secondary-lt',
+            self::REVERSING_FAILED => 'danger-lt',
         };
     }
 }

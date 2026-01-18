@@ -2,15 +2,14 @@
 
 namespace Wallet\Core\Jobs\Daraja;
 
-use App\Http\Traits\MwaloniWallet;
-use App\Jobs\PushTransactionCallback;
+use Wallet\Core\Http\Traits\MwaloniWallet;
 use Wallet\Core\Models\Transaction;
-use Wallet\Core\Models\TransactionLog;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
+use Wallet\Core\Jobs\PushTransactionCallback;
 
 class ProcessDarajaPaymentStatusCallback implements ShouldQueue
 {
@@ -100,13 +99,6 @@ class ProcessDarajaPaymentStatusCallback implements ShouldQueue
                 $data = (object) $this->json["Result"];
                 $data->orderNumber = $transaction->order_number;
                 PushTransactionCallback::dispatch($data, $transaction->service->callback_url);
-            }
-
-            $log = TransactionLog::where("status_description", "=", $this->json["Result"]["ConversationID"])->first();
-            if ($log) {
-                $log->status = $log_status;
-                $log->status_description = $log_status_description;
-                $log->save();
             }
 
             //Send SMS

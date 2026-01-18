@@ -2,14 +2,14 @@
 
 namespace Wallet\Core\Jobs\Daraja;
 
-use App\Http\Traits\MwaloniWallet;
+use Wallet\Core\Http\Traits\MwaloniWallet;
 use Wallet\Core\Models\Transaction;
-use Wallet\Core\Models\TransactionLog;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
+use Wallet\Core\Http\Enums\TransactionStatus;
 
 class ProcessDarajaReversalCallback implements ShouldQueue
 {
@@ -58,7 +58,7 @@ class ProcessDarajaReversalCallback implements ShouldQueue
             $account = $transaction->service->account;
 
             if ($this->json["Result"]["ResultCode"] == 21) {
-                $transaction->status_id = Transaction::STATUS_REVERSED;
+                $transaction->status = TransactionStatus::REVERSED;
                 $log_status = "REVERSED";
                 $log_status_description = $this->json["Result"]["TransactionID"];
 
@@ -78,7 +78,7 @@ class ProcessDarajaReversalCallback implements ShouldQueue
                     }
                 }
             } else {
-                $transaction->status_id = Transaction::STATUS_REVERSING_FAILED;
+                $transaction->status = TransactionStatus::REVERSING_FAILED;
                 $log_status = "FAILED";
                 $log_status_description = $this->json["Result"]["ResultDesc"];
 
@@ -93,13 +93,6 @@ class ProcessDarajaReversalCallback implements ShouldQueue
             //Increment balance by the reversed amount
             $transaction->service->balance += $amount;
             $transaction->service->save();
-
-            $log = TransactionLog::where("status_description", "=", $this->json["Result"]["ConversationID"])->first();
-            if ($log) {
-                $log->status = $log_status;
-                $log->status_description = $log_status_description;
-                $log->save();
-            }
 
             //Send SMS
             $this->sendSMS($successMessageTo, $successMessage);

@@ -29,3 +29,21 @@ if (!function_exists('cleanPhoneNumber')) {
         return $phone_number;
     }
 }
+
+if (!function_exists('getBalance')) {
+    function getBalance($str, $type)
+    {
+        $array = explode("&", $str);
+        $balance = 0;
+        for ($i = 0; $i < sizeof($array); $i++) {
+            $item_array = explode("|", $array[$i]);
+            for ($j = 0; $j < sizeof($item_array); $j++) {
+                if ($item_array[0] == $type && $j == 2) {
+                    $balance = $item_array[$j];
+                    break;
+                }
+            }
+        }
+        return $balance;
+    }
+}

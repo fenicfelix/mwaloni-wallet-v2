@@ -3,7 +3,6 @@
 namespace Wallet\Core\Jobs;
 
 use Wallet\Core\Models\Transaction;
-use Wallet\Core\Models\TransactionLog;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -97,13 +96,6 @@ class ProcessOfflinePayments implements ShouldQueue
                 $transaction->payload->update([
                     "raw_callback" => json_encode($callback)
                 ]);
-
-                $log = TransactionLog::where("status_description", "=", $transaction->payload?->conversation_id)->first();
-                if ($log) {
-                    $log->status = "SUCCESS";
-                    $log->status_description = $this->receipt_number;
-                    if (!$log->save()) return false;
-                }
 
                 return true;
             }, 2);

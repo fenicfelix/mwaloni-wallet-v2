@@ -9,7 +9,7 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
-use Illuminate\Support\Str;
+use Wallet\Core\Http\Enums\TransactionStatus;
 use Wallet\Core\Http\Enums\TransactionType;
 
 class ProcessDarajaB2CPayment implements ShouldQueue
@@ -46,7 +46,7 @@ class ProcessDarajaB2CPayment implements ShouldQueue
                     $payment_results_status = "SUBMITTED";
                     $payment_results_desc = $response->ConversationID;
 
-                    $transaction->status_id = Transaction::STATUS_SUBMITTED;
+                    $transaction->status = TransactionStatus::SUBMITTED;
                     $transaction->result_description = $response->ResponseDescription;
                     $transaction->save();
 
@@ -58,7 +58,7 @@ class ProcessDarajaB2CPayment implements ShouldQueue
                     $payment_results_status = "FAILED";
                     $payment_results_desc = isset($response->ResultDesc) ? $response->ResultDesc : $response->errorMessage;
 
-                    $transaction->status_id = Transaction::STATUS_FAILED;
+                    $transaction->status = TransactionStatus::FAILED;
                     $transaction->result_description = $payment_results_desc;
                     $transaction->save();
                 }

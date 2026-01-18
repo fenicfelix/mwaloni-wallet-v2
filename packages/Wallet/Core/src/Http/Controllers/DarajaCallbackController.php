@@ -23,8 +23,8 @@ class DarajaCallbackController extends Controller
         $json = $request->json()->all();
         if ($json["Result"]["ResultType"] == 0) {
             $account = Account::where("identifier", "=", $id)->first();
-            $account->working_balance = get_balance($json["Result"]["ResultParameters"]["ResultParameter"][1]["Value"], "Working Account");
-            $account->utility_balance = get_balance($json["Result"]["ResultParameters"]["ResultParameter"][1]["Value"], "Utility Account");
+            $account->working_balance = getBalance($json["Result"]["ResultParameters"]["ResultParameter"][1]["Value"], "Working Account");
+            $account->utility_balance = getBalance($json["Result"]["ResultParameters"]["ResultParameter"][1]["Value"], "Utility Account");
             $account->save();
         }
     }

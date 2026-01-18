@@ -62,6 +62,68 @@
             "time": "2024-03-07T12:27:18+00:00"
         },
         {
+            "name": "akika/laravel-mpesa-multivendor",
+            "version": "v0.2.9",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/akikadigital/laravel-mpesa-multivendor.git",
+                "reference": "dc40f5e655f4be4f2eed79e842ecca5bc63a29b0"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/akikadigital/laravel-mpesa-multivendor/zipball/dc40f5e655f4be4f2eed79e842ecca5bc63a29b0",
+                "reference": "dc40f5e655f4be4f2eed79e842ecca5bc63a29b0",
+                "shasum": ""
+            },
+            "require": {
+                "guzzlehttp/guzzle": "^7.5",
+                "illuminate/http": "^8.0 || ^9.0 || ^10.0 || ^11.0 || ^12.0",
+                "illuminate/support": "^8.0 || ^9.0 || ^10.0 || ^11.0 || ^12.0",
+                "php": "^8.0"
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "aliases": {
+                        "Mpesa": "Akika\\LaravelMpesaMultivendor\\Facades\\Mpesa"
+                    },
+                    "providers": [
+                        "Akika\\LaravelMpesaMultivendor\\MpesaServiceProvider"
+                    ]
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Akika\\LaravelMpesaMultivendor\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Felix Nyabwari",
+                    "email": "fenicfelix@gmail.com"
+                }
+            ],
+            "description": "A multi-tenant Laravel package for integrating Mpesa Daraja API. The package supports Laravel version 5 and above. It allows seamless Mpesa transactions for multiple vendors",
+            "homepage": "https://github.com/akikadigital/laravel-mpesa-multivendor",
+            "keywords": [
+                "Akika",
+                "daraja",
+                "digital",
+                "laravel",
+                "mpesa",
+                "payment"
+            ],
+            "support": {
+                "issues": "https://github.com/akikadigital/laravel-mpesa-multivendor/issues",
+                "source": "https://github.com/akikadigital/laravel-mpesa-multivendor/tree/v0.2.9"
+            },
+            "time": "2025-11-03T09:35:38+00:00"
+        },
+        {
             "name": "blade-ui-kit/blade-heroicons",
             "version": "2.6.0",
             "source": {
@@ -6372,15 +6434,17 @@
             "dist": {
                 "type": "path",
                 "url": "packages/Wallet/Core",
-                "reference": "7325ceddf7aeb739c9ccd4f3ba27dcb60869e9c5"
+                "reference": "7d6588e738b7c22948185a3a2aa84cf7685412c5"
             },
             "require": {
                 "africastalking/africastalking": "^3.0",
+                "akika/laravel-mpesa-multivendor": "^0.2.0",
                 "illuminate/support": "^8.0|^9.0|^10.0|^11.0|^12.0",
                 "php": "^8.0",
                 "rappasoft/laravel-livewire-tables": "^3.7"
             },
             "require-dev": {
+                "barryvdh/laravel-debugbar": "^3.7",
                 "orchestra/testbench": "^8.0|^9.0|^10.0",
                 "phpunit/phpunit": "^10.0|^11.0"
             },
