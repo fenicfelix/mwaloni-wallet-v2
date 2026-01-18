@@ -36,6 +36,7 @@ class CreateAccountsTable extends Migration
             $table->double("revenue")->default(0);
             $table->boolean("active")->default(true);
             $table->boolean("auto_fetch_balance")->default(true);
+            $table->foreignId('managed_by')->nullable()->references("id")->on("users")->onDelete("set null");
             $table->timestamps();
         });
     }

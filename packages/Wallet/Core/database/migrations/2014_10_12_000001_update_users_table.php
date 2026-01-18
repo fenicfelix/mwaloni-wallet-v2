@@ -12,7 +12,6 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('users', function (Blueprint $table) {
-            $table->uuid('identifier')->after('id');
             // rename name to first_name and give it a length of 30
             $table->renameColumn('name', 'first_name');
             $table->string('first_name', 30)->change();
