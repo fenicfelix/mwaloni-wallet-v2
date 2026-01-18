@@ -74,6 +74,9 @@ class ProcessDarajaB2CPayment implements ShouldQueue
     private function performTransaction($transactionID, $commandID, $msisdn, $amount, $remarks, $ocassion, $account)
     {
         $mpesa = new Mpesa($account->account_number, $account->consumer_key, $account->consumer_secret, $account->api_username, $account->api_password);
-        return $mpesa->b2cTransaction($commandID, $msisdn, $amount, $remarks, route('b2c_result_url', $transactionID), route('b2c_timeout_url'), $ocassion);
+        $promise = $mpesa->b2cTransaction($commandID, $msisdn, $amount, $remarks, route('b2c_result_url', $transactionID), route('b2c_timeout_url'), $ocassion);
+
+        $response = $promise->wait(); // 🔑 IMPORTANT
+        return $response;
     }
 }
