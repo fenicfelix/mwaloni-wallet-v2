@@ -68,9 +68,6 @@ class ProcessDarajaB2BPayment implements ShouldQueue
                     $transaction->result_description = $payment_results_desc;
                     $transaction->save();
                 }
-
-                $client_id = ($transaction->service_id) ? $transaction->service->client_id : NULL;
-                log_transaction($transaction->account->id, TransactionType::PAYMENTS, $client_id, $transaction->service_id, floor($transaction->disbursed_amount), $payment_results_status, $payment_results_desc, $transaction->order_number . ' - ' . $transaction->account_number, $transaction->requested_by);
             } else {
                 //Ignore the job
                 $transaction->status_id = 3;

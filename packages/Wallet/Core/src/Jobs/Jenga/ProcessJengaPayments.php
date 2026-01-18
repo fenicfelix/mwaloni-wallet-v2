@@ -2,7 +2,6 @@
 
 namespace Wallet\Core\Jobs\Jenga;
 
-use App\Jobs\PushTransactionCallback;
 use Wallet\Core\Models\Transaction;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -11,10 +10,13 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Log;
 use Wallet\Core\Http\Enums\TransactionType;
+use Wallet\Core\Jobs\Jenga;
+use Wallet\Core\Jobs\PushTransactionCallback;
 
 class ProcessJengaPayments implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
+    use Jenga;
 
     protected $transactionId;
 
@@ -39,8 +41,8 @@ class ProcessJengaPayments implements ShouldQueue
             $transaction = Transaction::with(["service", "paymentChannel", "account.currency", "payload"])->where("id", "=", $this->transactionId)->first();
             if ($transaction) {
                 $result = [];
-                if ($transaction->paymentChannel->slug == "jenga-pesalink-bank") $result = json_decode(jenga_pesalink_bank($transaction->account, json_decode($transaction->payload?->trx_payload)));
-                else if ($transaction->paymentChannel->slug == "jenga-ift") $result = json_decode(jenga_send_to_equity($transaction->account, json_decode($transaction->payload?->trx_payload)));
+                if ($transaction->paymentChannel->slug == "jenga-pesalink-bank") $result = json_decode($this->jenga_pesalink_bank($transaction->account, json_decode($transaction->payload?->trx_payload)));
+                else if ($transaction->paymentChannel->slug == "jenga-ift") $result = json_decode($this->jenga_send_to_equity($transaction->account, json_decode($transaction->payload?->trx_payload)));
                 if ($result) {
                     if ($result->status) {
                         $transaction->status_id = 2;
@@ -72,7 +74,6 @@ class ProcessJengaPayments implements ShouldQueue
                     if (!$transaction->save()) {
                         throw new \Exception("JENGA Payment Failed to save " . $transaction->id);
                     } else {
-                        log_transaction($transaction->account->id, TransactionType::PAYMENTS, $transaction->service->client_id, $transaction->service_id, floor($transaction->disbursed_amount), $result_status, $result->message, $transaction->order_number . ' - ' . $transaction->account_number, $transaction->requested_by);
                         if ($transaction->service->callback_url != NULL) {
                             PushTransactionCallback::dispatch($data, $transaction->service->callback_url);
                         }

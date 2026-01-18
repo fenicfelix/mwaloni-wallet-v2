@@ -9,12 +9,13 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Log;
-use Wallet\Core\Http\Enums\TransactionType;
+use Wallet\Core\Jobs\Jenga;
 use Wallet\Core\Jobs\PushTransactionCallback;
 
 class ProcessEquityToEquityPayment implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
+    use Jenga;
 
     protected $transactionId;
 
@@ -38,7 +39,7 @@ class ProcessEquityToEquityPayment implements ShouldQueue
         try {
             $transaction = Transaction::with(["service", "account.currency", "payload"])->where("id", "=", $this->transactionId)->first();
             if ($transaction) {
-                $result = json_decode(jenga_send_to_equity($transaction->account, json_decode($transaction->payload?->trx_payload)));
+                $result = json_decode($this->jenga_send_to_equity($transaction->account, json_decode($transaction->payload?->trx_payload)));
                 if ($result->status) {
                     $transaction->receipt_number = $result->data->transactionId;
                     $transaction->status_id = 2;
@@ -64,7 +65,6 @@ class ProcessEquityToEquityPayment implements ShouldQueue
                 if (!$transaction->save()) {
                     throw new \Exception("EQUIYTRANSFER Payment Failed to save " . $transaction->id);
                 } else {
-                    log_transaction($transaction->account->id, TransactionType::PAYMENTS, $transaction->service->client_id, $transaction->service_id, floor($transaction->disbursed_amount), $result->message, $result->message, $transaction->order_number . ' - ' . $transaction->account_number, $transaction->requested_by);
                     if ($transaction->service->callback_url != NULL) {
                         PushTransactionCallback::dispatch($data, $transaction->service->callback_url);
                     }
