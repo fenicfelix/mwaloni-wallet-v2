@@ -39,17 +39,6 @@
                                     <label class="col-sm-4 col-form-label font-weight-bold">Account Number</label>
                                     <input type="number" class="col-sm-8 md-input" wire:model="account_number" name="requested_amount" />
                                 </div>
-                                <div class="form-group row">
-                                    <label class="col-sm-4 col-form-label font-weight-bold">Payment Status</label>
-                                    <select wire:model="status_id" class="col-sm-8 md-input" name="status_id" required>
-                                        <option value="">Select Status</option>
-                                        @forelse ($statuses as $status)
-                                            <option value="{{ $status->id }}">{{ $status->name }}</option>
-                                        @empty
-                                            
-                                        @endforelse
-                                    </select>
-                                </div>
                             @elseif($pay_offline)
                                 <div class="form-group row">
                                     <label class="col-sm-4 col-form-label font-weight-bold">Receipt Number</label>

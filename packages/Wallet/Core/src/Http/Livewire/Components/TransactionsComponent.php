@@ -13,7 +13,6 @@ use Livewire\Component;
 use Wallet\Core\Http\Enums\TransactionStatus;
 use Wallet\Core\Http\Traits\NotifyBrowser;
 use Wallet\Core\Jobs\ProcessPayment;
-use Wallet\Core\Models\Status;
 use Wallet\Core\Models\Transaction;
 use Wallet\Core\Models\TransactionMetric;
 use Wallet\Core\Repositories\TransactionRepository;
@@ -35,8 +34,6 @@ class TransactionsComponent extends Component
     public ?array $formData = [];
 
     public ?Transaction $transaction;
-
-    public Collection $statuses;
 
     public ?TransactionMetric $analytics = null;
 
@@ -60,7 +57,6 @@ class TransactionsComponent extends Component
     {
         $this->content_title = "Transactions Manager";
         $this->user = Auth::user();
-        $this->statuses = Status::get();
         // if ($this->user->hasRole(['Admin', 'Technical'])) {
         // count transactions.id
         $this->analytics = TransactionMetric::first();
@@ -194,7 +190,6 @@ class TransactionsComponent extends Component
         $rules =  [
             'account_number' => 'required',
             'requested_amount' => 'required|min:0',
-            'status_id' => 'required:exists,statuses,status_id',
         ];
 
         return $rules;

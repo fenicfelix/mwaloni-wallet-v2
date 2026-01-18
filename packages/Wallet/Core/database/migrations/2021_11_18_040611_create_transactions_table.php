@@ -38,9 +38,7 @@ class CreateTransactionsTable extends Migration
             $table->double("revenue")->default(0);
 
             $table->string("receipt_number", 30)->nullable();
-
-            // Status
-            $table->foreignId('status_id')->nullable()->references("id")->on("statuses")->onDelete("set null");
+            
             $table->string("result_description")->nullable();
 
             $table->foreignId('requested_by')->nullable()->references("id")->on("users")->onDelete("set null");
