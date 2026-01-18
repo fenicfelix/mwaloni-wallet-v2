@@ -10,7 +10,9 @@
     "rappasoft/laravel-livewire-tables": "^3.7",
     "africastalking/africastalking": "^3.0",
     "akika/laravel-mpesa-multivendor": "^0.2.0",
-    "laravel/horizon": "^5.22"
+    "laravel/horizon": "^5.22",
+    "laravel/sanctum": "^4.0"
+    
   },
   "require-dev": {
     "barryvdh/laravel-debugbar": "^3.7",
