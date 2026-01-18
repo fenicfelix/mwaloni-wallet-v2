@@ -10,13 +10,13 @@ use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Log;
 use Wallet\Core\Models\Service;
 use Wallet\Core\Models\Transaction;
-use Wallet\Core\Services\PaymentService;
+use Wallet\Core\Services\MakePaymentService;
 
 class ApiController extends Controller
 {
     use MwaloniWallet;
 
-    public function __construct(protected PaymentService $paymentService)
+    public function __construct(protected MakePaymentService $MakePaymentService)
     {
         $this->middleware('auth:api');
     }
@@ -98,7 +98,7 @@ class ApiController extends Controller
                 return $this->error('Service not found');
             }
 
-            $transaction = $this->paymentService->sendMoney($request, $service);
+            $transaction = $this->MakePaymentService->sendMoney($request, $service);
 
             ProcessPayment::dispatch($transaction->id, $transaction->paymentChannel->slug)->onQueue('process-payments');
 
@@ -156,7 +156,7 @@ class ApiController extends Controller
 
     protected function resolveService(string $serviceId): ?Service
     {
-        return $this->paymentService
+        return $this->MakePaymentService
             ->resolveService($serviceId, auth()->user());
     }
 

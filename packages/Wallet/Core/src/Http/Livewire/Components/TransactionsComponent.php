@@ -8,12 +8,15 @@ use App\Jobs\Daraja\ProcessDarajaPaymentStatusCheck;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\Auth;
+use Livewire\Attributes\On;
 use Livewire\Component;
+use Wallet\Core\Http\Enums\TransactionStatus;
 use Wallet\Core\Http\Traits\NotifyBrowser;
 use Wallet\Core\Jobs\ProcessPayment;
 use Wallet\Core\Models\Status;
 use Wallet\Core\Models\Transaction;
 use Wallet\Core\Models\TransactionMetric;
+use Wallet\Core\Repositories\TransactionRepository;
 
 class TransactionsComponent extends Component
 {
@@ -29,13 +32,13 @@ class TransactionsComponent extends Component
 
     public bool $pay_offline = false;
 
+    public ?array $formData = [];
+
     public ?Transaction $transaction;
 
     public Collection $statuses;
 
     public ?TransactionMetric $analytics = null;
-
-    public ?string $receipt_number, $account_name;
 
     public ?string $confirm_message = "";
 
@@ -45,15 +48,6 @@ class TransactionsComponent extends Component
     public ?string $account_number, $requested_amount, $status_id;
 
     public ?array $selectedItems;
-
-    public $listeners = [
-        'viewFunction',
-        'editFunction',
-        'retryPayment',
-        'paidOffline',
-        'queryStatus',
-        'reverse'
-    ];
 
     public function mount()
     {
@@ -82,6 +76,7 @@ class TransactionsComponent extends Component
         $this->transaction = NULL;
     }
 
+    #[On('viewFunction')]
     public function viewFunction($form_id)
     {
         $this->resetValues();
@@ -89,6 +84,7 @@ class TransactionsComponent extends Component
         $this->transaction = Transaction::where("id", $form_id)->first();
     }
 
+    #[On('editFunction')]
     public function editFunction($form_id = NULL)
     {
         $this->resetValues();
@@ -107,6 +103,7 @@ class TransactionsComponent extends Component
         $this->list = true;
     }
 
+    #[On('retryPayment')]
     public function retryPayment($form_id)
     {
         $this->transaction = Transaction::with("payload")->where("id", $form_id)->first();
@@ -137,6 +134,7 @@ class TransactionsComponent extends Component
         $this->transaction = NULL;
     }
 
+    #[On('paidOffline')]
     public function paidOffline($form_id)
     {
         $this->resetValues();
@@ -144,15 +142,14 @@ class TransactionsComponent extends Component
         $this->pay_offline = true;
     }
 
-    public function submitOfflinePayment()
+    public function completePaymentOffline()
     {
         if ($this->transaction) {
-            $this->transaction->receipt_number = $this->receipt_number;
-            $this->transaction->account_name = $this->account_name;
-            $this->transaction->status_id = 2;
-            $this->transaction->completed_at = date('Y-m-d H:i:s');
-
-            if ($this->transaction->save()) {
+            $this->formData['status'] = TransactionStatus::SUCCESS;
+            $this->formData['completed_at'] = date('Y-m-d H:i:s');
+            $this->formData['status_message'] = 'Payment completed offline';
+            $update = app(TransactionRepository::class)->update($this->transaction->id, $this->formData);
+            if ($update) {
                 $this->notify("The transaction has been updated.", "success");
                 $this->resetValues();
                 $this->list = true;
@@ -162,6 +159,7 @@ class TransactionsComponent extends Component
         }
     }
 
+    #[On('queryStatus')]
     public function queryStatus($form_id)
     {
         $transaction = Transaction::with(["account"])->where("id", "=", $form_id)->first();
@@ -189,12 +187,6 @@ class TransactionsComponent extends Component
         }
         $this->resetValues();
         $this->list = true;
-    }
-
-    public function reverse($form_id)
-    {
-        $transaction = Transaction::with(['account'])->where("id", $form_id)->first();
-        dd($transaction);
     }
 
     public function rules()

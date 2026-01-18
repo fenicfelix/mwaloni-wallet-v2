@@ -10,10 +10,10 @@ use Wallet\Core\Models\Transaction;
 use Illuminate\Support\Str;
 use Wallet\Core\Http\Traits\MwaloniWallet;
 
-class PaymentService
+class MakePaymentService
 {
     use MwaloniWallet;
-    
+
     /**
      * Resolve service and ensure manager owns it
      */

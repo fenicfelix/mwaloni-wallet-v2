@@ -13,7 +13,7 @@
                <div class="col-sm-12 col-md-6 d-table h-100">
                   <div class="card card-border">
                      <div class="card-body">
-                        <form wire:submit.prevent="{{ ($pay_offline) ? 'submitOfflinePayment' : 'store'}}">
+                        <form wire:submit.prevent="{{ ($pay_offline) ? 'completePaymentOffline' : 'store'}}">
                             <div class="form-group row">
                                 <label class="col-sm-4 col-form-label font-weight-bold">Order Number</label>
                                 <label class="col-sm-8 col-form-label transaction-label">{{ ucwords(strtolower($transaction->order_number)) ?? 'Not Provided' }}</label>
@@ -53,19 +53,20 @@
                             @elseif($pay_offline)
                                 <div class="form-group row">
                                     <label class="col-sm-4 col-form-label font-weight-bold">Receipt Number</label>
-                                    <input type="text" class="col-sm-8 md-input" wire:model="receipt_number" name="receipt_number" />
+                                    <input type="text" class="col-sm-8 md-input" wire:model.defer="formData.receipt_number" name="receipt_number" />
                                 </div>
                                 <div class="form-group row">
                                     <label class="col-sm-4 col-form-label font-weight-bold">Account Name</label>
-                                    <input type="text" class="col-sm-8 md-input" wire:model="account_name" name="account_name" />
+                                    <input type="text" class="col-sm-8 md-input" wire:model.defer="formData.account_name" name="account_name" />
                                 </div>
                             @endif
                             <div class="mt-4">
-                                <button type="button" class="btn btn-danger btn-rounded w-sm" data-dismiss="modal" wire:click="cancelEdit">Cancel</button>
-                                <button type="submit" class="btn btn-dark btn-rounded w-sm">Submit</button>
-                                <span class="d-custom-none">
-                                    <img src="{{ asset('themes/agile/img/working.gif') }}" width="20" alt=""> <small>please wait...</small>
-                                </span>
+                                <x-wallet::button class="w-sm" variant="danger" wire:click.prevent="backAction">
+                                    Cancel
+                                </x-wallet::button>
+                                <x-wallet::button type="submit" class="w-sm" variant="dark">
+                                    Submit
+                                </x-wallet::button>
                             </div>
                         </form>
                      </div>

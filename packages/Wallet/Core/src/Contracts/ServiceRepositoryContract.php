@@ -11,6 +11,8 @@ interface ServiceRepositoryContract
 
     public function find(int $id): ?Service;
 
+    public function findWithAccount(int $id): ?Service;
+
     public function update(int $id, array $data): ?Service;
 
     public function delete(int $id): bool;

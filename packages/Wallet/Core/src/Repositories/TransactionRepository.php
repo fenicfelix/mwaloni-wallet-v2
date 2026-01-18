@@ -25,13 +25,13 @@ class TransactionRepository implements TransactionRepositoryContract
         return $transaction;
     }
 
-    public function find(string $id): ?Transaction
+    public function find(int $id): ?Transaction
     {
         // Implementation for finding a transaction by ID
         return Transaction::find($id);
     }
 
-    public function update(string $id, array $data): ?Transaction
+    public function update(int $id, array $data): ?Transaction
     {
         // Implementation for updating a transaction
         $transaction = Transaction::find($id);
@@ -42,7 +42,7 @@ class TransactionRepository implements TransactionRepositoryContract
         return null;
     }
 
-    public function delete(string $id): bool
+    public function delete(int $id): bool
     {
         // Implementation for deleting a transaction
         $transaction = Transaction::find($id);

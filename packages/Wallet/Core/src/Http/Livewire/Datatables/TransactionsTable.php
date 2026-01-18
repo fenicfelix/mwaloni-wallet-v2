@@ -149,11 +149,11 @@ class TransactionsTable extends DataTableComponent
                         if ($row->status != TransactionStatus::SUCCESS) {
                             if ($row->status == TransactionStatus::FAILED) $html .= '<a href="#" class="dropdown-item" wire:click="editFunction(' . $row->id . ')">Edit Details</a>';
                             if ($row->status == TransactionStatus::FAILED) $html .= '<a href="#" class="dropdown-item" wire:click="retryPayment(' . $row->id . ')">Retry Payment</a>';
-                            $html .= '<a href="#" class="dropdown-item" wire:click="paidOffline(' . $row->id . ')">Paid Offline</a>';
+                            $html .= '<a href="#" class="dropdown-item" wire:click="paidOffline(' . $row->id . ')">Complete Offline</a>';
                             if (in_array($row->status, [TransactionStatus::SUBMITTED, TransactionStatus::FAILED])) $html .= '<a href="#" class="dropdown-item" wire:click="queryStatus(' . $row->id . ')">Query Status</a>';
                         }
 
-                        if ($row->status == TransactionStatus::SUCCESS) $html .= '<a href="#" class="dropdown-item" wire:click="reverse(' . $row->id . ')">Reverse</a>';
+                        // if ($row->status == TransactionStatus::SUCCESS) $html .= '<a href="#" class="dropdown-item" wire:click="reverse(' . $row->id . ')">Reverse</a>';
                         $html .= '</div></div>';
                         return $html;
                     }

@@ -15,6 +15,8 @@ interface AccountRepositoryContract
     
     public function updateWithheldAmount(int $id, float $amount): ?Account;
 
+    public function activateDeactivate(int $id): bool;
+
     public function delete(int $id): bool;
 
     public function all(array $filters): Collection;
