@@ -31,7 +31,7 @@ class ProfileComponent extends Component
         $this->initializeValues();
     }
 
-    public function resetVariables()
+    public function resetValues()
     {
         $this->reset('changePassword', 'current_password', 'new_password', 'confirm_password');
     }
@@ -39,7 +39,7 @@ class ProfileComponent extends Component
     private function initializeValues()
     {
         $this->user = Auth::user();
-        $this->resetVariables();
+        $this->resetValues();
     }
 
     public function toggleView()
@@ -77,7 +77,7 @@ class ProfileComponent extends Component
             if ($this->user->save()) $this->notify("Password has been changed.", "success");
             else $this->notify("Password not saved. Please try again later.", "error");
 
-            $this->resetVariables();
+            $this->resetValues();
         }
     }
 

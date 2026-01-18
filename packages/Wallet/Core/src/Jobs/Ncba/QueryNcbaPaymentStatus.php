@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Jobs\Ncba;
+namespace Wallet\Core\Jobs\Ncba;
 
 use Akika\LaravelNcba\Ncba;
 use Wallet\Core\Models\Transaction;

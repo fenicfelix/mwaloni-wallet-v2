@@ -22,14 +22,14 @@
         <li class="nav-item {{ request()->is('*accounts*') ? 'active' : ''}}">
             <a href="{{ route('accounts') }}" class="nav-link"><span class="nav-text">Accounts</span></a>
         </li>
-        <li class="nav-item {{ request()->is('*clients*') ? 'active' : ''}}">
-            <a href="{{ route('clients') }}" class="nav-link"><span class="nav-text">Clients</span></a>
-        </li>
         <li class="nav-item {{ request()->is('*services*') ? 'active' : ''}}">
             <a href="{{ route('services') }}" class="nav-link"><span class="nav-text">Services</span></a>
         </li>
         <li class="nav-item {{ request()->is('*messages*') ? 'active' : ''}}">
             <a href="{{ route('messages') }}" class="nav-link"><span class="nav-text">Messages</span></a>
+        </li>
+        <li class="nav-item {{ request()->is('*clients*') ? 'active' : ''}}">
+            <a href="{{ route('clients') }}" class="nav-link"><span class="nav-text">Clients</span></a>
         </li>
         <li class="nav-item {{ request()->is('*users*') ? 'active' : ''}}">
             <a href="{{ route('users') }}" class="nav-link"><span class="nav-text">System Users</span></a>

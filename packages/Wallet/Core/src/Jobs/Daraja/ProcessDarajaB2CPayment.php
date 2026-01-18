@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Jobs\Daraja;
+namespace Wallet\Core\Jobs\Daraja;
 
 use Akika\LaravelMpesaMultivendor\Mpesa;
 use Wallet\Core\Models\Transaction;

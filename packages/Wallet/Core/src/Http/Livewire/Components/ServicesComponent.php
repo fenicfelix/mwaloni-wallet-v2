@@ -174,11 +174,6 @@ class ServicesComponent extends Component
         unset($this->formData['updated_at']);
     }
 
-    public function backToList()
-    {
-        $this->resetValues();
-    }
-
     public function backAction()
     {
         $this->resetValues();

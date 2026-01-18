@@ -22,7 +22,9 @@ use Wallet\Core\Models\PaymentChannel;
 use Wallet\Core\Models\Transaction;
 use Wallet\Core\Services\PayloadGeneratorService;
 use Illuminate\Support\Str;
+use Livewire\Attributes\On;
 use Wallet\Core\Repositories\AccountRepository;
+use Wallet\Core\Services\AccountBalanceService;
 use Wallet\Core\Services\CashoutService;
 
 class AccountsComponent extends Component
@@ -31,11 +33,11 @@ class AccountsComponent extends Component
 
     public ?int $formId = null;
 
-    public array $form = [];
+    public array $formData = [];
 
-    public ?string $content_title;
+    public array $cashoutFormData = [];
 
-    public ?Account $account;
+    public ?string $content_title = null;
 
     public bool $add = false;
 
@@ -43,41 +45,15 @@ class AccountsComponent extends Component
 
     public bool $editWithheldAmount = false;
 
-    public ?array $cashout_form;
-
     public ?Collection $payment_channels, $account_types, $currencies;
 
     public ?Collection $account_managers;
 
-    public $listeners = [
-        "editFunction",
-        "deactivateAccount",
-        "fetchBalance",
-        "cashoutFunction",
-        "updateWithheldAmount"
-    ];
+    public ?Account $account = null;
 
     public function mount()
     {
         $this->initializeVariables();
-    }
-
-    private function resetVariables()
-    {
-        $this->content_title = "Accounts Manager";
-        $this->editWithheldAmount = false;
-        $this->add = false;
-        $this->cashout = false;
-        $this->formId = null;
-        $this->account = new Account();
-
-        $this->reset("form");
-
-        $this->form = [
-            "account_type_id" => "",
-            "country_name" => "Kenya",
-            "country_code" => "KE"
-        ];
     }
 
     public function initializeVariables()
@@ -92,7 +68,7 @@ class AccountsComponent extends Component
             ];
         });
 
-        $this->form = [
+        $this->formData = [
             "account_type_id" => "",
             "country_name" => "Kenya",
             "country_code" => "KE"
@@ -105,129 +81,32 @@ class AccountsComponent extends Component
         $this->currencies = Currency::get();
     }
 
-    public function addFunction()
-    {
-        $this->resetVariables();
-        $this->content_title = "Add Account";
-        $this->add = true;
-        // clear variables
-    }
-
-    public function editFunction($id)
-    {
-        $this->content_title = "Update Account";
-        $this->formId = $id;
-        $this->add = true;
-        $this->editWithheldAmount = false;
-        $this->account = Account::where("id", $id)->first();
-
-        $this->form = $this->account->toArray();
-        $this->form["bank_code"] = $this->account->bank_code;
-        $this->form["branch_code"] = $this->account->branch_code;
-    }
-
-    public function backToList()
-    {
-        $this->content_title = "Accounts Manager";
-        $this->add = false;
-        $this->editWithheldAmount = false;
-        $this->cashout = false;
-    }
-
-    public function deactivateAccount($id)
-    {
-        $account = Account::where("id", $id)->first();
-        if ($account->active == "1") $account->active = "0";
-        else $account->active = "1";
-
-        $account->updated_by = Auth::id();
-        if ($account->save()) $this->notify("The account status has been updated.", "success");
-        else $this->notify("The account status has not been updated.", "error");
-    }
-
-    public function fetchBalance($id)
-    {
-        $account = Account::where("id", $id)->first();
-        if ($account->account_type_id == 1) { //Daraja
-            info('Fetching balance for daraja account');
-            FetchAccountBalance::dispatch($account)->onQueue("fetch-balance");
-        } else if ($account->account_type_id == 2) { //Jenga
-            info('Fetching balance for jenga account');
-            QueryJengaBalance::dispatch($account->id);
-        } else {
-            info('Fetching balance for ncba account');
-            QueryNcbaBalance::dispatch($account->id);
-        }
-
-        $this->notify("Balance enquiry made successfully.", "success");
-
-        return redirect()->route('accounts');
-    }
-
-    public function updateWithheldAmount($id)
-    {
-        $this->content_title = "Update Withheld Amount";
-        $this->formId = $id;
-        $this->add = false;
-        $this->editWithheldAmount = true;
-        $this->account = Account::where("id", $id)->first();
-        $this->form = $this->account->toArray();
-    }
-
-    public function saveWithheldAmount()
-    {
-        $this->customValidate();
-
-        $account = Account::where("id", $this->formId)->first();
-        $account->withheld_amount = $this->form['withheld_amount'];
-        $account->updated_by = Auth::id();
-
-        if ($account->save()) {
-            $this->resetVariables();
-            $this->notify("Withheld amount updated successfully.", "success");
-        } else {
-            $this->notify("Withheld amount could not be updated.", "error");
-        }
-    }
-
-    public function cashoutFunction($id)
-    {
-        $this->content_title = "Cashout";
-        $this->add = false;
-        $this->cashout = true;
-        $this->formId = $id;
-        $this->account = Account::with(['accountType'])->where("id", $this->formId)->first();
-        $this->cashout_form = [
-            'channel_id' => $this->account->channel_id
-        ];
-    }
-
     public function rules()
     {
         $rules = [];
 
         if ($this->editWithheldAmount) {
             $rules = [
-                'form.withheld_amount' => 'required|numeric'
+                'formData.withheld_amount' => 'required|numeric'
             ];
         } else {
             if ($this->cashout) {
                 $rules =  [
-                    'cashout_form.account_number' => 'required',
-                    'cashout_form.channel_id' => 'required|exists:payment_channels,id',
-                    'cashout_form.amount' => 'required',
-                    'cashout_form.account_reference' => 'required_if:channel_id,==,daraja-paybill',
+                    'cashoutFormData.account_number' => 'required',
+                    'cashoutFormData.channel_id' => 'required|exists:payment_channels,id',
+                    'cashoutFormData.amount' => 'required',
+                    'cashoutFormData.account_reference' => 'required_if:channel_id,==,daraja-paybill',
                 ];
             } else if ($this->add) {
                 $rules = [
-                    'form.currency_id' => 'required',
-                    'form.name' =>  'required',
+                    'formData.currency_id' => 'required',
+                    'formData.name' =>  'required',
                 ];
 
-                if ($this->form["account_type_id"] != "1") {
-                    $rules['form.bank_code'] = 'required';
-                    $rules['form.branch_code'] = 'required';
-                    $rules['form.country_name'] = 'required';
+                if ($this->formData["account_type_id"] != "1") {
+                    $rules['formData.bank_code'] = 'required';
+                    $rules['formData.branch_code'] = 'required';
+                    $rules['formData.country_name'] = 'required';
                 }
             }
         }
@@ -235,16 +114,14 @@ class AccountsComponent extends Component
         return $rules;
     }
 
-    public function doCashout()
+    public function submitCashout()
     {
         $this->customValidate();
-
-        $cashoutTransaction = app(CashoutService::class)->processCashout($this->cashout_form, $this->formId);
-
+        $cashoutTransaction = app(CashoutService::class)->processCashout($this->cashoutFormData, $this->formId);
         if ($cashoutTransaction) {
-            ProcessPayment::dispatch($cashoutTransaction->id, $cashoutTransaction->payment_channel->slug)->onQueue('process-payments');
+            ProcessPayment::dispatch($cashoutTransaction->id, $cashoutTransaction->paymentChannel->slug)->onQueue('process-payments');
             $this->notify("Cashout request has been placed successfully", "success");
-            $this->resetVariables();
+            $this->resetValues();
         } else {
             $this->notify("Cashout request has not been placed.", "error");
         }
@@ -254,10 +131,10 @@ class AccountsComponent extends Component
     {
         $this->customValidate();
 
-        if($this->formId === null) {
-            $account = app(AccountRepository::class)->create($this->form);
+        if ($this->formId === null) {
+            $account = app(AccountRepository::class)->create($this->formData);
         } else {
-            $account = app(AccountRepository::class)->update($this->formId, $this->form);
+            $account = app(AccountRepository::class)->update($this->formId, $this->formData);
         }
 
         if (!$account) {
@@ -269,16 +146,121 @@ class AccountsComponent extends Component
         $this->resetValues();
     }
 
-    public function customValidate() {
+    public function saveWithheldAmount()
+    {
+        $this->customValidate();
+
+        $account = app(AccountRepository::class)->updateWithheldAmount($this->formId, (float) $this->formData['withheld_amount']);
+        if (!$account) {
+            $this->notify("Withheld amount could not be updated.", "error");
+            return;
+        }
+
+        $this->notify("Withheld amount updated successfully.", "success");
+        $this->resetValues();
+    }
+
+    public function addFunction()
+    {
+        $this->resetValues();
+        $this->content_title = "Add Account";
+        $this->add = true;
+    }
+
+    #[On("editFunction")]
+    public function editFunction($id)
+    {
+        $this->resetValues();
+        $this->content_title = "Update Account";
+        $this->formId = $id;
+        $this->add = true;
+        $this->formData = app(AccountRepository::class)->find($id)->toArray();
+        unset($this->formData['operational_balance']);
+    }
+
+    #[On("cashoutFunction")]
+    public function cashoutFunction($id)
+    {
+        $this->content_title = "Cashout";
+        $this->add = false;
+        $this->cashout = true;
+        $this->formId = $id;
+        $this->account = Account::with(['accountType'])->where("id", $this->formId)->first();
+    }
+
+    #[On("deactivateAccount")]
+    public function deactivateAccount($id, $task)
+    {
+        $this->formId = $id;
+        $this->confirm(
+            'Confirm Action',
+            'Are you sure you want to ' . $task . ' this account?',
+            'warning',
+            'Yes, ' . ucfirst($task),
+            'confirmedDeactivateAccount'
+        );
+    }
+
+    #[On("confirmedDeactivateAccount")]
+    public function confirmedDeactivateAccount()
+    {
+        $update = app(AccountRepository::class)->activateDeactivate($this->formId);
+        if ($update) {
+            $this->notify("The account has been deactivated.", "success");
+            $this->dispatch('refreshDatatable');
+        } else {
+            $this->notify("The account could not be deactivated.", "error");
+        }
+    }
+
+    #[On("fetchBalance")]
+    public function fetchBalance($id)
+    {
+        $fetchBalance = app(AccountBalanceService::class)->fetchBalance($id);
+        if ($fetchBalance) {
+            $this->notify("Balance enquiry made successfully.", "success");
+        } else {
+            $this->notify("Balance enquiry failed.", "error");
+        }
+    }
+
+    #[On("updateWithheldAmount")]
+    public function updateWithheldAmount($id)
+    {
+        $this->resetValues();
+        $this->content_title = "Update Withheld Amount";
+        $this->formId = $id;
+        $this->editWithheldAmount = true;
+        $this->formData = app(AccountRepository::class)->find($this->formId)->toArray();
+    }
+
+    public function customValidate()
+    {
         try {
             $this->validate();
         } catch (\Throwable $th) {
             $this->notify(
-                'There were validation errors. Please check the form and try again.',
+                'There were validation errors. Please check the formData and try again.',
                 'error'
             );
             return;
         }
+    }
+
+    public function backAction()
+    {
+        $this->resetValues();
+    }
+
+    private function resetValues()
+    {
+        $this->reset("formId", "formData", "add", "editWithheldAmount", "cashout");
+        $this->formData = [
+            "account_type_id" => "",
+            "country_name" => "Kenya",
+            "country_code" => "KE"
+        ];
+        $this->content_title = "Accounts";
     }
 
     public function render()

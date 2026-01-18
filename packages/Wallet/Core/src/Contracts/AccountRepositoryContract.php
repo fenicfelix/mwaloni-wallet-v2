@@ -12,6 +12,8 @@ interface AccountRepositoryContract
     public function find(int $id): ?Account;
 
     public function update(int $id, array $data): ?Account;
+    
+    public function updateWithheldAmount(int $id, float $amount): ?Account;
 
     public function delete(int $id): bool;
 

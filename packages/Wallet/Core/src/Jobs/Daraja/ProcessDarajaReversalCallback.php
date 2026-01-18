@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Jobs\Daraja;
+namespace Wallet\Core\Jobs\Daraja;
 
 use App\Http\Traits\MwaloniWallet;
 use Wallet\Core\Models\Transaction;

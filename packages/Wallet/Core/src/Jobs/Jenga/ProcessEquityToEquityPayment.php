@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Jobs\Jenga;
+namespace Wallet\Core\Jobs\Jenga;
 
 use Wallet\Core\Models\Transaction;
 use Illuminate\Bus\Queueable;

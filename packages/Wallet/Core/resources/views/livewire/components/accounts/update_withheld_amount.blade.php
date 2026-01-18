@@ -15,14 +15,14 @@
                         <div class="card-body">
                             <form wire:submit.prevent="saveWithheldAmount">
                                 <div class="col-12">
-                                    <x-wallet::form.input label="Withheld Amount" wire:model.defer="formData.withheld_amount" name="withheld_amount" required />
+                                    <x-wallet::form.input type="number" label="Withheld Amount" wire:model.defer="formData.withheld_amount" name="withheld_amount" min="0" required />
                                 </div>
                                 <div class="mt-4">
                                     <x-wallet::button class="w-sm" variant="danger" wire:click.prevent="backAction">
                                         Cancel
                                     </x-wallet::button>
                                     <x-wallet::button type="submit" class="w-sm" variant="dark">
-                                        Update Withheld Amount
+                                        Submit
                                     </x-wallet::button>
                                 </div>
                             </form>

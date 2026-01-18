@@ -40,6 +40,29 @@ class AccountRepository implements AccountRepositoryContract
         return null;
     }
 
+    public function updateWithheldAmount(int $id, float $amount): ?Account
+    {
+        // Implementation for updating the withheld amount of a Account
+        $Account = Account::find($id);
+        if ($Account) {
+            $Account->withheld_amount = $amount;
+            $Account->save();
+            return $Account;
+        }
+        return null;
+    }
+
+    public function activateDeactivate(int $id): bool
+    {
+        // Implementation for activating or deactivating a Account
+        $Account = Account::find($id);
+        if ($Account) {
+            $Account->active = !$Account->active;
+            if ($Account->save()) return true;
+        }
+        return false;
+    }
+
     public function delete(int $id): bool
     {
         // Implementation for deleting a Account

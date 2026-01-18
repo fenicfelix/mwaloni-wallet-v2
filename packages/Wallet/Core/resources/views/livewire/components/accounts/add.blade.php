@@ -20,7 +20,7 @@
                                         </div>
                                         <div class="col-6">
                                             <x-wallet::form.select label="Currency" wire:model.live="formData.currency_id"
-                                                :options="$currencies->pluck('name', 'code')" placeholder="Choose Currency" />
+                                                :options="$currencies->pluck('name', 'id')" placeholder="Choose Currency" />
                                         </div>
                                     </div>
                                     <div class="row">
@@ -41,7 +41,7 @@
                                                 :options="$account_managers" placeholder="Choose Manager" />
                                         </div>
                                     </div>
-                                    @if ($form['account_type_id'] != "1")
+                                    @if ($formData['account_type_id'] != "1")
                                         <div class="row">
                                             <div class="col-6">
                                                 <x-wallet::form.input label="Country of Registration" wire:model.defer="formData.country_name" name="country_name"
@@ -63,7 +63,7 @@
                                             </div>
                                         </div>
                                     @endif
-                                    @if ($form['account_type_id'] == "1")
+                                    @if ($formData['account_type_id'] == "1")
                                         <div class="row">
                                             <div class="col-sm-12">
                                                 <x-wallet::form.input label="Consumer Key" wire:model.defer="formData.consumer_key" name="consumer_key"
@@ -77,7 +77,7 @@
                                             </div>
                                         </div>
                                     @else
-                                        @if ($form['account_type_id'] == "3")
+                                        @if ($formData['account_type_id'] == "3")
                                             <div class="row">
                                                 <div class="col-sm-6">
                                                     <x-wallet::form.input label="CIF" wire:model.defer="formData.cif" name="cif"
@@ -113,12 +113,10 @@
                                         </div>
                                         <div class="row">
                                             <div class="col-6">
-                                                <x-wallet::form.input label="API Username" wire:model.defer="formData.api_username" name="api_username" type="text"
-                                                    required />
+                                                <x-wallet::form.input label="API Username" wire:model.defer="formData.api_username" name="api_username" type="text"/>
                                             </div>
                                             <div class="col-6">
-                                                <x-wallet::form.input label="API Password" wire:model.defer="formData.api_password" name="api_password" type="text"
-                                                    required />
+                                                <x-wallet::form.input label="API Password" wire:model.defer="formData.api_password" name="api_password" type="text"/>
                                             </div>
                                         </div>
                                     @endif

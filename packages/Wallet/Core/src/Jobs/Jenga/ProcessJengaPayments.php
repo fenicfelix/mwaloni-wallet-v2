@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Jobs\Jenga;
+namespace Wallet\Core\Jobs\Jenga;
 
 use App\Jobs\PushTransactionCallback;
 use Wallet\Core\Models\Transaction;

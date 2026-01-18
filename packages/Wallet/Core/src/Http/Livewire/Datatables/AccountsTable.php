@@ -87,8 +87,8 @@ class AccountsTable extends DataTableComponent
                         $html .= '<a href="#" data-toggle="dropdown"><img height="16" src="' . asset('themes/agile/img/icon_more.png') . '" alt=""></a>';
                         $html .= '<div class="dropdown-menu bg-light" role="menu">';
                         if ($row->active == 1) $html .= '<a href="#" class="dropdown-item" wire:click="editFunction(' . $row->id . ')">Edit</a>';
-                        if ($row->active == "1") $html .= '<a href="#" class="dropdown-item" wire:click="deactivateAccount(' . $row->id . ')">Deactivate</a>';
-                        if ($row->active != "1") $html .= '<a href="#" class="dropdown-item" wire:click="deactivateAccount(' . $row->id . ')">Activate</a>';
+                        if ($row->active == "1") $html .= '<a href="#" class="dropdown-item" wire:click="deactivateAccount(' . $row->id . ', `deactivate`)">Deactivate</a>';
+                        if ($row->active != "1") $html .= '<a href="#" class="dropdown-item" wire:click="deactivateAccount(' . $row->id . ', `activate`)">Activate</a>';
                         if ($row->active == 1) $html .= '<a href="#" class="dropdown-item"wire:click="cashoutFunction(' . $row->id . ')">Cashout</a>';
                         if ($row->active == 1) $html .= '<a href="#" class="dropdown-item"wire:click="fetchBalance(' . $row->id . ')">Fetch Balance</a>';
                         if ($row->active == 1) $html .= '<a href="#" class="dropdown-item"wire:click="updateWithheldAmount(' . $row->id . ')">Update Withheld Amount</a>';
@@ -106,9 +106,9 @@ class AccountsTable extends DataTableComponent
         $this->dispatch('editFunction', $form_id);
     }
 
-    public function deactivateAccount($form_id)
+    public function deactivateAccount($form_id, $task)
     {
-        $this->dispatch('deactivateAccount', $form_id);
+        $this->dispatch('deactivateAccount', $form_id, $task);
     }
 
     public function cashoutFunction($form_id)
