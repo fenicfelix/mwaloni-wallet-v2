@@ -66,7 +66,7 @@
                                                 name="bank_name" required />
                                         </div>
                                         <div class="col-12 col-md-6">
-                                            <x-wallet::form.input label="Bank CIF" wire:model.defer="cashoutFormData.bank_cif" name="bank_cif" type="number" required />
+                                            <x-wallet::form.input label="Bank CIF" wire:model.defer="cashoutFormData.bank_cif" name="bank_cif" type="text" required />
                                         </div>
                                     </div>
                                     <div class="row">
@@ -85,7 +85,7 @@
                                         Cancel
                                     </x-wallet::button>
                                     <x-wallet::button type="submit" class="w-sm" variant="dark">
-                                        Submit Cashout
+                                        Submit
                                     </x-wallet::button>
                                 </div>
                             </form>
