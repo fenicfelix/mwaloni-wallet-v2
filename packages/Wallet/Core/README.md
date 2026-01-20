@@ -1,5 +1,7 @@
 ## Installation
 
+- Run the following commands to install dependencies and publish necessary assets
+
 ```bash
 composer require wallet/core:@dev -W  # Wallet Core Package
 
