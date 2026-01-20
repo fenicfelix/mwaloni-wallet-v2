@@ -2,9 +2,6 @@
 
 namespace Wallet\Core\Jobs;
 
-use App\Jobs\Daraja\ProcessDarajaB2BPayment;
-use App\Jobs\Daraja\ProcessDarajaB2CPayment;
-use App\Jobs\Jenga\ProcessJengaPayments;
 use Wallet\Core\Models\Transaction;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -12,7 +9,12 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Log;
+use Wallet\Core\Http\Enums\TransactionStatus;
+use Wallet\Core\Jobs\Daraja\ProcessDarajaB2BPayment;
+use Wallet\Core\Jobs\Daraja\ProcessDarajaB2CPayment;
+use Wallet\Core\Jobs\Jenga\ProcessJengaPayments;
 use Wallet\Core\Jobs\Ncba\ProcessNcbaPayments;
+use Wallet\Core\Jobs\Stanbic\ProcessStanbicPayment;
 
 class ProcessPayment implements ShouldQueue
 {
@@ -29,16 +31,6 @@ class ProcessPayment implements ShouldQueue
 
     public function handle()
     {
-
-        /*
-        5	jenga-pesalink-mobile
-        9	ncba-eft
-        8	ncba-ift
-        12	ncba-mobile
-        11	ncba-pesalink
-        10	ncba-rtgs
-        */
-
         // if $this->channel like ncba-*, then ProcessNcbaPayments::dispatch($this->transactionId);
         if (strpos($this->channel, 'ncba-') !== false) {
             ProcessNcbaPayments::dispatch($this->transactionId);
@@ -67,7 +59,7 @@ class ProcessPayment implements ShouldQueue
     private function unknownChannel($transactionId)
     {
         Transaction::where("id", "=", $transactionId)->update([
-            "status_id" => 3,
+            "status" => TransactionStatus::FAILED,
             "completed_at" => date('Y-m-d H:i:s'),
             "result_description" => "Transaction Channel not specified"
         ]);

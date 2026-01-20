@@ -87,8 +87,8 @@ class ServicesComponent extends Component
             $rules =  [
                 'formData.name' => 'required',
                 'formData.description' => 'required',
-                'formData.client_id' => 'required:exists,clients,status_id',
-                'formData.account_id' => 'required:exists,accounts,status_id',
+                'formData.client_id' => 'required:exists,clients,id',
+                'formData.account_id' => 'required:exists,accounts,id',
                 'formData.system_charges' => 'required',
                 'formData.max_trx_amount' => 'required|min:2',
             ];

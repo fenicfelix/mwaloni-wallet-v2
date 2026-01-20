@@ -46,7 +46,7 @@
                             <label class="col-sm-4 col-form-label font-weight-bold">Payment Reason</label>
                             <label class="col-sm-8 col-form-label transaction-label">{{$transaction->description }}</label>
                         </div>
-                        @if ($transaction->status_id == 2)
+                        @if ($isSuccessful)
                             <div class="form-group row">
                                 <label class="col-sm-4 col-form-label font-weight-bold">Disbursed Amount</label>
                                 <label class="col-sm-8 col-form-label transaction-label">KSh. {{ number_format($transaction->disbursed_amount, 2) }}</label>

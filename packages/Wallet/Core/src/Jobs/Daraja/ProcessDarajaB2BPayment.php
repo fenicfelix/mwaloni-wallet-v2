@@ -70,7 +70,7 @@ class ProcessDarajaB2BPayment implements ShouldQueue
                 }
             } else {
                 //Ignore the job
-                $transaction->status_id = 3;
+                $transaction->status = TransactionStatus::FAILED;
                 $transaction->save();
             }
         } else {

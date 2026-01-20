@@ -33,11 +33,11 @@
                             @if ($edit)
                                 <div class="form-group row">
                                     <label class="col-sm-4 col-form-label font-weight-bold">Requested Amount</label>
-                                    <input type="number" class="col-sm-8 md-input" wire:model="requested_amount" name="requested_amount" />
+                                    <input type="number" class="col-sm-8 md-input" wire:model.defer="formData.requested_amount" name="requested_amount" />
                                 </div>
                                 <div class="form-group row">
                                     <label class="col-sm-4 col-form-label font-weight-bold">Account Number</label>
-                                    <input type="number" class="col-sm-8 md-input" wire:model="account_number" name="requested_amount" />
+                                    <input type="number" class="col-sm-8 md-input" wire:model.defer="formData.account_number" name="requested_amount" />
                                 </div>
                             @elseif($pay_offline)
                                 <div class="form-group row">

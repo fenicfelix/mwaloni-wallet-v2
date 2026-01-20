@@ -38,13 +38,13 @@ class QueryJengaBalance implements ShouldQueue
         try {
             $account = Account::where("id", $this->accountId)->first();
             if ($account) {
-                $result = json_decode($this->jenga_fetch_balance($account));
+                $result = json_decode($this->jengaFetchBalance($account));
                 if ($result->status) {
                     $account->working_balance = 0;
                     foreach ($result->data->balances as $balance) {
                         if ($balance->type == "Current") $account->utility_balance = $balance->amount;
                     }
-                    
+
                     if (!$account->save()) throw new \Exception("An error ocurred while processing balance.");
                 } else {
                     throw new \Exception("Balance enquiry not made successfully.");

@@ -54,7 +54,7 @@ class WithdrawService
                     "service_id" => $service->id,
                     "transaction_type" => TransactionType::SERVICE_CHARGE,
                     "order_number" => $this->generateOrderNumber(TransactionType::SERVICE_CHARGE),
-                    "status_id" => TransactionStatus::PENDING,
+                    "status" => TransactionStatus::PENDING,
                     "system_charges" => 0,
                     "sms_charges" => 0,
                     "revenue" => 0,

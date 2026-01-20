@@ -4,14 +4,13 @@ declare(strict_types=1);
 
 namespace Wallet\Core\Http\Livewire\Components;
 
-use App\Jobs\Daraja\ProcessDarajaPaymentStatusCheck;
 use App\Models\User;
-use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Attributes\On;
 use Livewire\Component;
 use Wallet\Core\Http\Enums\TransactionStatus;
 use Wallet\Core\Http\Traits\NotifyBrowser;
+use Wallet\Core\Jobs\Daraja\ProcessDarajaPaymentStatusCheck;
 use Wallet\Core\Jobs\ProcessPayment;
 use Wallet\Core\Models\Transaction;
 use Wallet\Core\Models\TransactionMetric;
@@ -33,6 +32,8 @@ class TransactionsComponent extends Component
 
     public ?array $formData = [];
 
+    public bool $isSuccessful = false;
+
     public ?Transaction $transaction;
 
     public ?TransactionMetric $analytics = null;
@@ -40,9 +41,6 @@ class TransactionsComponent extends Component
     public ?string $confirm_message = "";
 
     public ?User $user;
-
-    //Edit parameters
-    public ?string $account_number, $requested_amount, $status_id;
 
     public ?array $selectedItems;
 
@@ -86,10 +84,11 @@ class TransactionsComponent extends Component
         $this->resetValues();
         $this->edit = true;
         $this->transaction = Transaction::where("id", $form_id)->first();
+        $this->isSuccessful = $this->transaction->status == TransactionStatus::SUCCESS;
         if ($this->transaction) {
-            $this->account_number = $this->transaction->account_number;
-            $this->requested_amount = $this->transaction->requested_amount;
-            $this->status_id = $this->transaction->status_id;
+            $this->formData['account_number'] = $this->transaction->account_number;
+            $this->formData['requested_amount'] = $this->transaction->requested_amount;
+            $this->formData['status'] = $this->transaction->status;
         }
     }
 
@@ -103,7 +102,7 @@ class TransactionsComponent extends Component
     public function retryPayment($form_id)
     {
         $this->transaction = Transaction::with("payload")->where("id", $form_id)->first();
-        if ($this->transaction->status_id == 3 || ($this->transaction->status_id == 1 && get_elapsed_time($this->transaction->requested_on) > 120)) {
+        if ($this->transaction->status == TransactionStatus::FAILED || ($this->transaction->status == TransactionStatus::SUBMITTED && getElapsedTime($this->transaction->requested_on) > 120)) {
             $balance = ($this->transaction->account->utility_balance - ($this->transaction->disbursed_amount + $this->transaction->account->revenue));
 
             if ($balance < 0) $this->notify("Insufficient Balance. Please reload the account and retry.", "error");
@@ -112,7 +111,7 @@ class TransactionsComponent extends Component
                 $trx_payload = json_decode($this->transaction->trx_payload);
                 $trx_payload->reference = $reference;
                 $this->transaction->reference = $reference;
-                $this->transaction->status_id = 1;
+                $this->transaction->status = TransactionStatus::SUBMITTED;
                 $this->transaction->save();
 
                 $this->transaction->payload->update([
@@ -171,7 +170,7 @@ class TransactionsComponent extends Component
 
     public function queryStatusAll()
     {
-        $transactions = Transaction::with(['account'])->where("status_id", 1)->get();
+        $transactions = Transaction::with(['account'])->where("status", TransactionStatus::SUBMITTED)->get();
         if (sizeof($transactions) > 0) {
             foreach ($transactions as $transaction) {
                 //Check status only for Daraja
@@ -188,38 +187,11 @@ class TransactionsComponent extends Component
     public function rules()
     {
         $rules =  [
-            'account_number' => 'required',
-            'requested_amount' => 'required|min:0',
+            'formData.account_number' => 'required',
+            'formData.requested_amount' => 'required|min:0',
         ];
 
         return $rules;
-    }
-
-    public function store()
-    {
-        if ($this->transaction) {
-            $this->validate();
-        }
-
-        $this->transaction->account_number = $this->account_number;
-        $this->transaction->status_id = $this->status_id;
-
-        if ($this->transaction->requested_amount != $this->requested_amount) {
-            $this->transaction->requested_amount = $this->requested_amount;
-            $this->transaction->disbursed_amount = $this->requested_amount;
-            if ($this->transaction->payload->trx_payload) {
-                $payload = json_decode($this->transaction->payload?->trx_payload);
-                $payload["amount"] = $this->requested_amount;
-                $this->transaction->payload->trx_payload = json_encode($payload);
-            }
-        }
-
-        if (!$this->transaction->save()) $this->notify("The transaction has not been updated.", "success");
-        else {
-            $this->notify("The transaction has been updated.", "success");
-            $this->resetValues();
-            $this->list = true;
-        }
     }
 
     public function render()

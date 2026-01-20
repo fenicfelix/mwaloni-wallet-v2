@@ -9,6 +9,7 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
+use Wallet\Core\Http\Enums\TransactionStatus;
 use Wallet\Core\Jobs\PushTransactionCallback;
 
 class ProcessDarajaPaymentStatusCallback implements ShouldQueue
@@ -44,7 +45,7 @@ class ProcessDarajaPaymentStatusCallback implements ShouldQueue
 
         $transaction = Transaction::with(["account", "service", "payload"])->where("identifier", $this->transactionId)->first();
 
-        if ($transaction && $transaction->status_id != 2) {
+        if ($transaction && $transaction->status != TransactionStatus::SUCCESS) {
             $transaction->payload->update([
                 "raw_callback" => json_encode($this->json)
             ]);
@@ -53,7 +54,7 @@ class ProcessDarajaPaymentStatusCallback implements ShouldQueue
             $account = $transaction->account;
 
             if ($this->json["Result"]["ResultCode"] == 0) {
-                $transaction->status_id = 2;
+                $transaction->status = TransactionStatus::SUCCESS;
                 $log_status = "SUCCESS";
                 $log_status_description = $this->json["Result"]["TransactionID"];
 
@@ -83,7 +84,7 @@ class ProcessDarajaPaymentStatusCallback implements ShouldQueue
                     if ($parameter["Key"] == "Amount") $successMessage = str_replace('{amount}', number_format($parameter["Value"], 2), $successMessage);
                 }
             } else {
-                $transaction->status_id = 3;
+                $transaction->status = TransactionStatus::FAILED;
                 $log_status = "FAILED";
                 $log_status_description = $this->json["Result"]["ResultDesc"];
 

@@ -89,11 +89,6 @@ class Transaction extends Model
         return $this->belongsTo(Account::class, "account_id");
     }
 
-    public function status()
-    {
-        return $this->belongsTo(Status::class, "status_id");
-    }
-
     public function paymentChannel()
     {
         return $this->belongsTo(PaymentChannel::class, "payment_channel_id");

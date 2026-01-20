@@ -42,6 +42,18 @@ class TransactionRepository implements TransactionRepositoryContract
         return null;
     }
 
+    public function updateTransactionWithPayload(int $id, array $data, array $payloadData): ?Transaction
+    {
+        // Implementation for updating a transaction with payload
+        $transaction = Transaction::find($id);
+        if ($transaction) {
+            $transaction->update($data);
+            $transaction->payload()->update($payloadData);
+            return $transaction;
+        }
+        return null;
+    }
+
     public function delete(int $id): bool
     {
         // Implementation for deleting a transaction

@@ -9,6 +9,7 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Log;
+use Wallet\Core\Http\Enums\TransactionStatus;
 use Wallet\Core\Http\Enums\TransactionType;
 use Wallet\Core\Jobs\Jenga;
 use Wallet\Core\Jobs\PushTransactionCallback;
@@ -41,16 +42,16 @@ class ProcessJengaPayments implements ShouldQueue
             $transaction = Transaction::with(["service", "paymentChannel", "account.currency", "payload"])->where("id", "=", $this->transactionId)->first();
             if ($transaction) {
                 $result = [];
-                if ($transaction->paymentChannel->slug == "jenga-pesalink-bank") $result = json_decode($this->jenga_pesalink_bank($transaction->account, json_decode($transaction->payload?->trx_payload)));
-                else if ($transaction->paymentChannel->slug == "jenga-ift") $result = json_decode($this->jenga_send_to_equity($transaction->account, json_decode($transaction->payload?->trx_payload)));
+                if ($transaction->paymentChannel->slug == "jenga-pesalink-bank") $result = json_decode($this->jengaPesalinkBank($transaction->account, json_decode($transaction->payload?->trx_payload)));
+                else if ($transaction->paymentChannel->slug == "jenga-ift") $result = json_decode($this->jengaSendToEquity($transaction->account, json_decode($transaction->payload?->trx_payload)));
                 if ($result) {
                     if ($result->status) {
-                        $transaction->status_id = 2;
+                        $transaction->status = TransactionStatus::SUCCESS;
                         $result_status = "SUCCESS";
                         $transactionId = $result->data->transactionId;
                         $transaction->receipt_number = $transactionId;
                     } else {
-                        $transaction->status_id = 3;
+                        $transaction->status = TransactionStatus::FAILED;
                         $result_status = "FAILED";
                         $transactionId = $result->code;
                     }

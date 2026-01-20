@@ -9,6 +9,7 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
+use Wallet\Core\Http\Enums\TransactionStatus;
 use Wallet\Core\Jobs\PushTransactionCallback;
 
 class ProcessDarajaB2CCallback implements ShouldQueue
@@ -44,7 +45,7 @@ class ProcessDarajaB2CCallback implements ShouldQueue
         $successMessageTo = getOption("DARAJA-ALERT-CONTACT");
         $transaction = Transaction::with(["account", "service", "payload"])->where("identifier", $this->transactionId)->first();
 
-        if ($transaction && $transaction->status_id != 2) {
+        if ($transaction && $transaction->status != TransactionStatus::SUCCESS) {
             $account = $transaction->account;
             $transaction->payload->update([
                 "raw_callback" => json_encode($this->json)
@@ -53,7 +54,7 @@ class ProcessDarajaB2CCallback implements ShouldQueue
             $transaction->result_description = $this->json["Result"]["ResultDesc"];
 
             if ($this->json["Result"]["ResultCode"] == 0) {
-                $transaction->status_id = 2;
+                $transaction->status = TransactionStatus::SUCCESS;
                 $log_status = "SUCCESS";
                 $log_status_description = $this->json["Result"]["TransactionID"];
 
@@ -84,7 +85,7 @@ class ProcessDarajaB2CCallback implements ShouldQueue
                     }
                 }
             } else {
-                $transaction->status_id = 3;
+                $transaction->status = TransactionStatus::FAILED;
                 $transaction->completed_at = $completed_at;
 
                 $log_status = "FAILED";

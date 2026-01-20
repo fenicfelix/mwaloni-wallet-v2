@@ -2,7 +2,6 @@
 
 namespace Wallet\Core\Jobs;
 
-use App\Jobs\Jenga\QueryJengaBalance;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -10,6 +9,8 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Log;
 use Wallet\Core\Http\Traits\MwaloniWallet;
+use Wallet\Core\Jobs\Jenga\QueryJengaBalance;
+use Wallet\Core\Jobs\Ncba\QueryNcbaBalance;
 
 class FetchAccountBalance implements ShouldQueue
 {
@@ -49,6 +50,8 @@ class FetchAccountBalance implements ShouldQueue
             }
         } else if ($this->account->account_type_id == 2) { //Jenga
             QueryJengaBalance::dispatch($this->account->id);
+        } else if ($this->account->account_type_id == 3) { //NCBA
+            // QueryNcbaBalance::dispatch($this->account->id);
         }
     }
 }

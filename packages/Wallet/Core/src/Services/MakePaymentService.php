@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Log;
 use Wallet\Core\Models\Service;
 use Wallet\Core\Models\Transaction;
 use Illuminate\Support\Str;
+use Wallet\Core\Http\Enums\TransactionStatus;
 use Wallet\Core\Http\Traits\MwaloniWallet;
 
 class MakePaymentService
@@ -127,7 +128,7 @@ class MakePaymentService
                 'type_id'             => 1,
                 'order_number'        => $request->post('order_number'),
                 'message_id'          => $payload['messageId'] ?? null,
-                'status_id'           => 6,
+                'status'              => TransactionStatus::PENDING,
                 'system_charges'      => $service->system_charges,
                 'sms_charges'         => $service->sms_charges,
                 'revenue'             => $revenue,

@@ -10,9 +10,9 @@ use Rappasoft\LaravelLivewireTables\Views\Column;
 use Wallet\Core\Models\Transaction;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Auth;
-use App\Exports\TransactionsExport;
 use Maatwebsite\Excel\Facades\Excel;
 use Wallet\Core\Http\Enums\TransactionStatus;
+use Wallet\Core\Http\Exports\TransactionsExport;
 
 class TransactionsTable extends DataTableComponent
 {
@@ -36,6 +36,11 @@ class TransactionsTable extends DataTableComponent
             'class' => 'badge badge-pill badge-dark d-inline-flex align-items-center', // Add these classes to the sorting pills item
             'default-colors' => false, // Do not output the default colors
             'default-styling' => true // Output the default styling
+        ]);
+        $this->setBulkActionsRowButtonAttributes([
+            'class' => 'btn btn-sm btn-outline-dark',
+            'icon' => 'fas fa-ellipsis-v',
+            'label' => 'Actions',
         ]);
         $this->setFilterLayout('slide-down');
 
@@ -147,7 +152,7 @@ class TransactionsTable extends DataTableComponent
                         $html .= '<div class="dropdown-menu bg-light" role="menu">';
                         $html .= '<a href="#" class="dropdown-item" wire:click="viewFunction(' . $row->id . ')">View Details</a>';
                         if ($row->status != TransactionStatus::SUCCESS) {
-                            if ($row->status == TransactionStatus::FAILED) $html .= '<a href="#" class="dropdown-item" wire:click="editFunction(' . $row->id . ')">Edit Details</a>';
+                            // if ($row->status == TransactionStatus::FAILED) $html .= '<a href="#" class="dropdown-item" wire:click="editFunction(' . $row->id . ')">Edit Details</a>';
                             if ($row->status == TransactionStatus::FAILED) $html .= '<a href="#" class="dropdown-item" wire:click="retryPayment(' . $row->id . ')">Retry Payment</a>';
                             $html .= '<a href="#" class="dropdown-item" wire:click="paidOffline(' . $row->id . ')">Complete Offline</a>';
                             if (in_array($row->status, [TransactionStatus::SUBMITTED, TransactionStatus::FAILED])) $html .= '<a href="#" class="dropdown-item" wire:click="queryStatus(' . $row->id . ')">Query Status</a>';
@@ -239,9 +244,9 @@ class TransactionsTable extends DataTableComponent
 
     public function export()
     {
-        // $transactions = $this->getSelected();
-        // $this->clearSelected();
-        // return Excel::download(new TransactionsExport($transactions), 'transactions.xlsx');
+        $transactions = $this->getSelected();
+        $this->clearSelected();
+        return Excel::download(new TransactionsExport($transactions), 'transactions.xlsx');
     }
 
     public function reverse($form_id)

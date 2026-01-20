@@ -1,6 +1,6 @@
 <?php
 
-namespace Wallet\Core\Jobs;
+namespace Wallet\Core\Jobs\Stanbic;
 
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;

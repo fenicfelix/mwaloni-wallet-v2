@@ -11,6 +11,7 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Log;
+use Wallet\Core\Http\Enums\TransactionStatus;
 
 class ProcessNcbaPayments implements ShouldQueue
 {
@@ -53,7 +54,7 @@ class ProcessNcbaPayments implements ShouldQueue
             /// Update the transaction status if the transaction has been submitted
             if ($result["resultCode"] == "000") {
                 $transaction->update([
-                    "status_id" => Transaction::STATUS_SUCCESS,
+                    "status" => TransactionStatus::SUCCESS,
                     "receipt_number" => $result["txnReferenceNo"],
                     "result_description" => $result["statusDescription"],
                 ]);
@@ -67,7 +68,7 @@ class ProcessNcbaPayments implements ShouldQueue
         } catch (\Throwable $th) {
             info("NCBA Payment Exception: " . $th->getMessage());
             $transaction->update([
-                "status_id" => Transaction::STATUS_FAILED,
+                "status" => TransactionStatus::FAILED,
                 "result_description" => $th->getMessage(),
             ]);
             $transaction->payload->update([
@@ -76,7 +77,7 @@ class ProcessNcbaPayments implements ShouldQueue
         }
     }
 
-    private function submitTransaction($transaction)
+    private function submitTransaction($transaction): ?string
     {
         $account = $transaction->account;
         $ncba = new Ncba($account->consumer_key, $account->api_username, $account->api_password);
@@ -84,7 +85,7 @@ class ProcessNcbaPayments implements ShouldQueue
         $authenticate = json_decode($ncba->authenticate(), true);
         if (!$authenticate || !isset($authenticate['accessToken'])) {
             info("NCBA Authentication failed");
-            return;
+            return null;
         }
 
         $response = null;

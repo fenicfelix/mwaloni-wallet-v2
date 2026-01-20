@@ -23,10 +23,7 @@ class PopulateTransactionMetricTable implements ShouldQueue
      *
      * @return void
      */
-    public function __construct()
-    {
-        //
-    }
+    public function __construct() {}
 
     /**
      * Execute the job.
@@ -60,7 +57,7 @@ class PopulateTransactionMetricTable implements ShouldQueue
                 ]
             );
 
-            if(! $update) {
+            if (! $update) {
                 throw new \Exception('Failed to update transaction metrics.');
             }
 

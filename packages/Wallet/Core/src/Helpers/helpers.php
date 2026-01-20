@@ -47,3 +47,14 @@ if (!function_exists('getBalance')) {
         return $balance;
     }
 }
+
+if (!function_exists('getElapsedTime')) {
+    function getElapsedTime($time)
+    {
+        $time = strtotime($time);
+        $time_now = strtotime(date('Y-m-d H:i:s'));
+        $minutes = round(($time_now - $time) / 60);
+
+        return $minutes;
+    }
+}

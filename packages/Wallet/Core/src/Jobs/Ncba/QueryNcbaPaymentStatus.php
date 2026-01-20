@@ -10,6 +10,7 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Log;
+use Wallet\Core\Http\Enums\TransactionStatus;
 
 class QueryNcbaPaymentStatus implements ShouldQueue
 {
@@ -39,14 +40,14 @@ class QueryNcbaPaymentStatus implements ShouldQueue
             return;
         }
 
-        $result = json_decode($this->performStatusQuery($transaction), true);
+        $result = $this->performStatusQuery($transaction);
         if (!$result) {
             return;
         }
 
         if ($result["Code"] == "000") {
             $transaction->update([
-                "status_id" => Transaction::STATUS_SUCCESS,
+                "status" => TransactionStatus::SUCCESS,
                 "receipt_number" => $result["Reference"],
                 "result_description" => $result["Description"],
                 "completed_at" => date('Y-m-d H:i:s', strtotime($result["Transaction"]["Date"]))
@@ -56,7 +57,7 @@ class QueryNcbaPaymentStatus implements ShouldQueue
         }
     }
 
-    private function performStatusQuery($transaction)
+    private function performStatusQuery($transaction): ?array
     {
         $account = $transaction->account;
         $ncba = new Ncba($account->bank_code, $account->branch_code, $account->country_name, $account->currency->code);

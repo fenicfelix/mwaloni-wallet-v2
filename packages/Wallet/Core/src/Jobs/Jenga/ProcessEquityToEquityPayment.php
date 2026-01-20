@@ -9,6 +9,7 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Log;
+use Wallet\Core\Http\Enums\TransactionStatus;
 use Wallet\Core\Jobs\Jenga;
 use Wallet\Core\Jobs\PushTransactionCallback;
 
@@ -39,12 +40,12 @@ class ProcessEquityToEquityPayment implements ShouldQueue
         try {
             $transaction = Transaction::with(["service", "account.currency", "payload"])->where("id", "=", $this->transactionId)->first();
             if ($transaction) {
-                $result = json_decode($this->jenga_send_to_equity($transaction->account, json_decode($transaction->payload?->trx_payload)));
+                $result = json_decode($this->jengaSendToEquity($transaction->account, json_decode($transaction->payload?->trx_payload)));
                 if ($result->status) {
                     $transaction->receipt_number = $result->data->transactionId;
-                    $transaction->status_id = 2;
+                    $transaction->status = TransactionStatus::SUCCESS;
                 } else {
-                    $transaction->status_id = 3;
+                    $transaction->status = TransactionStatus::FAILED;
                 }
 
                 $transaction->result_description = $result->message;

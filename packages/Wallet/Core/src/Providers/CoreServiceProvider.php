@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Route;
 use Illuminate\Support\ServiceProvider;
 use Livewire\Livewire;
 use Wallet\Core\Console\Commands\CoreMakeLivewire;
+use Wallet\Core\Console\Commands\PopulateTransactionMetricTableCommand;
 use Wallet\Core\Console\Commands\TestApi;
 use Wallet\Core\Http\Livewire\LivewireRegistrar;
 
@@ -37,6 +38,7 @@ class CoreServiceProvider extends ServiceProvider
         if ($this->app->runningInConsole()) {
             $this->commands([
                 CoreMakeLivewire::class,
+                PopulateTransactionMetricTableCommand::class,
                 TestApi::class,
             ]);
         }
