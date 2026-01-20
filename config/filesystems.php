@@ -59,6 +59,15 @@ return [
             'throw' => false,
             'report' => false,
         ],
+        
+        'stanbic_sftp' => [
+            'driver' => 'sftp',
+            'host' => env('STANBIC_SFTP_HOST'),
+            'port' => (int) env('STANBIC_SFTP_PORT', 22),
+            'username' => env('STANBIC_SFTP_USERNAME'),
+            'privateKey' => env('STANBIC_SFTP_PRIVATE_KEY'),
+            'throw' => true,
+        ],
 
     ],
 

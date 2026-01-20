@@ -3,14 +3,12 @@
 ```bash
 composer require wallet/core:@dev -W  # Wallet Core Package
 
-# Install Akika Wallet related packages
-composer require akika/laravel-mpesa-multivendor
-composer require akika/laravel-ncba
-composer require akika/laravel-stanbic
-
-# Other dependacies
-composer require africastalking/africastalking
-composer require rappasoft/laravel-livewire-tables
 # Publish datatable
 php artisan vendor:publish --tag="livewire-tables-config"
+
+# Install horizon
+php artisan horizon:install
+# Publish log-viewer assets
+php artisan vendor:publish --tag="log-viewer-config"
+php artisan log-viewer:publish
 ```

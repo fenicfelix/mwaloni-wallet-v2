@@ -4,10 +4,10 @@ namespace Wallet\Core\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use Wallet\Core\Http\Traits\MwaloniWallet;
-use App\Jobs\ProcessPayment;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Log;
+use Wallet\Core\Jobs\ProcessPayment;
 use Wallet\Core\Models\Service;
 use Wallet\Core\Models\Transaction;
 use Wallet\Core\Services\MakePaymentService;
@@ -16,16 +16,13 @@ class ApiController extends Controller
 {
     use MwaloniWallet;
 
-    public function __construct(protected MakePaymentService $MakePaymentService)
-    {
-        $this->middleware('auth:api');
-    }
+    public function __construct(protected MakePaymentService $MakePaymentService) {}
 
     /* -----------------------------------------------------------------
      | BALANCE
      |-----------------------------------------------------------------*/
 
-    public function fetch_balance(Request $request)
+    public function fetchBalance(Request $request)
     {
         $service = $this->resolveService($request->post('service_id'));
 
@@ -51,7 +48,7 @@ class ApiController extends Controller
      | TRANSACTION STATUS
      |-----------------------------------------------------------------*/
 
-    public function get_transaction_status(Request $request)
+    public function getTransactionStatus(Request $request)
     {
         $orderNumber = $request->post('orderNumber');
 
@@ -89,7 +86,7 @@ class ApiController extends Controller
      | SEND MONEY
      |-----------------------------------------------------------------*/
 
-    public function send_money(Request $request)
+    public function sendMoney(Request $request)
     {
         try {
             $service = $this->resolveService($request->post('service_id'));
@@ -118,7 +115,7 @@ class ApiController extends Controller
      | CONTACT LOOKUP
      |-----------------------------------------------------------------*/
 
-    public function contact_lookup(Request $request)
+    public function contactLookup(Request $request)
     {
         $contact = substr($request->post('contact'), -9);
 
@@ -140,7 +137,7 @@ class ApiController extends Controller
      | SEND SMS
      |-----------------------------------------------------------------*/
 
-    public function api_sendSMS(Request $request)
+    public function clientSendSMS(Request $request)
     {
         $this->sendSMS(
             $request->post('phoneNumber'),
@@ -157,14 +154,14 @@ class ApiController extends Controller
     protected function resolveService(string $serviceId): ?Service
     {
         return $this->MakePaymentService
-            ->resolveService($serviceId, auth()->user());
+            ->resolveService($serviceId, auth('api')->user());
     }
 
     protected function ownsTransaction(Transaction $transaction): bool
     {
         return $transaction->service
             ->account
-            ->managed_by === auth()->id();
+            ->managed_by === auth('api')->id();
     }
 
     protected function success(array $data = [])

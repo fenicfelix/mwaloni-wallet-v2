@@ -67,37 +67,31 @@
                                 <div class="row mb-2">
                                     <div class="col-6">
                                         <small class="text-muted">First Name</small>
-                                        <div class="my-3 border-bottom font-weight-bold">{{ $user->first_name }}</div>
+                                        <div class="my-3 border-bottom">{{ $user->first_name }}</div>
                                     </div>
                                     <div class="col-6">
                                         <small class="text-muted">Last Name</small>
-                                        <div class="my-3 border-bottom font-weight-bold">{{ $user->last_name }}</div>
+                                        <div class="my-3 border-bottom">{{ $user->last_name }}</div>
                                     </div>
                                 </div>
 
                                 <div class="row mb-2">
-                                    <div class="col-6">
+                                    <div class="col-12">
                                         <small class="text-muted">Phone Number</small>
-                                        <div class="my-3 border-bottom font-weight-bold">{{ $user->phone_number }}</div>
+                                        <div class="my-3 border-bottom">{{ $user->phone_number }}</div>
                                     </div>
                                 </div>
 
                                 <div class="row mb-2">
                                     <div class="col-12">
                                         <small class="text-muted">Email Address</small>
-                                        <div class="my-3 border-bottom font-weight-bold">{{ $user->email }}</div>
+                                        <div class="my-3 border-bottom">{{ $user->email }}</div>
                                     </div>
                                 </div>
                                 <div class="row mb-2">
                                     <div class="col-12">
                                         <small class="text-muted">Role</small>
-                                        <div class="my-3 border-bottom font-weight-bold">
-                                            @if(!empty($user->getRoleNames()))
-                                            @foreach($user->getRoleNames() as $v)
-                                            {{ $v }}
-                                            @endforeach
-                                            @endif
-                                        </div>
+                                        <div class="my-3 border-bottom">{{ $user->role->name }}</div>
                                     </div>
                                 </div>
                                 @endif

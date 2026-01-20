@@ -4,11 +4,14 @@ declare(strict_types=1);
 
 namespace Wallet\Core\Providers;
 
+use Wallet\Core\Http\Controllers\Middleware\VerifyMwaloniHeaders;
 use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Route;
 use Illuminate\Support\ServiceProvider;
 use Livewire\Livewire;
 use Wallet\Core\Console\Commands\CoreMakeLivewire;
+use Wallet\Core\Console\Commands\TestApi;
 use Wallet\Core\Http\Livewire\LivewireRegistrar;
 
 class CoreServiceProvider extends ServiceProvider
@@ -34,6 +37,7 @@ class CoreServiceProvider extends ServiceProvider
         if ($this->app->runningInConsole()) {
             $this->commands([
                 CoreMakeLivewire::class,
+                TestApi::class,
             ]);
         }
 
@@ -42,6 +46,10 @@ class CoreServiceProvider extends ServiceProvider
 
         // Load the web routes
         $this->loadRoutesFrom(__DIR__ . '/../../routes/core.php');
+
+        Route::middleware(['api', VerifyMwaloniHeaders::class])
+            ->prefix('api')
+            ->group(__DIR__ . '/../../routes/api.php');
 
         $this->loadMigrationsFrom(__DIR__ . '/../../database/migrations');
 
