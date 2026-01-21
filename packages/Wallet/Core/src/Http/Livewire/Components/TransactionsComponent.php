@@ -30,6 +30,8 @@ class TransactionsComponent extends Component
 
     public bool $pay_offline = false;
 
+    public ?int $formId = null;
+
     public ?array $formData = [];
 
     public bool $isSuccessful = false;
@@ -61,80 +63,14 @@ class TransactionsComponent extends Component
         // }
     }
 
-    public function resetValues()
+    public function rules()
     {
-        $this->view = false;
-        $this->edit = false;
-        $this->list = false;
-        $this->pay_offline = false;
-        $this->transaction = NULL;
-    }
+        $rules =  [
+            'formData.account_number' => 'required',
+            'formData.requested_amount' => 'required|min:0',
+        ];
 
-    #[On('viewFunction')]
-    public function viewFunction($form_id)
-    {
-        $this->resetValues();
-        $this->view = true;
-        $this->transaction = Transaction::where("id", $form_id)->first();
-    }
-
-    #[On('editFunction')]
-    public function editFunction($form_id = NULL)
-    {
-        $this->resetValues();
-        $this->edit = true;
-        $this->transaction = Transaction::where("id", $form_id)->first();
-        $this->isSuccessful = $this->transaction->status == TransactionStatus::SUCCESS;
-        if ($this->transaction) {
-            $this->formData['account_number'] = $this->transaction->account_number;
-            $this->formData['requested_amount'] = $this->transaction->requested_amount;
-            $this->formData['status'] = $this->transaction->status;
-        }
-    }
-
-    public function cancelEdit()
-    {
-        $this->resetValues();
-        $this->list = true;
-    }
-
-    #[On('retryPayment')]
-    public function retryPayment($form_id)
-    {
-        $this->transaction = Transaction::with("payload")->where("id", $form_id)->first();
-        if ($this->transaction->status == TransactionStatus::FAILED || ($this->transaction->status == TransactionStatus::SUBMITTED && getElapsedTime($this->transaction->requested_on) > 120)) {
-            $balance = ($this->transaction->account->utility_balance - ($this->transaction->disbursed_amount + $this->transaction->account->revenue));
-
-            if ($balance < 0) $this->notify("Insufficient Balance. Please reload the account and retry.", "error");
-            else {
-                $reference = date('ymdHs') . rand(0, 99);
-                $trx_payload = json_decode($this->transaction->trx_payload);
-                $trx_payload->reference = $reference;
-                $this->transaction->reference = $reference;
-                $this->transaction->status = TransactionStatus::SUBMITTED;
-                $this->transaction->save();
-
-                $this->transaction->payload->update([
-                    "trx_payload" => json_encode($trx_payload)
-                ]);
-
-
-                ProcessPayment::dispatch($this->transaction->id, $this->transaction->paymentChannel->slug)->onQueue('process-payments');
-                $this->notify("The retry request has been sent.", "success");
-            }
-        } else {
-            $this->notify($this->transaction->order_number . " is still being processed.", "warning");
-        }
-
-        $this->transaction = NULL;
-    }
-
-    #[On('paidOffline')]
-    public function paidOffline($form_id)
-    {
-        $this->resetValues();
-        $this->transaction = Transaction::where("id", $form_id)->first();
-        $this->pay_offline = true;
+        return $rules;
     }
 
     public function completePaymentOffline()
@@ -154,20 +90,6 @@ class TransactionsComponent extends Component
         }
     }
 
-    #[On('queryStatus')]
-    public function queryStatus($form_id)
-    {
-        $transaction = Transaction::with(["account"])->where("id", "=", $form_id)->first();
-        if (!$transaction) $this->notify("Transaction not found.", "warning");
-        else {
-            //Check status only for Daraja
-            if ($transaction->account->account_type_id == 1) ProcessDarajaPaymentStatusCheck::dispatch($transaction->identifier);
-            $this->notify("The transaction has been updated.", "success");
-            $this->resetValues();
-            $this->list = true;
-        }
-    }
-
     public function queryStatusAll()
     {
         $transactions = Transaction::with(['account'])->where("status", TransactionStatus::SUBMITTED)->get();
@@ -184,14 +106,119 @@ class TransactionsComponent extends Component
         $this->list = true;
     }
 
-    public function rules()
+    #[On('viewFunction')]
+    public function viewFunction($form_id)
     {
-        $rules =  [
-            'formData.account_number' => 'required',
-            'formData.requested_amount' => 'required|min:0',
-        ];
+        $this->resetValues();
+        $this->list = false;
+        $this->view = true;
+        $this->transaction = app(TransactionRepository::class)->find($form_id);
+    }
 
-        return $rules;
+    #[On('editFunction')]
+    public function editFunction($form_id = NULL)
+    {
+        $this->resetValues();
+        $this->edit = true;
+        $this->transaction = app(TransactionRepository::class)->find($form_id);
+        $this->isSuccessful = $this->transaction->status == TransactionStatus::SUCCESS;
+        if ($this->transaction) {
+            $this->formData['account_number'] = $this->transaction->account_number;
+            $this->formData['requested_amount'] = $this->transaction->requested_amount;
+            $this->formData['status'] = $this->transaction->status;
+        }
+    }
+
+    #[On('retryPayment')]
+    public function retryPayment($form_id)
+    {
+        $this->formId = $form_id;
+        $this->confirm(
+            'Confirm Action',
+            'Are you sure you want to retry this transaction?',
+            'warning',
+            'Yes, Retry',
+            'confirmedRetryPayment'
+        );
+    }
+
+    #[On('confirmedRetryPayment')]
+    public function confirmedRetryPayment()
+    {
+        $this->transaction = app(TransactionRepository::class)->find($this->formId);
+        if ($this->transaction->status == TransactionStatus::FAILED || ($this->transaction->status == TransactionStatus::SUBMITTED && getElapsedTime($this->transaction->requested_on) > 120)) {
+            $balance = ($this->transaction->account->utility_balance - ($this->transaction->disbursed_amount + $this->transaction->account->revenue));
+
+            if ($balance < 0) $this->notify("Insufficient Balance. Please reload the account and retry.", "error");
+            else {
+                $reference = date('ymdHs') . rand(0, 99);
+                $trx_payload = json_decode($this->transaction->payload->trx_payload);
+                $trx_payload->reference = $reference;
+                $this->transaction->reference = $reference;
+                $this->transaction->status = TransactionStatus::SUBMITTED;
+                $this->transaction->save();
+
+                $this->transaction->payload->update([
+                    "trx_payload" => json_encode($trx_payload)
+                ]);
+
+                ProcessPayment::dispatch($this->transaction->id, $this->transaction->paymentChannel->slug)->onQueue('process-payments');
+                $this->notify("The retry request has been sent.", "success");
+            }
+        } else {
+            $this->notify($this->transaction->order_number . " is still being processed.", "warning");
+        }
+
+        $this->resetValues();
+        $this->dispatch('refreshDatatable');
+    }
+
+    #[On('paidOffline')]
+    public function paidOffline($form_id)
+    {
+        $this->resetValues();
+        $this->transaction = app(TransactionRepository::class)->find($form_id);
+        $this->list = false;
+        $this->pay_offline = true;
+    }
+
+    #[On('queryStatus')]
+    public function queryStatus($form_id)
+    {
+        $this->formId = $form_id;
+        $this->confirm(
+            'Confirm Action',
+            'Are you sure you want to query status for this transaction?',
+            'warning',
+            'Yes, Query',
+            'confirmedQueryStatus'
+        );
+    }
+
+    #[On('confirmedQueryStatus')]
+    public function confirmedQueryStatus()
+    {
+        $transaction = app(TransactionRepository::class)->find($this->formId);
+        if (!$transaction) {
+            $this->notify("Transaction not found.", "warning");
+            return;
+        }
+        //Check status only for Daraja
+        if ($transaction->account->account_type_id == 1) ProcessDarajaPaymentStatusCheck::dispatch($transaction->identifier);
+        $this->notify("Your request has been submitted.", "success");
+        $this->resetValues();
+        $this->list = true;
+        $this->dispatch('refreshDatatable');
+    }
+
+    public function backAction()
+    {
+        $this->resetValues();
+    }
+
+    public function resetValues()
+    {
+        $this->reset('view', 'edit', 'list', 'pay_offline', 'transaction', 'formId', 'formData');
     }
 
     public function render()
