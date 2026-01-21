@@ -9,7 +9,7 @@ use Wallet\Core\Models\TransactionCharge;
 class TransactionChargesTable extends DataTableComponent
 {
     protected $model = TransactionCharge::class;
-    public $counter = 1;
+    protected $counter = 1;
 
     public function configure(): void
     {

@@ -9,7 +9,7 @@ use Rappasoft\LaravelLivewireTables\Views\Column;
 class RolesTable extends DataTableComponent
 {
     protected $model = Role::class;
-    public $counter = 1;
+    protected $counter = 1;
 
     public function configure(): void
     {

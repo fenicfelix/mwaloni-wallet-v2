@@ -9,7 +9,7 @@ use App\Models\User;
 class UsersTable extends DataTableComponent
 {
     protected $model = User::class;
-    public $counter = 1;
+    protected $counter = 1;
 
     public function configure(): void
     {

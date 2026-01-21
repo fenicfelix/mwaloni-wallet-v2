@@ -9,7 +9,7 @@ use Wallet\Core\Models\AccountType;
 class AccountTypesTable extends DataTableComponent
 {
     protected $model = AccountType::class;
-    public $counter = 1;
+    protected $counter = 1;
 
     public function configure(): void
     {

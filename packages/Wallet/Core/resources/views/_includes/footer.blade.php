@@ -66,7 +66,6 @@
                     progressBar: true,
                     timeOut: 3000
                 });
-                $.NotificationApp.send("Heads up!", event[0].message, "top-right", "rgba(0,0,0,0.2)", event[0].type);
             });
             Livewire.on('confirm', (event) => {
                 Swal.fire({

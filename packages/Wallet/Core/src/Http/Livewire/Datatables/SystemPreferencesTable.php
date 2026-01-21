@@ -9,7 +9,7 @@ use Wallet\Core\Models\SystemPreference;
 class SystemPreferencesTable extends DataTableComponent
 {
     protected $model = SystemPreference::class;
-    public $counter = 1;
+    protected $counter = 1;
 
     public function configure(): void
     {
