@@ -4,15 +4,16 @@ namespace Wallet\Core\Http\Enums;
 
 enum TransactionStatus: string
 {
-    case SUBMITTED = 'submitted';
-    case SUCCESS = 'success';
-    case FAILED = 'failed';
-    case CANCELLED = 'cancelled';
-    case REVERSING = 'reversing';
-    case PENDING = 'pending';
-    case REVERSED = 'reversed';
-    case QUERYING_STATUS = 'querying_status';
-    case REVERSING_FAILED = 'reversing_failed';
+    case REQUESTED = 'requested'; // Initial state waiting for approval
+    case CANCELLED = 'cancelled'; // User has cancelled the transaction
+    case PENDING = 'pending'; // Transaction is pending
+    case SUBMITTED = 'submitted'; // Transaction has been submitted
+    case SUCCESS = 'success'; // Transaction was successful
+    case FAILED = 'failed'; // Transaction has failed
+    case REVERSING = 'reversing'; // Transaction is being reversed
+    case REVERSED = 'reversed'; // Transaction has been reversed
+    case QUERYING_STATUS = 'querying_status'; // Transaction status is being queried
+    case REVERSING_FAILED = 'reversing_failed'; // Transaction reversal has failed
 
     public static function values(): array
     {
@@ -25,12 +26,13 @@ enum TransactionStatus: string
     public static function labels(): array
     {
         return [
+            self::REQUESTED->value => 'Requested',
+            self::CANCELLED->value => 'Cancelled',
+            self::PENDING->value => 'Pending',
             self::SUBMITTED->value => 'Submitted',
             self::SUCCESS->value => 'Success',
             self::FAILED->value => 'Failed',
-            self::CANCELLED->value => 'Cancelled',
             self::REVERSING->value => 'Reversing',
-            self::PENDING->value => 'Pending',
             self::REVERSED->value => 'Reversed',
             self::QUERYING_STATUS->value => 'Querying Status',
             self::REVERSING_FAILED->value => 'Reversing Failed',
@@ -45,12 +47,13 @@ enum TransactionStatus: string
     public static function fromValue(string $value): self
     {
         return match ($value) {
+            'requested' => self::REQUESTED,
+            'cancelled' => self::CANCELLED,
+            'pending' => self::PENDING,
             'submitted' => self::SUBMITTED,
             'success' => self::SUCCESS,
             'failed' => self::FAILED,
-            'cancelled' => self::CANCELLED,
             'reversing' => self::REVERSING,
-            'pending' => self::PENDING,
             'reversed' => self::REVERSED,
             'querying_status' => self::QUERYING_STATUS,
             'reversing_failed' => self::REVERSING_FAILED,
@@ -61,11 +64,12 @@ enum TransactionStatus: string
     public function backgroundColor(): string
     {
         return match ($this) {
+            self::REQUESTED => 'info-lt',
+            self::CANCELLED => 'danger-lt',
             self::PENDING => 'secondary-lt',
             self::SUBMITTED => 'primary-lt',
             self::SUCCESS => 'success-lt',
             self::FAILED => 'danger-lt',
-            self::CANCELLED => 'danger-lt',
             self::REVERSING => 'primary-lt',
             self::REVERSED => 'dark-lt',
             self::QUERYING_STATUS => 'secondary-lt',
