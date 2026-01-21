@@ -12,6 +12,7 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Log;
 use Wallet\Core\Http\Enums\TransactionStatus;
+use Wallet\Core\Repositories\TransactionRepository;
 
 class ProcessNcbaPayments implements ShouldQueue
 {
@@ -52,28 +53,32 @@ class ProcessNcbaPayments implements ShouldQueue
             }
 
             /// Update the transaction status if the transaction has been submitted
-            if ($result["resultCode"] == "000") {
-                $transaction->update([
-                    "status" => TransactionStatus::SUCCESS,
-                    "receipt_number" => $result["txnReferenceNo"],
-                    "result_description" => $result["statusDescription"],
-                ]);
-                $transaction->payload->update([
-                    "raw_callback" => json_encode($result)
-                ]);
-            } else {
+            if($result["resultCode"] != "000") {
                 info("NCBA Payment failed: " . $result["statusDescription"]);
                 throw new Exception("Error Processing Request", 1);
             }
+
+            $updateData = [
+                "status" => TransactionStatus::SUCCESS,
+                "receipt_number" => $result["txnReferenceNo"],
+                "result_description" => $result["statusDescription"],
+            ];
+            $payloadData = [
+                "raw_callback" => json_encode($result)
+            ];
+
+            app(TransactionRepository::class)->updateTransactionAndPayload($transaction->id, $updateData, $payloadData);
+            app(TransactionRepository::class)->completeTransaction($transaction->id);
         } catch (\Throwable $th) {
             info("NCBA Payment Exception: " . $th->getMessage());
-            $transaction->update([
+            $updateData = [
                 "status" => TransactionStatus::FAILED,
                 "result_description" => $th->getMessage(),
-            ]);
-            $transaction->payload->update([
+            ];
+            $payloadData = [
                 "raw_callback" => json_encode($th)
-            ]);
+            ];
+            app(TransactionRepository::class)->updateTransactionAndPayload($transaction->id, $updateData, $payloadData);
         }
     }
 

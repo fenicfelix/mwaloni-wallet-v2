@@ -10,13 +10,16 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Log;
 use Wallet\Core\Http\Enums\TransactionStatus;
+use Wallet\Core\Http\Traits\MwaloniWallet;
 use Wallet\Core\Jobs\Jenga;
 use Wallet\Core\Jobs\PushTransactionCallback;
+use Wallet\Core\Repositories\TransactionRepository;
 
 class ProcessEquityToEquityPayment implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
     use Jenga;
+    use MwaloniWallet;
 
     protected $transactionId;
 
@@ -41,16 +44,19 @@ class ProcessEquityToEquityPayment implements ShouldQueue
             $transaction = Transaction::with(["service", "account.currency", "payload"])->where("id", "=", $this->transactionId)->first();
             if ($transaction) {
                 $result = json_decode($this->jengaSendToEquity($transaction->account, json_decode($transaction->payload?->trx_payload)));
+
                 if ($result->status) {
-                    $transaction->receipt_number = $result->data->transactionId;
-                    $transaction->status = TransactionStatus::SUCCESS;
+                    $updateData = [
+                        'receipt_number' => $result->data->transactionId,
+                        'status' => TransactionStatus::SUCCESS,
+                    ];
                 } else {
-                    $transaction->status = TransactionStatus::FAILED;
+                    $updateData['status'] = TransactionStatus::FAILED;
                 }
 
-                $transaction->result_description = $result->message;
+                $updateData['result_description'] = $result->message;
 
-                $data = [
+                $payloadData = [
                     "ResultType" => 0,
                     "ResultCode" => 0,
                     "ResultDesc" => $result->data->status,
@@ -59,16 +65,12 @@ class ProcessEquityToEquityPayment implements ShouldQueue
                     "orderNumber" => $transaction->order_number,
                 ];
 
-                $transaction->payload->update([
-                    "raw_callback" => json_encode($data)
-                ]);
-
-                if (!$transaction->save()) {
+                if (!app(TransactionRepository::class)->updateTransactionAndPayload($transaction->id, $updateData, $payloadData)) {
                     throw new \Exception("EQUIYTRANSFER Payment Failed to save " . $transaction->id);
-                } else {
-                    if ($transaction->service->callback_url != NULL) {
-                        PushTransactionCallback::dispatch($data, $transaction->service->callback_url);
-                    }
+                }
+
+                if ($updateData['status'] == TransactionStatus::SUCCESS) {
+                    app(TransactionRepository::class)->completeTransaction($transaction->id);
                 }
             }
         } catch (\Throwable $th) {

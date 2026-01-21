@@ -11,6 +11,7 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Log;
 use Wallet\Core\Http\Enums\TransactionStatus;
+use Wallet\Core\Repositories\TransactionRepository;
 
 class QueryNcbaPaymentStatus implements ShouldQueue
 {
@@ -45,16 +46,23 @@ class QueryNcbaPaymentStatus implements ShouldQueue
             return;
         }
 
-        if ($result["Code"] == "000") {
-            $transaction->update([
-                "status" => TransactionStatus::SUCCESS,
-                "receipt_number" => $result["Reference"],
-                "result_description" => $result["Description"],
-                "completed_at" => date('Y-m-d H:i:s', strtotime($result["Transaction"]["Date"]))
-            ]);
-        } else {
+        if ($result["Code"] !== "000") {
             Log::warning($transaction->id . ": NCBA PAYMENT STATUS: " . json_encode($result));
         }
+
+        $updateData = [
+            "status" => TransactionStatus::SUCCESS,
+            "receipt_number" => $result["Reference"],
+            "result_description" => $result["Description"],
+            "completed_at" => date('Y-m-d H:i:s', strtotime($result["Transaction"]["Date"]))
+        ];
+
+        $payloadData = [
+            "raw_callback" => json_encode($result)
+        ];
+
+        app(TransactionRepository::class)->updateTransactionAndPayload($transaction->id, $updateData, $payloadData);
+        app(TransactionRepository::class)->completeTransaction($transaction->id);
     }
 
     private function performStatusQuery($transaction): ?array
