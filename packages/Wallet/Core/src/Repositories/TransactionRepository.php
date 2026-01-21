@@ -7,6 +7,7 @@ use Wallet\Core\Contracts\TransactionRepositoryContract;
 use Wallet\Core\Models\Transaction;
 use Illuminate\Support\Facades\DB;
 use Wallet\Core\Http\Enums\TransactionStatus;
+use Wallet\Core\Jobs\PushTransactionCallback;
 
 class TransactionRepository implements TransactionRepositoryContract
 {
@@ -76,10 +77,21 @@ class TransactionRepository implements TransactionRepositoryContract
     public function completeTransaction(int $id): ?Transaction
     {
         // Implementation for completing a transaction
-        $transaction = Transaction::with(['payload'])->find($id);
+        $transaction = Transaction::with(['payload', 'service'])->find($id);
         if ($transaction) {
+            // Release any reserved amounts
             $transaction->releaseReservedAmount();
+
+            // Refresh the transaction to get the latest data
             $transaction->refresh();
+
+            // Send callback if the service has a callback URL
+            if (isset($transaction->service) && $transaction->service->callback_url != NULL) {
+                $data = (object) $transaction->payload->raw_callback;
+                $data->orderNumber = $transaction->order_number;
+                PushTransactionCallback::dispatch($data, $transaction->service->callback_url);
+            }
+
             return $transaction;
         }
         return null;

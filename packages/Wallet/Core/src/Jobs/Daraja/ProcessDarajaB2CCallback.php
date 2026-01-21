@@ -10,7 +10,7 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Wallet\Core\Http\Enums\TransactionStatus;
-use Wallet\Core\Jobs\PushTransactionCallback;
+use Wallet\Core\Repositories\TransactionRepository;
 
 class ProcessDarajaB2CCallback implements ShouldQueue
 {
@@ -38,76 +38,94 @@ class ProcessDarajaB2CCallback implements ShouldQueue
      */
     public function handle()
     {
-        $log_status = "";
-        $log_status_description = "";
         $completed_at = date("Y-m-d H:i:s");
-        $successMessage = "";
-        $successMessageTo = getOption("DARAJA-ALERT-CONTACT");
+        $smsMessage = "";
         $transaction = Transaction::with(["account", "service", "payload"])->where("identifier", $this->transactionId)->first();
 
-        if ($transaction && $transaction->status != TransactionStatus::SUCCESS) {
-            $account = $transaction->account;
-            $transaction->payload->update([
-                "raw_callback" => json_encode($this->json)
-            ]);
-            $transaction->receipt_number = $this->json["Result"]["TransactionID"];
-            $transaction->result_description = $this->json["Result"]["ResultDesc"];
+        if (! $transaction) {
+            return;
+        }
 
-            if ($this->json["Result"]["ResultCode"] == 0) {
-                $transaction->status = TransactionStatus::SUCCESS;
-                $log_status = "SUCCESS";
-                $log_status_description = $this->json["Result"]["TransactionID"];
+        if ($transaction->status == TransactionStatus::SUCCESS) {
+            return;
+        }
 
-                $successMessage = getOption("SMS-B2C-SUCCESS-MESSAGE");
-                $successMessage = str_replace("{order_number}", $transaction->order_number, $successMessage);
-                $successMessage = (isset($transaction->service)) ? str_replace("{service}", $transaction->service->name, $successMessage) : str_replace("{service}", $transaction->account->name, $successMessage);
+        $account = $transaction->account;
+        $balance = 0;
+        $smsMessage = "";
+        $payloadData = [
+            "raw_callback" => json_encode($this->json)
+        ];
+        $updateData = [
+            'receipt_number' => $this->json["Result"]["TransactionID"],
+            'result_description' => $this->json["Result"]["ResultDesc"]
+        ];
 
-                if (isset($this->json["Result"]["ResultParameters"])) {
-                    foreach ($this->json["Result"]["ResultParameters"]["ResultParameter"] as $parameter) {
-                        if ($parameter["Key"] == "TransactionReceipt") $successMessage = str_replace('{receipt_number}', $parameter["Value"], $successMessage);
-                        if ($parameter["Key"] == "TransactionAmount") $successMessage = str_replace('{amount}', number_format($parameter["Value"], 2), $successMessage);
-                        if ($parameter["Key"] == "ReceiverPartyPublicName") {
-                            $array = explode(" - ", $parameter["Value"]);
-                            $transaction->account_name = $array[1];
-                            $successMessage = str_replace('{to}', ucwords(strtolower($parameter["Value"])), $successMessage);
-                            $log_status_description .= " - " . $parameter["Value"];
-                        }
-                        if ($parameter["Key"] == "TransactionCompletedDateTime") {
-                            $completed_at = date("Y-m-d H:i:s", strtotime($parameter["Value"]));
-                            $transaction->completed_at = $completed_at;
-                            $successMessage = str_replace('{datetime}', date("Y-m-d", strtotime($completed_at)) . " at " . date("H:i:s", strtotime($completed_at)), $successMessage);
-                        }
-                        if ($parameter["Key"] == "B2CUtilityAccountAvailableFunds") {
-                            $account->utility_balance = $parameter["Value"];
-                            $successMessage = str_replace('{balance}', number_format($parameter["Value"], 2), $successMessage);
-                        }
-                        if ($parameter["Key"] == "B2CWorkingAccountAvailableFunds") $account->working_balance = $parameter["Value"];
+        if ($this->json["Result"]["ResultCode"] == 0) {
+            $updateData['status'] = TransactionStatus::SUCCESS;
+
+            $smsMessage = getOption("SMS-B2C-SUCCESS-MESSAGE");
+            $smsMessage = str_replace("{order_number}", $transaction->order_number, $smsMessage);
+            $smsMessage = (isset($transaction->service)) ? str_replace("{service}", $transaction->service->name, $smsMessage) : str_replace("{service}", $transaction->account->name, $smsMessage);
+
+            if (isset($this->json["Result"]["ResultParameters"])) {
+                foreach ($this->json["Result"]["ResultParameters"]["ResultParameter"] as $parameter) {
+                    if ($parameter["Key"] == "TransactionReceipt") {
+                        $smsMessage = str_replace('{receipt_number}', $parameter["Value"], $smsMessage);
+                    }
+                    if ($parameter["Key"] == "TransactionAmount") {
+                        $smsMessage = str_replace('{amount}', number_format($parameter["Value"], 2), $smsMessage);
+                    }
+                    if ($parameter["Key"] == "ReceiverPartyPublicName") {
+                        $array = explode(" - ", $parameter["Value"]);
+                        $updateData['account_name'] = $array[1];
+                        $smsMessage = str_replace('{to}', ucwords(strtolower($parameter["Value"])), $smsMessage);
+                    }
+                    if ($parameter["Key"] == "TransactionCompletedDateTime") {
+                        $completed_at = date("Y-m-d H:i:s", strtotime($parameter["Value"]));
+                        $updateData['completed_at'] = $completed_at;
+                        $smsMessage = str_replace('{datetime}', date("Y-m-d", strtotime($completed_at)) . " at " . date("H:i:s", strtotime($completed_at)), $smsMessage);
+                    }
+                    if ($parameter["Key"] == "DebitAccountCurrentBalance") {
+                        $balance = getBalance($parameter["Value"], "BasicAmount");
+                        $smsMessage = str_replace('{balance}', number_format($balance, 2), $smsMessage);
+                    }
+                    if ($parameter["Key"] == "B2CWorkingAccountAvailableFunds") {
+                        $account->working_balance = $parameter["Value"];
                     }
                 }
-            } else {
-                $transaction->status = TransactionStatus::FAILED;
-                $transaction->completed_at = $completed_at;
-
-                $log_status = "FAILED";
-                $log_status_description = $this->json["Result"]["ResultDesc"];
-
-                $successMessage = getOption("DARAJA-ERROR-MESSAGE");
-                $successMessage = str_replace('{account}', $account->name, $successMessage);
-                $successMessage = str_replace('{error}', $this->json["Result"]["ResultDesc"], $successMessage);
-                $successMessage = str_replace('{transaction}', $transaction->order_number, $successMessage);
             }
+        } else {
+            $updateData['completed_at'] = $completed_at;
+            $updateData['status'] = TransactionStatus::FAILED;
 
-            $transaction->save();
-            $account->save();
+            $smsMessage = getOption("DARAJA-ERROR-MESSAGE");
+            $smsMessage = str_replace('{account}', $account->name, $smsMessage);
+            $smsMessage = str_replace('{error}', $this->json["Result"]["ResultDesc"], $smsMessage);
+            $smsMessage = str_replace('{transaction}', $transaction->order_number, $smsMessage);
+        }
 
-            if (isset($transaction->service) && $transaction->service->callback_url != NULL) {
-                $data = (object) $this->json["Result"];
-                $data->orderNumber = $transaction->order_number;
-                PushTransactionCallback::dispatch($data, $transaction->service->callback_url)->onQueue("push-callback");
+        info('UpdateData: ' . json_encode($updateData));
+        info('PayloadData: ' . json_encode($payloadData));
+        info('MESSAGE: ' . $smsMessage);
+        die;
+
+        app(TransactionRepository::class)->updateTransactionAndPayload($transaction->id, $updateData, $payloadData);
+
+        //Save account balance
+        if ($this->json["Result"]["ResultCode"] == 0) {
+            app(TransactionRepository::class)->completeTransaction($transaction->id);
+            if ($balance) {
+                $account->update([
+                    'utility_balance' => $balance
+                ]);
             }
+        }
 
-            //Send SMS
-            $this->sendSMS($successMessageTo, $successMessage);
+        //Send SMS
+        if ($smsMessage != "") {
+            $smsMessageTo = getOption("DARAJA-ALERT-CONTACT");
+            $this->sendSMS($smsMessageTo, $smsMessage);
         }
     }
 }
