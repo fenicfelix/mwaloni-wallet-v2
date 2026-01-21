@@ -38,18 +38,23 @@ class ProcessDarajaB2CCallback implements ShouldQueue
      */
     public function handle()
     {
+        info('Processing Daraja B2C Callback...');
+        info('JSON: ' . json_encode($this->json));
         $completed_at = date("Y-m-d H:i:s");
         $smsMessage = "";
         $transaction = Transaction::with(["account", "service", "payload"])->where("identifier", $this->transactionId)->first();
 
         if (! $transaction) {
+            info('1');
             return;
         }
 
         if ($transaction->status == TransactionStatus::SUCCESS) {
+            info('2');
             return;
         }
 
+        info('3');
         $account = $transaction->account;
         $balance = 0;
         $smsMessage = "";
@@ -62,6 +67,7 @@ class ProcessDarajaB2CCallback implements ShouldQueue
         ];
 
         if ($this->json["Result"]["ResultCode"] == 0) {
+            info('4');
             $updateData['status'] = TransactionStatus::SUCCESS;
 
             $smsMessage = getOption("SMS-B2C-SUCCESS-MESSAGE");
@@ -96,6 +102,7 @@ class ProcessDarajaB2CCallback implements ShouldQueue
                 }
             }
         } else {
+            info('5');
             $updateData['completed_at'] = $completed_at;
             $updateData['status'] = TransactionStatus::FAILED;
 
@@ -104,6 +111,8 @@ class ProcessDarajaB2CCallback implements ShouldQueue
             $smsMessage = str_replace('{error}', $this->json["Result"]["ResultDesc"], $smsMessage);
             $smsMessage = str_replace('{transaction}', $transaction->order_number, $smsMessage);
         }
+
+        info('6');
 
         info('UpdateData: ' . json_encode($updateData));
         info('PayloadData: ' . json_encode($payloadData));
