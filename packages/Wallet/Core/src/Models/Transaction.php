@@ -93,4 +93,25 @@ class Transaction extends Model
     {
         return $this->belongsTo(PaymentChannel::class, "payment_channel_id");
     }
+
+    public function balanceReservations()
+    {
+        return $this->hasMany(BalanceReservation::class);
+    }
+
+    public function reserveAmount()
+    {
+        if ($this->requested_amount > 0 && $this->account_id) {
+            BalanceReservation::create([
+                'account_id' => $this->account_id,
+                'transaction_id' => $this->id,
+                'amount' => $this->requested_amount
+            ]);
+        }
+    }
+
+    public function releaseReservedAmount()
+    {
+        $this->balanceReservations()->delete();
+    }
 }

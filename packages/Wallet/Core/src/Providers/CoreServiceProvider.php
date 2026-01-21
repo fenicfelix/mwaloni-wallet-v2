@@ -4,8 +4,10 @@ declare(strict_types=1);
 
 namespace Wallet\Core\Providers;
 
+use Akika\LaravelStanbic\Events\Pain00200103ReportReceived;
 use Wallet\Core\Http\Controllers\Middleware\VerifyMwaloniHeaders;
 use Illuminate\Support\Facades\Blade;
+use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\ServiceProvider;
@@ -14,6 +16,7 @@ use Wallet\Core\Console\Commands\CoreMakeLivewire;
 use Wallet\Core\Console\Commands\PopulateTransactionMetricTableCommand;
 use Wallet\Core\Console\Commands\TestApi;
 use Wallet\Core\Http\Livewire\LivewireRegistrar;
+use Wallet\Core\Listeners\StanbicStatusReportEventListener;
 
 class CoreServiceProvider extends ServiceProvider
 {
@@ -42,6 +45,11 @@ class CoreServiceProvider extends ServiceProvider
                 TestApi::class,
             ]);
         }
+
+        Event::listen(
+            Pain00200103ReportReceived::class,
+            StanbicStatusReportEventListener::class
+        );
 
         // Register Livewire components
         LivewireRegistrar::register();

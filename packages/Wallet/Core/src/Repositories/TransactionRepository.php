@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Collection;
 use Wallet\Core\Contracts\TransactionRepositoryContract;
 use Wallet\Core\Models\Transaction;
 use Illuminate\Support\Facades\DB;
+use Wallet\Core\Http\Enums\TransactionStatus;
 
 class TransactionRepository implements TransactionRepositoryContract
 {
@@ -15,6 +16,7 @@ class TransactionRepository implements TransactionRepositoryContract
         $transaction = DB::transaction(function () use ($transactionData, $payloadData) {
             $transaction = Transaction::create($transactionData);
             $transaction->payload()->create($payloadData);
+            $transaction->reserveAmount();
             return $transaction;
         });
 
@@ -42,7 +44,7 @@ class TransactionRepository implements TransactionRepositoryContract
         return null;
     }
 
-    public function updateTransactionWithPayload(int $id, array $data, array $payloadData): ?Transaction
+    public function updateTransactionAndPayload(int $id, array $data, array $payloadData): ?Transaction
     {
         // Implementation for updating a transaction with payload
         $transaction = Transaction::find($id);
@@ -69,5 +71,17 @@ class TransactionRepository implements TransactionRepositoryContract
     {
         // Implementation for listing all transactions with filters
         return Transaction::where($filters)->get();
+    }
+
+    public function completeTransaction(int $id): ?Transaction
+    {
+        // Implementation for completing a transaction
+        $transaction = Transaction::with(['payload'])->find($id);
+        if ($transaction) {
+            $transaction->releaseReservedAmount();
+            $transaction->refresh();
+            return $transaction;
+        }
+        return null;
     }
 }

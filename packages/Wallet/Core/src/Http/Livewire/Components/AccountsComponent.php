@@ -175,7 +175,7 @@ class AccountsComponent extends Component
         $this->formId = $id;
         $this->add = true;
         $this->formData = app(AccountRepository::class)->find($id)->toArray();
-        unset($this->formData['operational_balance']);
+        unset($this->formData['float']);
     }
 
     #[On("cashoutFunction")]

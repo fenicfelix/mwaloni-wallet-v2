@@ -20,9 +20,9 @@ class CreateAccountsTable extends Migration
             $table->string('country_name')->nullable();
             $table->string('bank_code')->nullable();
             $table->string('branch_code')->nullable();
-            $table->double("working_balance")->default(0);
-            $table->double("utility_balance")->default(0);
-            $table->double("withheld_amount")->default(0);
+            $table->decimal("working_balance", 10, 2)->default(0);
+            $table->decimal("utility_balance", 10, 2)->default(0);
+            $table->decimal("withheld_amount", 10, 2)->default(0);
             $table->foreignId('account_type_id')->nullable()->references("id")->on("account_types")->onDelete("set null");
             $table->foreignId('currency_id')->nullable()->references("id")->on("currencies")->onDelete("set null");
             $table->string('api_username', 30)->nullable();
@@ -33,7 +33,7 @@ class CreateAccountsTable extends Migration
             $table->string('address')->nullable();
             $table->string('consumer_key', 100)->nullable();
             $table->string('consumer_secret', 100)->nullable();
-            $table->double("revenue")->default(0);
+            $table->decimal("revenue", 10, 2)->default(0);
             $table->boolean("active")->default(true);
             $table->boolean("auto_fetch_balance")->default(true);
             $table->foreignId('managed_by')->nullable()->references("id")->on("users")->onDelete("set null");

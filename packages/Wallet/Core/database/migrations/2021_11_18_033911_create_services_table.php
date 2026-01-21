@@ -20,13 +20,13 @@ class CreateServicesTable extends Migration
             $table->string('description', 255)->nullable();
             $table->boolean("active")->default(true);
             $table->foreignId('client_id')->nullable()->references("id")->on("clients")->onDelete("set null");
-            $table->double("system_charges")->default(0);
-            $table->double('max_trx_amount')->default(0);
-            $table->double("sms_charges")->default(0);
+            $table->decimal("system_charges", 10, 2)->default(0);
+            $table->decimal('max_trx_amount', 10, 2)->default(0);
+            $table->decimal("sms_charges", 10, 2)->default(0);
             $table->string("username", 20);
             $table->string("password", 100);
             $table->string('callback_url')->nullable();
-            $table->double('revenue')->default(0);
+            $table->decimal('revenue', 10, 2)->default(0);
             $table->foreignId('account_id')->nullable()->references("id")->on("accounts")->onDelete("set null");
             $table->timestamps();
         });

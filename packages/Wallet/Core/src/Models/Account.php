@@ -11,8 +11,8 @@ class Account extends Model
 
     protected $guarded = [];
 
-    // include operational_balance in the model's array and JSON form
-    protected $appends = ['operational_balance'];
+    // include float in the model's array and JSON form
+    protected $appends = ['float'];
 
     // disable timestamps
     public $timestamps = false;
@@ -32,13 +32,25 @@ class Account extends Model
         return $this->belongsTo(Currency::class, "currency_id");
     }
 
+    // balance reservation
+    public function balanceReservation()
+    {
+        return $this->hasMany(BalanceReservation::class);
+    }
+
     public function scopeIsActive($query)
     {
         return $query->where('active', "1");
     }
 
-    public function getOperationalBalanceAttribute()
+    public function getFloatAttribute()
     {
-        return ($this->utility_balance + $this->working_balance) - $this->withheld_amount;
+        $balanceReservations = 0;
+        try {
+            $balanceReservations = $this->balanceReservation()->sum('amount');
+        } catch (\Throwable $th) {
+            //throw $th;
+        }
+        return ($this->utility_balance + $this->working_balance) - $this->withheld_amount - $balanceReservations;
     }
 }

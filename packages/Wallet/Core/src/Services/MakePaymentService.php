@@ -83,7 +83,7 @@ class MakePaymentService
 
         /* -------------------- BALANCE CHECK -------------------- */
 
-        $balance = $service->account->operational_balance
+        $balance = $service->account->float
             - $service->account->revenue
             - $amountToSend
             - $expenses

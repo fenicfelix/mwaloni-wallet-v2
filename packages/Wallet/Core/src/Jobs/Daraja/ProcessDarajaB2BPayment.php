@@ -11,6 +11,7 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Wallet\Core\Http\Enums\TransactionStatus;
 use Wallet\Core\Http\Enums\TransactionType;
+use Wallet\Core\Repositories\TransactionRepository;
 
 class ProcessDarajaB2BPayment implements ShouldQueue
 {
@@ -36,46 +37,55 @@ class ProcessDarajaB2BPayment implements ShouldQueue
     public function handle()
     {
         $transaction = Transaction::with(["service", "account", "payload"])->where("id", "=", $this->transactionId)->first();
-        if ($transaction) {
-            $isTillNumber = false;
-            if ($transaction->payment_channel_id == 3) {
-                $isTillNumber = true;
-            }
+        if (! $transaction) {
+            // Ignore the job
+            return;
+        }
 
-            $account_reference = ($transaction->account_reference) ? $transaction->account_reference : $transaction->order_number;
-            $response = json_decode($this->performTransaction($transaction->identifier, $transaction->account_number, floor($transaction->disbursed_amount), $transaction->description, $account_reference, $transaction->account, $isTillNumber));
-            if ($response) {
-                $payment_results_status = "";
-                $payment_results_desc = "";
+        $isTillNumber = false;
+        if ($transaction->payment_channel_id == 3) {
+            $isTillNumber = true;
+        }
 
-                try {
-                    $payment_results_status = "SUBMITTED";
-                    $payment_results_desc = $response->ConversationID;
+        $account_reference = ($transaction->account_reference) ? $transaction->account_reference : $transaction->order_number;
+        $response = json_decode($this->performTransaction($transaction->identifier, $transaction->account_number, floor($transaction->disbursed_amount), $transaction->description, $account_reference, $transaction->account, $isTillNumber));
+        if ($response) {
+            $updateData = [];
+            $payloadData = [
+                'raw_callback' => json_encode($response)
+            ];
 
-                    $transaction->status = TransactionStatus::SUBMITTED;
-                    $transaction->result_description = $response->ResponseDescription;
-                    $transaction->save();
 
-                    $transaction->payload->update([
-                        "conversation_id" => $response->ConversationID,
-                        "original_conversation_id" => $response->OriginatorConversationID
-                    ]);
-                } catch (\Throwable $th) {
-                    $payment_results_status = "FAILED";
-                    $payment_results_desc = $response->ResultDesc;
+            $payment_results_status = "";
+            $payment_results_desc = "";
 
-                    $transaction->status = TransactionStatus::FAILED;
-                    $transaction->result_description = $payment_results_desc;
-                    $transaction->save();
-                }
-            } else {
-                //Ignore the job
-                $transaction->status = TransactionStatus::FAILED;
-                $transaction->save();
+            try {
+                $updateData = [
+                    "status" => TransactionStatus::SUBMITTED,
+                    "result_description" => $response->ResponseDescription
+                ];
+                $payloadData = [
+                    "conversation_id" => $response->ConversationID,
+                    "original_conversation_id" => $response->OriginatorConversationID
+                ];
+            } catch (\Throwable $th) {
+                $updateData = [
+                    "status" => TransactionStatus::FAILED,
+                    "result_description" => $response->ResultDesc
+                ];
             }
         } else {
             //Ignore the job
+            $updateData = [
+                "status" => TransactionStatus::FAILED
+            ];
         }
+
+        app(TransactionRepository::class)->updateTransactionAndPayload(
+            $transaction->id,
+            $updateData,
+            $payloadData
+        );
     }
 
     private function performTransaction($transactionID, $destShortcode, $amount, $remarks, $accountRef, $account, $isTillNumber)

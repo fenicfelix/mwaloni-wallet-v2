@@ -3,11 +3,11 @@
 namespace Wallet\Core\Http\Controllers;
 
 use App\Http\Controllers\Controller;
-use App\Jobs\Daraja\ProcessDarajaB2BCallback;
-use App\Jobs\Daraja\ProcessDarajaB2CCallback;
-use App\Jobs\Daraja\ProcessDarajaPaymentStatusCallback;
-use App\Jobs\Daraja\ProcessDarajaReversalCallback;
 use Illuminate\Http\Request;
+use Wallet\Core\Jobs\Daraja\ProcessDarajaB2BCallback;
+use Wallet\Core\Jobs\Daraja\ProcessDarajaB2CCallback;
+use Wallet\Core\Jobs\Daraja\ProcessDarajaPaymentStatusCallback;
+use Wallet\Core\Jobs\Daraja\ProcessDarajaReversalCallback;
 use Wallet\Core\Models\Account;
 
 class DarajaCallbackController extends Controller

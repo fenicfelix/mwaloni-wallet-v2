@@ -10,6 +10,7 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Wallet\Core\Http\Enums\TransactionStatus;
+use Wallet\Core\Repositories\TransactionRepository;
 
 class ProcessDarajaB2CPayment implements ShouldQueue
 {
@@ -35,40 +36,46 @@ class ProcessDarajaB2CPayment implements ShouldQueue
     public function handle()
     {
         $transaction = Transaction::with(["service", "account", "payload"])->where("id", "=", $this->transactionId)->first();
-        if ($transaction) {
-            $response = json_decode($this->performTransaction($transaction->identifier, "BusinessPayment", $transaction->account_number, floor($transaction->disbursed_amount), $transaction->description, NULL, $transaction->account));
-            if ($response) {
-                $payment_results_status = "";
-                $payment_results_desc = "";
 
-                try {
-                    $payment_results_status = "SUBMITTED";
-                    $payment_results_desc = $response->ConversationID;
+        if (! $transaction) {
+            // Ignore the job
+            return;
+        }
 
-                    $transaction->status = TransactionStatus::SUBMITTED;
-                    $transaction->result_description = $response->ResponseDescription;
-                    $transaction->save();
+        $response = json_decode($this->performTransaction($transaction->identifier, "BusinessPayment", $transaction->account_number, floor($transaction->disbursed_amount), $transaction->description, NULL, $transaction->account));
+        if ($response) {
+            $updateData = [];
+            $payloadData = [
+                'raw_callback' => json_encode($response)
+            ];
 
-                    $transaction->payload->update([
-                        "conversation_id" => $response->ConversationID,
-                        "original_conversation_id" => $response->OriginatorConversationID
-                    ]);
-                } catch (\Throwable $th) {
-                    $payment_results_status = "FAILED";
-                    $payment_results_desc = isset($response->ResultDesc) ? $response->ResultDesc : $response->errorMessage;
+            try {
+                $updateData = [
+                    "status" => TransactionStatus::SUBMITTED,
+                    "result_description" => $response->ResponseDescription
+                ];
 
-                    $transaction->status = TransactionStatus::FAILED;
-                    $transaction->result_description = $payment_results_desc;
-                    $transaction->save();
-                }
-            } else {
-                //Ignore the job
-                $transaction->status = TransactionStatus::FAILED;
-                $transaction->save();
+                $payloadData = [
+                    "conversation_id" => $response->ConversationID,
+                    "original_conversation_id" => $response->OriginatorConversationID
+                ];
+            } catch (\Throwable $th) {
+                $updateData = [
+                    "status" => TransactionStatus::FAILED,
+                    "result_description" => isset($response->ResultDesc) ? $response->ResultDesc : $response->errorMessage
+                ];
             }
         } else {
             //Ignore the job
+            $updateData = [
+                "status" => TransactionStatus::FAILED
+            ];
         }
+        app(TransactionRepository::class)->updateTransactionAndPayload(
+            $transaction->id,
+            $updateData,
+            $payloadData
+        );
     }
 
     private function performTransaction($transactionID, $commandID, $msisdn, $amount, $remarks, $ocassion, $account)

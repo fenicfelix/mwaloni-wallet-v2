@@ -15,9 +15,9 @@ class CreateWithdrawalChargesTable extends Migration
     {
         Schema::create('withdrawal_charges', function (Blueprint $table) {
             $table->id();
-            $table->double("minimum")->default(0);
-            $table->double("maximum")->default(0);
-            $table->double("charge")->default(0);
+            $table->decimal("minimum", 10, 2)->default(0);
+            $table->decimal("maximum", 10, 2)->default(0);
+            $table->decimal("charge", 10, 2)->default(0);
             $table->timestamps();
         });
     }

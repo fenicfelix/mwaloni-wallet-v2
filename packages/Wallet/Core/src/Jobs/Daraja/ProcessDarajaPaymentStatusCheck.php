@@ -10,6 +10,7 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Wallet\Core\Http\Enums\TransactionStatus;
+use Wallet\Core\Repositories\TransactionRepository;
 
 class ProcessDarajaPaymentStatusCheck implements ShouldQueue
 {
@@ -36,20 +37,25 @@ class ProcessDarajaPaymentStatusCheck implements ShouldQueue
     {
         $transaction = Transaction::with(["account", "payload"])->where("identifier", "=", $this->id)->first();
         $response = json_decode($this->performTransaction($transaction));
-        $originalConversationID = $transaction->payload?->conversation_id;
 
         /// Only update the transaction if status has been queried successfully
-        if ($response) {
-            if (isset($response->ResponseCode) && $response->ResponseCode == 0) {
-                $transaction->status = TransactionStatus::QUERYING_STATUS;
+        if ($response && isset($response->ResponseCode) && $response->ResponseCode == 0) {
+            $updateData = [
+                "status" => TransactionStatus::QUERYING_STATUS,
+                "result_description" => $response->ResponseDescription
+            ];
 
-                $transaction->save();
+            $payloadData = [
+                'raw_callback' => json_encode($response),
+                "conversation_id" => $response->ConversationID,
+                "original_conversation_id" => $response->OriginatorConversationID
+            ];
 
-                $transaction->payload->update([
-                    "conversation_id" => $response->ConversationID,
-                    "original_conversation_id" => $response->OriginatorConversationID
-                ]);
-            }
+            app(TransactionRepository::class)->updateTransactionAndPayload(
+                $transaction->id,
+                $updateData,
+                $payloadData
+            );
         }
     }
 
@@ -57,6 +63,9 @@ class ProcessDarajaPaymentStatusCheck implements ShouldQueue
     {
         $account = $transaction->account;
         $mpesa = new Mpesa($account->account_number, $account->consumer_key, $account->consumer_secret, $account->api_username, $account->api_password);
-        return $mpesa->getTransactionStatus($transaction->receipt_number, "shortcode", $transaction->description, route('trx_status_result_url'), route('trx_status_timeout_url'), $transaction->original_conversation_id);
+        $promise = $mpesa->getTransactionStatus($transaction->receipt_number, "shortcode", $transaction->description, route('trx_status_result_url'), route('trx_status_timeout_url'), $transaction->original_conversation_id);
+
+        $response = $promise->wait(); // 🔑 IMPORTANT
+        return $response;
     }
 }

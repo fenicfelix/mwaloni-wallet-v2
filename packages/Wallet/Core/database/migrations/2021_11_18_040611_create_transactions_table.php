@@ -30,12 +30,12 @@ class CreateTransactionsTable extends Migration
             $table->string('message_id', 30)->nullable();
 
             // Amounts
-            $table->double("requested_amount")->default(0);
-            $table->double("disbursed_amount")->default(0);
-            $table->double("transaction_charges")->default(0);
-            $table->double("system_charges")->default(0);
-            $table->double("sms_charges")->default(0);
-            $table->double("revenue")->default(0);
+            $table->decimal("requested_amount", 10, 2)->default(0);
+            $table->decimal("disbursed_amount", 10, 2)->default(0);
+            $table->decimal("transaction_charges", 10, 2)->default(0);
+            $table->decimal("system_charges", 10, 2)->default(0);
+            $table->decimal("sms_charges", 10, 2)->default(0);
+            $table->decimal("revenue", 10, 2)->default(0);
 
             $table->string("receipt_number", 30)->nullable();
             
