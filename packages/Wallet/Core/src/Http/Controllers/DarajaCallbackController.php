@@ -12,6 +12,12 @@ use Wallet\Core\Models\Account;
 
 class DarajaCallbackController extends Controller
 {
+    // constructor
+    public function __construct()
+    {
+        // Middleware or other initializations can go here
+        info("DarajaCallbackController initialized");
+    }
 
     public function balance_timeout(Request $request)
     {
@@ -32,6 +38,7 @@ class DarajaCallbackController extends Controller
     public function b2c_result(Request $request, $transactionId)
     {
         $json = $request->json()->all();
+        info('Received B2C Callback: ' . json_encode($json));
         ProcessDarajaB2CCallback::dispatch($transactionId, $json)->onQueue("b2c-callback");
     }
 

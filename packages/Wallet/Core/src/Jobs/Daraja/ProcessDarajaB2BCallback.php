@@ -38,23 +38,18 @@ class ProcessDarajaB2BCallback implements ShouldQueue
      */
     public function handle()
     {
-        info('Processing Daraja B2B Callback...');
-        info('JSON: ' . json_encode($this->json));
         $balance = NULL;
         $completed_at = date("Y-m-d H:i:s");
         $transaction = Transaction::with(["account", "service", "payload"])->where("identifier", $this->transactionId)->first();
 
         if (! $transaction) {
-            info('1');
             return;
         }
 
         if ($transaction->status == TransactionStatus::SUCCESS) {
-            info('2');
             return;
         }
 
-        info('3');
         $account = $transaction->account;
         $smsMessage = "";
         $payloadData = [
@@ -66,7 +61,6 @@ class ProcessDarajaB2BCallback implements ShouldQueue
         ];
 
         if ($this->json["Result"]["ResultCode"] == 0) {
-            info('4');
             $updateData['status'] = TransactionStatus::SUCCESS;
 
             $smsMessage = getOption("SMS-B2B-SUCCESS-MESSAGE");
@@ -90,8 +84,12 @@ class ProcessDarajaB2BCallback implements ShouldQueue
                     $smsMessage = str_replace('{balance}', number_format($balance), $smsMessage);
                 }
             }
+
+            // Final SMS Message Formatting
+            $smsMessage = str_replace('{datetime}', date("Y-m-d", strtotime($completed_at)) . " at " . date("H:i:s", strtotime($completed_at)), $smsMessage);
+            $smsMessage = str_replace('{amount}', number_format($transaction->disbursed_amount), $smsMessage);
+            $smsMessage = str_replace('{to}', $transaction->account_number, $smsMessage);
         } else {
-            info('5');
             $updateData['status'] = TransactionStatus::FAILED;
             $updateData['completed_at'] = $completed_at;
 

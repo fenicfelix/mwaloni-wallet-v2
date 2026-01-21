@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Wallet\Core\Providers;
 
 use Akika\LaravelStanbic\Events\Pain00200103ReportReceived;
+use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
 use Wallet\Core\Http\Controllers\Middleware\VerifyMwaloniHeaders;
 use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\Facades\Event;
@@ -60,6 +61,10 @@ class CoreServiceProvider extends ServiceProvider
         Route::middleware(['api', VerifyMwaloniHeaders::class])
             ->prefix('api')
             ->group(__DIR__ . '/../../routes/api.php');
+
+        app(VerifyCsrfToken::class)->except([
+            '*drj-callback/*',
+        ]);
 
         $this->loadMigrationsFrom(__DIR__ . '/../../database/migrations');
 

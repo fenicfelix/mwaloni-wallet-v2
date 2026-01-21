@@ -10,6 +10,7 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Wallet\Core\Http\Enums\TransactionStatus;
+use Wallet\Core\Repositories\TransactionRepository;
 
 class ProcessDarajaReversalCallback implements ShouldQueue
 {
@@ -35,11 +36,8 @@ class ProcessDarajaReversalCallback implements ShouldQueue
      */
     public function handle()
     {
-        $log_status = "";
-        $log_status_description = "";
         $completed_at = date("Y-m-d H:i:s");
         $successMessage = "";
-        $successMessageTo = getOption("DARAJA-ALERT-CONTACT");
 
         // get transaction where payload->conversation_id is $this->json["Result"]["ConversationID"])
         $transaction = Transaction::with(["service.account", "payload"])
@@ -49,18 +47,15 @@ class ProcessDarajaReversalCallback implements ShouldQueue
             ->first();
 
         if ($transaction) {
-            $amount = 0;
-            $transaction->payload->update([
+            $payloadData = [
                 "raw_callback" => json_encode($this->json)
-            ]);
-            $transaction->result_description = $this->json["Result"]["ResultDesc"];
-
-            $account = $transaction->service->account;
+            ];
+            $updateData = [
+                'result_description' => $this->json["Result"]["ResultDesc"]
+            ];
 
             if ($this->json["Result"]["ResultCode"] == 21) {
-                $transaction->status = TransactionStatus::REVERSED;
-                $log_status = "REVERSED";
-                $log_status_description = $this->json["Result"]["TransactionID"];
+                $updateData['status'] = TransactionStatus::REVERSED;
 
                 $successMessage = getOption("SMS-B2C-REVERSAL-MESSAGE");
                 $successMessage = str_replace("{trxid}", $this->json["Result"]["TransactionID"], $successMessage);
@@ -69,33 +64,28 @@ class ProcessDarajaReversalCallback implements ShouldQueue
                 foreach ($this->json["Result"]["ResultParameters"]["ResultParameter"] as $parameter) {
                     if ($parameter["Key"] == "TransCompletedTime") {
                         $completed_at = date("Y-m-d H:i:s", strtotime($parameter["Value"]));
-                        $transaction->reversed_on = $completed_at;
+                        $updateData['reversed_on'] = $completed_at;
                         $successMessage = str_replace('{datetime}', date("Y-m-d", strtotime($completed_at)) . " at " . date("H:i:s", strtotime($completed_at)), $successMessage);
                     }
                     if ($parameter["Key"] == "Amount") {
-                        $amount = $parameter["Value"];
                         $successMessage = str_replace('{amount}', number_format($parameter["Value"], 2), $successMessage);
                     }
                 }
             } else {
-                $transaction->status = TransactionStatus::REVERSING_FAILED;
-                $log_status = "FAILED";
-                $log_status_description = $this->json["Result"]["ResultDesc"];
-
+                $updateData['status'] = TransactionStatus::REVERSING_FAILED;
                 $successMessage = getOption("DARAJA-ERROR-MESSAGE");
                 $successMessage = str_replace('{error}', $this->json["Result"]["ResultDesc"], $successMessage);
             }
 
-            $transaction->completed_at = $completed_at;
-            $transaction->save();
-            $account->save();
+            $updateData['completed_at'] = $completed_at;
 
-            //Increment balance by the reversed amount
-            $transaction->service->balance += $amount;
-            $transaction->service->save();
+            app(TransactionRepository::class)->updateTransactionAndPayload($transaction->id, $updateData, $payloadData);
 
             //Send SMS
-            $this->sendSMS($successMessageTo, $successMessage);
+            if ($successMessage != "") {
+                $successMessageTo = getOption("DARAJA-ALERT-CONTACT");
+                $this->sendSMS($successMessageTo, $successMessage);
+            }
         }
     }
 }
