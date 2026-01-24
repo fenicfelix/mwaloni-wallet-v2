@@ -27,12 +27,13 @@ Route::get('test', function () {
     return response()->json(["status" => "00", "message" => "Success"], 200);
 });
 
+// Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
+//     return $request->user();
+// });
+
 Route::post('authenticate', [AuthController::class, 'authenticate']);
 
-Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-    return $request->user();
-});
-
+// Version 2 routes
 Route::middleware('auth:sanctum')->group(function () {
     Route::post('get-balance', [ApiController::class, 'fetchBalance']);
     Route::post('get-transaction-status', [ApiController::class, 'getTransactionStatus']);
