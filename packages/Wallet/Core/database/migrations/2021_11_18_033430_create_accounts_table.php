@@ -15,6 +15,7 @@ class CreateAccountsTable extends Migration
     {
         Schema::create('accounts', function (Blueprint $table) {
             $table->id();
+            $table->uuid('identifier');
             $table->string("name", 100);
             $table->string('country_code', 5)->default('KE');
             $table->string('country_name')->nullable();

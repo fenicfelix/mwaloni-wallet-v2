@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Collection;
 use Wallet\Core\Contracts\AccountRepositoryContract;
 use Wallet\Core\Models\Account;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 
 class AccountRepository implements AccountRepositoryContract
 {
@@ -13,6 +14,7 @@ class AccountRepository implements AccountRepositoryContract
     {
         // Implementation for creating a Account
         $Account = DB::transaction(function () use ($data) {
+            $data['identifier'] = Str::uuid()->toString();
             return Account::create($data);
         });
 
