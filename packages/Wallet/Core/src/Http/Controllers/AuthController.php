@@ -26,7 +26,7 @@ class AuthController extends Controller
             ], Response::HTTP_OK);
         }
 
-        $response = [
+        return response()->json([
             'status' => "00",
             'message' => "Success",
             'data' => [
@@ -34,12 +34,7 @@ class AuthController extends Controller
                 'tokenType' => 'Bearer',
                 'expiresIn' => JWTAuth::factory()->getTTL() * 60 // Corrected line
             ],
-        ];
-
-        info('User authenticated successfully: '.$request->input('username'));
-        info(json_encode($response));
-
-        return response()->json($response, Response::HTTP_OK);
+        ], Response::HTTP_OK);
     }
 
     /**
