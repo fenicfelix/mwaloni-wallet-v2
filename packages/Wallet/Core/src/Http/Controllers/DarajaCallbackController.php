@@ -27,6 +27,7 @@ class DarajaCallbackController extends Controller
     public function balance_result(Request $request, $id)
     {
         $json = $request->json()->all();
+        info('Received Balance Callback: ' . json_encode($json));
         if ($json["Result"]["ResultType"] == 0) {
             $account = Account::where("identifier", "=", $id)->first();
             $account->working_balance = getBalance($json["Result"]["ResultParameters"]["ResultParameter"][1]["Value"], "Working Account");
