@@ -16,9 +16,7 @@ class ApiController extends Controller
 {
     use MwaloniWallet;
 
-    public function __construct(protected MakePaymentService $MakePaymentService) {
-        info('MakePaymentService initialized');
-    }
+    public function __construct(protected MakePaymentService $MakePaymentService) {}
 
     /* -----------------------------------------------------------------
      | BALANCE
@@ -26,24 +24,15 @@ class ApiController extends Controller
 
     public function fetchBalance(Request $request)
     {
-        info('fetching balance for service: ' . json_encode($request->all()));
         $service = $this->resolveService($request->post('service_id'));
-
-        info('resolved service: ' . json_encode($service));
 
         if (! $service) {
             return $this->error('Service not found');
         }
 
-        info('1');
         $account = $service->account;
-        info('2');
-
         $utilityBalance = $account->utility_balance
             - ($account->revenue + $account->withheld_amount);
-
-            info('3: '.json_encode($utilityBalance));
-            info('4: '.json_encode($account->working_balance));
 
         return $this->success([
             'balance' => $utilityBalance,
