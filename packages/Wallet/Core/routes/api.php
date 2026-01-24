@@ -33,10 +33,10 @@ Route::get('test', function () {
 
 Route::post('authenticate', [AuthController::class, 'authenticate']);
 
-Route::middleware('auth:sanctum')->group(function () {
+// Route::middleware('auth:sanctum')->group(function () {
     Route::post('get-balance', [ApiController::class, 'fetchBalance']);
     Route::post('get-transaction-status', [ApiController::class, 'getTransactionStatus']);
     Route::post('send-money', [ApiController::class, 'sendMoney']);
     Route::post('contact-lookup', [ApiController::class, 'contactLookup']);
     Route::post('send-sms', [ApiController::class, 'clientSendSMS']);
-});
+// });
