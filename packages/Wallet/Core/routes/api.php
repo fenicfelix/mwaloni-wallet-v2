@@ -23,19 +23,20 @@ if (env('APP_ENV') === 'production') {
     URL::forceScheme('https');
 }
 
-Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-    return $request->user();
-});
-
 Route::get('test', function () {
     return response()->json(["status" => "00", "message" => "Success"], 200);
 });
 
 Route::post('authenticate', [AuthController::class, 'authenticate']);
 
-// Version 2 routes
-Route::post('get-balance', [ApiController::class, 'fetchBalance']);
-Route::post('get-transaction-status', [ApiController::class, 'getTransactionStatus']);
-Route::post('send-money', [ApiController::class, 'sendMoney']);
-Route::post('contact-lookup', [ApiController::class, 'contactLookup']);
-Route::post('send-sms', [ApiController::class, 'clientSendSMS']);
+Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
+    return $request->user();
+});
+
+Route::middleware('auth:sanctum')->group(function () {
+    Route::post('get-balance', [ApiController::class, 'fetchBalance']);
+    Route::post('get-transaction-status', [ApiController::class, 'getTransactionStatus']);
+    Route::post('send-money', [ApiController::class, 'sendMoney']);
+    Route::post('contact-lookup', [ApiController::class, 'contactLookup']);
+    Route::post('send-sms', [ApiController::class, 'clientSendSMS']);
+});
