@@ -34,10 +34,8 @@ Route::get('test', function () {
 Route::post('authenticate', [AuthController::class, 'authenticate']);
 
 // Version 2 routes
-Route::prefix('api')->group(function () {
-    Route::post('get-balance', [ApiController::class, 'fetchBalance']);
-    Route::post('get-transaction-status', [ApiController::class, 'getTransactionStatus']);
-    Route::post('send-money', [ApiController::class, 'sendMoney']);
-    Route::post('contact-lookup', [ApiController::class, 'contactLookup']);
-    Route::post('send-sms', [ApiController::class, 'clientSendSMS']);
-});
+Route::post('get-balance', [ApiController::class, 'fetchBalance']);
+Route::post('get-transaction-status', [ApiController::class, 'getTransactionStatus']);
+Route::post('send-money', [ApiController::class, 'sendMoney']);
+Route::post('contact-lookup', [ApiController::class, 'contactLookup']);
+Route::post('send-sms', [ApiController::class, 'clientSendSMS']);
