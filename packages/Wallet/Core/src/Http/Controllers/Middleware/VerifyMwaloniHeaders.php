@@ -13,8 +13,6 @@ class VerifyMwaloniHeaders
     {
         $apiKey = $request->header('x-api-key');
 
-        info('RAW_REQUEST: '.json_encode($request->all()));
-
         if (! $apiKey) {
             return response()->json([
                 'status' => '01',
