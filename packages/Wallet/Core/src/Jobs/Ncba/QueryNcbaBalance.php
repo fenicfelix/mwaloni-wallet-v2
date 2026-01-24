@@ -35,11 +35,8 @@ class QueryNcbaBalance implements ShouldQueue
     {
         $account = Account::where("id", $this->accountId)->first();
         if ($account) {
-            // $apiKey, $username, $password
-            info("NCBA Credentials: {$account->consumer_key}, {$account->api_username}, {$account->api_password}");
             $ncba = new Ncba($account->consumer_key, $account->api_username, $account->api_password);
             $authenticate = json_decode($ncba->authenticate(), true);
-            info("NCBA Authentication: " . json_encode($authenticate));
             try {
                 if (!$authenticate || !isset($authenticate['accessToken'])) {
                     throw new Exception("Authentication problem.", 1);
