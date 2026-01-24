@@ -24,16 +24,23 @@ class ApiController extends Controller
 
     public function fetchBalance(Request $request)
     {
+        info('fetching balance for user: ' . json_encode($request->all()));
         $service = $this->resolveService($request->post('service_id'));
+
+        info('resolved service: ' . json_encode($service));
 
         if (! $service) {
             return $this->error('Service not found');
         }
 
+        info('1');
         $account = $service->account;
+        info('2');
 
         $utilityBalance = $account->utility_balance
             - ($account->revenue + $account->withheld_amount);
+
+            info('3: '.json_encode($utilityBalance));
 
         return $this->success([
             'balance' => $utilityBalance,
