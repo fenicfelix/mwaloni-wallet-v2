@@ -2,7 +2,6 @@
 return [
     'env' => env('NCBA_ENV', 'sandbox'), // sandbox or production
     'debug' => env('NCBA_DEBUG', true),
-    'url' => env('NCBA_URL', 'https://apidev.ncbagroup.com/api/v1'),
     'sandbox' => [
         'api_key' => env('NCBA_SANDBOX_API_KEY', 'T3st123'),
         'url' => 'https://apidev.ncbagroup.com/api/v1',
