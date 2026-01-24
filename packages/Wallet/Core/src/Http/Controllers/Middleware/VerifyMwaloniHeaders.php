@@ -9,35 +9,30 @@ use Symfony\Component\HttpFoundation\Response;
 
 class VerifyMwaloniHeaders
 {
-    /**
-     * Handle an incoming request.
-     *
-     * @param  \Closure(\Illuminate\Http\Request): (\Symfony\Component\HttpFoundation\Response)  $next
-     */
     public function handle(Request $request, Closure $next)
     {
         $apiKey = $request->header('x-api-key');
 
-        if (!$apiKey) {
+        info('RAW_REQUEST: '.json_encode($request->all()));
+
+        if (! $apiKey) {
             return response()->json([
                 'status' => '01',
                 'message' => 'Unauthorized: API key missing',
             ], Response::HTTP_UNAUTHORIZED);
         }
 
-        $user = User::where('api_key', $apiKey)->first();
+        $account = User::where('api_key', $apiKey)->first();
 
-        if (!$user) {
+        if (! $account) {
             return response()->json([
                 'status' => '01',
                 'message' => 'Unauthorized: Invalid API key',
             ], Response::HTTP_UNAUTHORIZED);
         }
 
-        // Optionally, you can attach the user to the request for later use
-        $request->setUserResolver(function () use ($user) {
-            return $user;
-        });
+        // ✅ Attach metadata instead of overriding auth user
+        $request->attributes->set('api_account', $account);
 
         return $next($request);
     }

@@ -6,33 +6,41 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Tymon\JWTAuth\Facades\JWTAuth;
+use Illuminate\Support\Facades\Auth;
 
 class AuthController extends Controller
 {
-    /**
-     * Create a new AuthController instance.
-     *
-     * @return void
-     */
-    public function __construct() {}
-
     public function authenticate(Request $request)
     {
-        $credentials = $request->only('username', 'password');
-        if (!$token = JWTAuth::attempt($credentials)) {
+        $credentials = $request->validate([
+            'username' => ['required', 'string'],
+            'password' => ['required', 'string'],
+        ]);
+
+        if (! Auth::attempt($credentials)) {
             return response()->json([
-                'status' => "01",
-                'message' => "Invalid credentials",
+                'status'  => '01',
+                'message' => 'Invalid credentials',
             ], Response::HTTP_OK);
         }
 
+        $user = Auth::user();
+
+        // Optional: delete old tokens if this is a service account
+        // $user->tokens()->delete();
+
+        $token = $user->createToken(
+            'api-token',
+            ['*'] // or scoped abilities like ['payments:create']
+        );
+
         return response()->json([
-            'status' => "00",
-            'message' => "Success",
+            'status'  => '00',
+            'message' => 'Success',
             'data' => [
-                'token' => $token,
-                'tokenType' => 'Bearer',
-                'expiresIn' => JWTAuth::factory()->getTTL() * 60 // Corrected line
+                'token'      => $token->plainTextToken,
+                'tokenType'  => 'Bearer',
+                'expiresIn'  => null, // Sanctum does not embed TTL like JWT
             ],
         ], Response::HTTP_OK);
     }
@@ -42,36 +50,9 @@ class AuthController extends Controller
      *
      * @return \Illuminate\Http\JsonResponse
      */
-    public function logout()
+    public function logout(Request $request)
     {
-        auth()->logout();
-
+        $request->user()->tokens()->delete();
         return response()->json(['message' => 'Successfully logged out']);
-    }
-
-    /**
-     * Refresh a token.
-     *
-     * @return \Illuminate\Http\JsonResponse
-     */
-    public function refresh()
-    {
-        return $this->respondWithToken(auth()->refresh());
-    }
-
-    /**
-     * Get the token array structure.
-     *
-     * @param  string $token
-     *
-     * @return \Illuminate\Http\JsonResponse
-     */
-    protected function respondWithToken($token)
-    {
-        return response()->json([
-            'access_token' => $token,
-            'token_type' => 'bearer',
-            'expires_in' => auth()->factory()->getTTL() * 60
-        ]);
     }
 }

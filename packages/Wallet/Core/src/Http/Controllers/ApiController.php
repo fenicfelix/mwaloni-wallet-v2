@@ -16,7 +16,9 @@ class ApiController extends Controller
 {
     use MwaloniWallet;
 
-    public function __construct(protected MakePaymentService $MakePaymentService) {}
+    public function __construct(protected MakePaymentService $MakePaymentService) {
+        info('MakePaymentService initialized');
+    }
 
     /* -----------------------------------------------------------------
      | BALANCE
@@ -161,14 +163,14 @@ class ApiController extends Controller
     protected function resolveService(string $serviceId): ?Service
     {
         return $this->MakePaymentService
-            ->resolveService($serviceId, auth('api')->user());
+            ->resolveService($serviceId, auth()->user());
     }
 
     protected function ownsTransaction(Transaction $transaction): bool
     {
         return $transaction->service
             ->account
-            ->managed_by === auth('api')->id();
+            ->managed_by === auth()->id();
     }
 
     protected function success(array $data = [])
