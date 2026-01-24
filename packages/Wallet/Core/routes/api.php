@@ -33,7 +33,7 @@ Route::get('test', function () {
 
 Route::post('authenticate', [AuthController::class, 'authenticate']);
 
-Route::group(['middleware' => "api"], function () {
+Route::middleware('auth:sanctum')->group(function () {
     Route::post('get-balance', [ApiController::class, 'fetchBalance']);
     Route::post('get-transaction-status', [ApiController::class, 'getTransactionStatus']);
     Route::post('send-money', [ApiController::class, 'sendMoney']);
