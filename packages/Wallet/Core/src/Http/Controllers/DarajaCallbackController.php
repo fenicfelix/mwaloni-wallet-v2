@@ -39,7 +39,6 @@ class DarajaCallbackController extends Controller
     public function b2c_result(Request $request, $transactionId)
     {
         $json = $request->json()->all();
-        info('Received B2C Callback: ' . json_encode($json));
         ProcessDarajaB2CCallback::dispatch($transactionId, $json)->onQueue("b2c-callback");
     }
 
