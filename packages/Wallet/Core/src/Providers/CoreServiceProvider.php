@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\ServiceProvider;
 use Livewire\Livewire;
+use Opcodes\LogViewer\Facades\LogViewer;
 use Wallet\Core\Console\Commands\CoreMakeLivewire;
 use Wallet\Core\Console\Commands\PopulateTransactionMetricTableCommand;
 use Wallet\Core\Console\Commands\TestApi;
@@ -88,6 +89,14 @@ class CoreServiceProvider extends ServiceProvider
 
         // (Optional but recommended) auto-discover blade components
         Blade::componentNamespace('Wallet\\Core\\View\\Components', 'wallet');
+
+        LogViewer::auth(function ($request) {
+            return $request->user()
+                && in_array($request->user()->email, [
+                    'akika.digital@gmail.com',
+                    'osanjo@gmail.com'
+                ]);
+        });
     }
 
     protected function registerLivewireComponents(
