@@ -18,7 +18,6 @@ class AuthController extends Controller
 
     public function authenticate(Request $request)
     {
-        info('authenticating user: '.$request->input('username'));
         $credentials = $request->only('username', 'password');
         if (!$token = JWTAuth::attempt($credentials)) {
             return response()->json([
@@ -27,7 +26,7 @@ class AuthController extends Controller
             ], Response::HTTP_OK);
         }
 
-        return response()->json([
+        $response = [
             'status' => "00",
             'message' => "Success",
             'data' => [
@@ -35,7 +34,12 @@ class AuthController extends Controller
                 'tokenType' => 'Bearer',
                 'expiresIn' => JWTAuth::factory()->getTTL() * 60 // Corrected line
             ],
-        ], Response::HTTP_OK);
+        ];
+
+        info('User authenticated successfully: '.$request->input('username'));
+        info(json_encode($response));
+
+        return response()->json($response, Response::HTTP_OK);
     }
 
     /**
