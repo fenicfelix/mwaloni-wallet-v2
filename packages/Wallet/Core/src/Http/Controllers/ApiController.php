@@ -26,7 +26,7 @@ class ApiController extends Controller
 
     public function fetchBalance(Request $request)
     {
-        info('fetching balance for user: ' . json_encode($request->all()));
+        info('fetching balance for service: ' . json_encode($request->all()));
         $service = $this->resolveService($request->post('service_id'));
 
         info('resolved service: ' . json_encode($service));
@@ -43,6 +43,7 @@ class ApiController extends Controller
             - ($account->revenue + $account->withheld_amount);
 
             info('3: '.json_encode($utilityBalance));
+            info('4: '.json_encode($account->working_balance));
 
         return $this->success([
             'balance' => $utilityBalance,
