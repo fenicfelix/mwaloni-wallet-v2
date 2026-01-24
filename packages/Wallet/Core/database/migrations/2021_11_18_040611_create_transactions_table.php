@@ -3,6 +3,7 @@
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
+use Wallet\Core\Http\Enums\TransactionStatus;
 
 class CreateTransactionsTable extends Migration
 {
@@ -40,6 +41,8 @@ class CreateTransactionsTable extends Migration
             $table->string("receipt_number", 30)->nullable();
             
             $table->string("result_description")->nullable();
+
+            $table->enum('status', TransactionStatus::values())->default(TransactionStatus::PENDING->value);
 
             $table->foreignId('requested_by')->nullable()->references("id")->on("users")->onDelete("set null");
             $table->foreignId('reversed_by')->nullable()->references("id")->on("users")->onDelete("set null");

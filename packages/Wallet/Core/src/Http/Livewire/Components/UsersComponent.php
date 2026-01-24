@@ -203,6 +203,7 @@ class UsersComponent extends Component
         $this->user = app(UserRepository::class)->update($this->formId, [
             'password' => Hash::make($password),
         ]);
+        $this->formData['password'] = $password;
         if (!$this->user) {
             $this->notify("Failed to generate API credentials. Please try again.", "error");
         }
