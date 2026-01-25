@@ -9,7 +9,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
     <meta name="developer" content="akika.digital">
     <meta name="developer:email" content="akika.digital@gmail.com">
-    {{-- <meta http-equiv="refresh" content="300"> --}}
+    @if (request()->is('*transactions*'))
+        <meta http-equiv="refresh" content="300">
+    @endif
         
     <link rel="icon" type="image/png" sizes="16x16" href="{{ asset('themes/agile/img/mwaloni_logo_white.png') }}">
 
