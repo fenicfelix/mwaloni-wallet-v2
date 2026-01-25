@@ -225,16 +225,16 @@ trait MwaloniWallet
     {
         $order_number = DB::table('transactions')
             ->where('transaction_type', $transactionType->value)
-            ->orderByDesc('order_number')
-            ->pluck('order_number')
-            ->first();
+            ->max('order_number');
         if ($order_number) {
             $order_number++;
         } else {
             if ($transactionType == TransactionType::CASHOUT) $order_number = "CSHT0001";
             else if ($transactionType == TransactionType::REVENUE_TRANSFER) $order_number = "REV0001";
-            else $order_number = TransactionType::SERVICE_CHARGE;
+            else if ($transactionType == TransactionType::SERVICE_CHARGE) $order_number = "SRVC0001";
+            else $order_number = "TRX0001";
         }
+        
         return $order_number;
     }
 
