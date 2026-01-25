@@ -27,21 +27,21 @@ class WalletCleanup extends Command
     public function handle()
     {
         $this->info('Cleaning up wallet data...');
-        // Perform cleanup tasks here
-        // get all transactions where order_number = REV0001
-        $order_number = 'REV0001';
-        $transactions = Transaction::where('order_number', $order_number)->get();
-        $counter = 0;
-        foreach ($transactions as $transaction) {
-            $order_number = 'REV' . str_pad(++$counter, 4, '0', STR_PAD_LEFT);
-            $transaction->order_number = $order_number;
-            $transaction->save();
-            $this->info('TRX_id: ' . $transaction->id. ' - ' . $order_number);
-        }
+        // // Perform cleanup tasks here
+        // // get all transactions where order_number = REV0001
+        // $order_number = 'REV0001';
+        // $transactions = Transaction::where('order_number', $order_number)->get();
+        // $counter = 0;
+        // foreach ($transactions as $transaction) {
+        //     $order_number = 'REV' . str_pad(++$counter, 4, '0', STR_PAD_LEFT);
+        //     $transaction->order_number = $order_number;
+        //     $transaction->save();
+        //     $this->info('TRX_id: ' . $transaction->id. ' - ' . $order_number);
+        // }
 
-        // update transactions set transaction_type='service_charge' where order_number like 'SR%';
-        Transaction::where('order_number', 'like', 'SRVC%')
-            ->update(['transaction_type' => 'service_charge']);
+        // // update transactions set transaction_type='service_charge' where order_number like 'SR%';
+        // Transaction::where('order_number', 'like', 'SRVC%')
+        //     ->update(['transaction_type' => 'service_charge']);
 
         $this->info('Wallet cleanup completed.');
     }
