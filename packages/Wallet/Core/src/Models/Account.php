@@ -51,6 +51,6 @@ class Account extends Model
         } catch (\Throwable $th) {
             //throw $th;
         }
-        return ($this->utility_balance + $this->working_balance) - $this->withheld_amount - $balanceReservations;
+        return ($this->utility_balance + $this->working_balance) - ($this->revenue + $this->withheld_amount + $balanceReservations);
     }
 }

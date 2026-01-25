@@ -5,7 +5,9 @@ namespace Wallet\Core\Http\Livewire\Datatables;
 use Rappasoft\LaravelLivewireTables\DataTableComponent;
 use Rappasoft\LaravelLivewireTables\Views\Column;
 use Wallet\Core\Models\Account;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Auth;
+
 
 class AccountsTable extends DataTableComponent
 {
@@ -29,6 +31,20 @@ class AccountsTable extends DataTableComponent
             'default-colors' => false, // Do not output the default colors
             'default-styling' => true // Output the default styling
         ]);
+    }
+
+    public function builder(): Builder
+    {
+        return Account::query()
+            ->select('accounts.*')
+            ->selectSub(
+                function ($query) {
+                    $query->from('balance_reservations')
+                        ->selectRaw('COALESCE(SUM(amount), 0)')
+                        ->whereColumn('balance_reservations.account_id', 'accounts.id');
+                },
+                'transaction_reservations'
+            );
     }
 
     public function columns(): array
@@ -59,20 +75,26 @@ class AccountsTable extends DataTableComponent
                 ->format(
                     fn($value) => number_format($value, 2)
                 ),
-            Column::make("Total Balance")
-                ->sortable()
-                ->label(function ($row, Column $column) {
-                    return number_format($row->working_balance + $row->utility_balance, 2);
-                }),
+            // Column::make("Total Balance")
+            //     ->sortable()
+            //     ->label(function ($row, Column $column) {
+            //         return number_format($row->acc_float, 2);
+            //     }),
             Column::make("Revenue", "revenue")
                 ->sortable()
                 ->format(
                     fn($value) => number_format($value)
                 ),
+            Column::make("Withheld Amount", "withheld_amount")
+                ->sortable()
+                ->format(
+                    fn($value) => number_format($value, 2)
+                ),
             Column::make("Operational Balance")
                 ->sortable()
                 ->label(function ($row, Column $column) {
-                    return number_format((($row->working_balance + $row->utility_balance) - $row->revenue), 2);
+                    $operational_balance = $row->working_balance + $row->utility_balance - ($row->revenue + $row->withheld_amount + $row->transaction_reservations);
+                    return number_format($operational_balance, 2);
                 }),
             Column::make("Status", "active")
                 ->sortable()
