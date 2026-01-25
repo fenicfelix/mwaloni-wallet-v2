@@ -90,6 +90,12 @@ class AccountsTable extends DataTableComponent
                 ->format(
                     fn($value) => number_format($value, 2)
                 ),
+
+            Column::make("TRX. Reservations")
+                ->sortable()
+                ->label(function ($row, Column $column) {
+                    return number_format($row->transaction_reservations, 2);
+                }),
             Column::make("Operational Balance")
                 ->sortable()
                 ->label(function ($row, Column $column) {
