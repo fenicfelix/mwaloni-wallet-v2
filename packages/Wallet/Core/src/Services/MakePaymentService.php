@@ -10,6 +10,7 @@ use Wallet\Core\Models\Transaction;
 use Illuminate\Support\Str;
 use Wallet\Core\Http\Enums\TransactionStatus;
 use Wallet\Core\Http\Traits\MwaloniWallet;
+use Wallet\Core\Repositories\TransactionRepository;
 
 class MakePaymentService
 {
@@ -113,7 +114,7 @@ class MakePaymentService
             $revenue,
             $keyBlock
         ) {
-            $transaction = Transaction::create([
+            $transactionData = [
                 'identifier'          => Str::uuid(),
                 'account_name'        => $request->post('account_name'),
                 'account_number'      => $request->post('account_number'),
@@ -137,15 +138,14 @@ class MakePaymentService
                 'requested_on'        => now(),
                 'transaction_date'    => now(),
                 'payment_channel_id'  => $paymentChannel->id,
-            ]);
+            ];
 
-            $transaction->payload()->create([
+            $payloadData = [
                 'raw_request' => json_encode($request->all()),
                 'trx_payload' => json_encode($payload),
-            ]);
+            ];
 
-            // Update revenue
-            $service->account->increment('revenue', $revenue);
+            $transaction = app(TransactionRepository::class)->create($transactionData, $payloadData, $revenue);
 
             return $transaction;
         }, 2);

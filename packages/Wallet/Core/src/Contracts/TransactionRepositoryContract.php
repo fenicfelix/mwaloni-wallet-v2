@@ -7,7 +7,7 @@ use Wallet\Core\Models\Transaction;
 
 interface TransactionRepositoryContract
 {
-    public function create(array $transactionData, array $payloadData): ?Transaction;
+    public function create(array $transactionData, array $payloadData, ?float $revenue): ?Transaction;
 
     public function find(int $id): ?Transaction;
 

@@ -11,13 +11,23 @@ use Wallet\Core\Jobs\PushTransactionCallback;
 
 class TransactionRepository implements TransactionRepositoryContract
 {
-    public function create(array $transactionData, array $payloadData): ?Transaction
+    public function create(array $transactionData, array $payloadData, ?float $revenue = 0): ?Transaction
     {
         // Implementation for creating a transaction
-        $transaction = DB::transaction(function () use ($transactionData, $payloadData) {
+        $transaction = DB::transaction(function () use ($transactionData, $payloadData, $revenue) {
             $transaction = Transaction::create($transactionData);
             $transaction->payload()->create($payloadData);
-            $transaction->reserveAmount();
+            $transaction->balanceReservations()->create(
+                [
+                    'account_id' => $transaction->service_id,
+                    'transaction_id' => $transaction->id,
+                    'amount' => $transaction->disbursed_amount
+                ]
+            );
+
+            if($revenue > 0){
+                $transaction->account->increment('revenue', $revenue);
+            }
             return $transaction;
         });
 

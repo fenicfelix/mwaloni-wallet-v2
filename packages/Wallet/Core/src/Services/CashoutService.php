@@ -11,6 +11,7 @@ use Wallet\Core\Http\Traits\MwaloniWallet;
 use Illuminate\Support\Str;
 use Wallet\Core\Models\Service;
 use Wallet\Core\Models\Transaction;
+use Wallet\Core\Repositories\TransactionRepository;
 
 class CashoutService
 {
@@ -40,7 +41,7 @@ class CashoutService
 
                 $orderNumber = $this->generateOrderNumber(TransactionType::REVENUE_TRANSFER);
                 $payload =  app(PayloadGeneratorService::class)->generatePayload($paymentChannel, $request, $cashout_form['amount']);
-                $transaction = Transaction::query()->create([
+                $transactionData = [
                     "identifier" => Str::uuid(),
                     "account_name" => $cashout_form['account_name'],
                     "account_number" => $cashout_form['account_number'],
@@ -64,13 +65,14 @@ class CashoutService
                     "requested_on" => date('Y-m-d H:i:s'),
                     "transaction_date" => date('Y-m-d H:i:s'),
                     "payment_channel_id" => $paymentChannel->id,
-                ]);
+                ];
 
-                $transaction->payload()->create([
+                $payloadData = [
                     "raw_request" => json_encode($request),
                     "trx_payload" => json_encode($payload)
-                ]);
+                ];
 
+                $transaction = app(TransactionRepository::class)->create($transactionData, $payloadData);
                 if (!$transaction) return false;
 
                 //Add to revenue

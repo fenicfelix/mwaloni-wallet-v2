@@ -11,6 +11,7 @@ use Wallet\Core\Models\Transaction;
 use Illuminate\Support\Str;
 use Wallet\Core\Http\Enums\TransactionStatus;
 use Wallet\Core\Http\Traits\MwaloniWallet;
+use Wallet\Core\Repositories\TransactionRepository;
 
 class WithdrawService
 {
@@ -39,7 +40,7 @@ class WithdrawService
                 $payload = app(PayloadGeneratorService::class)->generatePayload($paymentChannel, $request, $withdrawFrom['amount']);
                 if (!$payload) return false;
 
-                $transaction = Transaction::query()->create([
+                $transactionData = [
                     "identifier" => Str::uuid(),
                     "account_name" => $withdrawFrom['account_name'],
                     "account_number" => $withdrawFrom['account_number'],
@@ -63,13 +64,14 @@ class WithdrawService
                     "requested_on" => date('Y-m-d H:i:s'),
                     "transaction_date" => date('Y-m-d H:i:s'),
                     "payment_channel_id" => $paymentChannel->id,
-                ]);
+                ];
 
-                $transaction->payload()->create([
+                $payloadData = [
                     "raw_request" => json_encode($request),
                     "trx_payload" => json_encode($payload)
-                ]);
+                ];
 
+                $transaction = app(TransactionRepository::class)->create($transactionData, $payloadData);
                 if (!$transaction) return false;
 
                 return $transaction;
