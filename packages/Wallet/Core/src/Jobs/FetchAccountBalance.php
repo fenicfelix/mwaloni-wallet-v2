@@ -7,27 +7,22 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
-use Illuminate\Support\Facades\Log;
 use Wallet\Core\Http\Traits\MwaloniWallet;
+use Wallet\Core\Jobs\Daraja\QueryDarajaBalance;
 use Wallet\Core\Jobs\Jenga\QueryJengaBalance;
-use Wallet\Core\Jobs\Ncba\QueryNcbaBalance;
+use Wallet\Core\Models\Account;
 
 class FetchAccountBalance implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
     use MwaloniWallet;
 
-    protected $account;
-
     /**
      * Create a new job instance.
      *
      * @return void
      */
-    public function __construct($account)
-    {
-        $this->account = $account;
-    }
+    public function __construct(public Account $account) {}
 
     /**
      * Execute the job.
@@ -36,22 +31,14 @@ class FetchAccountBalance implements ShouldQueue
      */
     public function handle()
     {
-        $result = true;
         if ($this->account->account_type_id == 1) { //Daraja
-            $result = (object) json_decode($this->daraja_account_balance($this->account));
-            info('Daraja balance result: ' . json_encode($result));
-            try {
-                if ($result->ResponseCode != "0") {
-                    $result = false;
-                }
-            } catch (\Throwable $th) {
-                Log::warning($th->getMessage());
-                $result = false;
-            }
+            QueryDarajaBalance::dispatch($this->account->id);
         } else if ($this->account->account_type_id == 2) { //Jenga
             QueryJengaBalance::dispatch($this->account->id);
         } else if ($this->account->account_type_id == 3) { //NCBA
             // QueryNcbaBalance::dispatch($this->account->id);
         }
+
+        return true;
     }
 }

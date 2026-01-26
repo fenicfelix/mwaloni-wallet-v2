@@ -30,6 +30,13 @@ if (!function_exists('cleanPhoneNumber')) {
     }
 }
 
+if (!function_exists('cleanAccountName')) {
+    function cleanAccountName($accountName)
+    {
+        return str_replace(['\'', '"', ',', ';', '<', '>', '(', ')', '-'], ' ', $accountName);
+    }
+}
+
 if (!function_exists('getBalance')) {
     function getBalance($str, $type): float
     {
