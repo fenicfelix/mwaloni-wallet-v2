@@ -165,7 +165,6 @@ return [
     'include_files' => [
         '*.log',
         '**/*.log',
-        '/var/www/wallet.mwaloni.com/storage/logs/*',
 
         // You can include paths to other log types as well, such as apache, nginx, and more.
         // This key => value pair can be used to rename and group multiple paths into one folder in the UI.
