@@ -33,7 +33,7 @@
                                     @endif
                                     <div class="col-sm-12">
                                         <x-wallet::form.input type="number" label="Amount" wire:model.defer="withdrawalForm.amount"
-                                            name="Amount" help="Should not exceed {{ number_format($max_amount, 2) }}" required min="0" />
+                                            name="Amount" help="Should not exceed {{ number_format($max_amount, 2) }}" required min="0" max="{{ $max_amount }}" />
                                     </div>
                                 </div>
                                 

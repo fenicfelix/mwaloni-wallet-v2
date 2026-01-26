@@ -30,7 +30,7 @@ class WithdrawService
             "id" => $service->id,
             "account_number" => $withdrawFrom['account_number'],
             "account_name" => $withdrawFrom['account_name'],
-            "channel_id" => $withdrawFrom['channel_id'],
+            "channel_id" => $paymentChannel->id,
             "account_reference" => $withdrawFrom['account_reference'] ?? null,
             "amount" => $withdrawFrom['amount'],
         ];
