@@ -65,7 +65,7 @@ class CoreServiceProvider extends ServiceProvider
         // Define a custom rate limiter for the api-key
         RateLimiter::for('mwaloni-api', function (Request $request) {
             $apiKey = $request->header('x-api-key');
-            return Limit::perMinute(12ß0)
+            return Limit::perMinute(120)
                 ->by($apiKey ?: $request->ip());
         });
 
