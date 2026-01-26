@@ -3,7 +3,6 @@
 namespace Wallet\Core\Services;
 
 use Wallet\Core\Jobs\Daraja\QueryDarajaBalance;
-use Wallet\Core\Jobs\FetchAccountBalance;
 use Wallet\Core\Jobs\Jenga\QueryJengaBalance;
 use Wallet\Core\Jobs\Ncba\QueryNcbaBalance;
 use Wallet\Core\Repositories\AccountRepository;
@@ -31,7 +30,6 @@ class AccountBalanceService
             return true;
         } catch (\Throwable $th) {
             //throw $th;
-            dd($th->getMessage());
             return false;
         }
     }

@@ -4,24 +4,16 @@ declare(strict_types=1);
 
 namespace Wallet\Core\Http\Livewire\Components;
 
-use App\Jobs\Jenga\QueryJengaBalance;
-use App\Jobs\Ncba\QueryNcbaBalance;
 use App\Models\User;
 use Illuminate\Support\Collection;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
 use Livewire\Component;
 use Wallet\Core\Http\Traits\MwaloniWallet;
 use Wallet\Core\Http\Traits\NotifyBrowser;
-use Wallet\Core\Jobs\FetchAccountBalance;
 use Wallet\Core\Jobs\ProcessPayment;
 use Wallet\Core\Models\Account;
 use Wallet\Core\Models\AccountType;
 use Wallet\Core\Models\Currency;
 use Wallet\Core\Models\PaymentChannel;
-use Wallet\Core\Models\Transaction;
-use Wallet\Core\Services\PayloadGeneratorService;
-use Illuminate\Support\Str;
 use Livewire\Attributes\On;
 use Wallet\Core\Repositories\AccountRepository;
 use Wallet\Core\Services\AccountBalanceService;

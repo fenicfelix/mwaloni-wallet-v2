@@ -43,6 +43,11 @@ class Account extends Model
         return $query->where('active', "1");
     }
 
+    public function scopeIsAutoFetch($query)
+    {
+        return $query->where('auto_fetch_balance', "1");
+    }
+
     public function getFloatAttribute()
     {
         $balanceReservations = 0;

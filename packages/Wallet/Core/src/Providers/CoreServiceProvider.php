@@ -22,6 +22,8 @@ use Wallet\Core\Listeners\StanbicStatusReportEventListener;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Http\Request;
+use Wallet\Core\Console\Commands\ClearLogs;
+use Wallet\Core\Console\Commands\FetchAccountBalanceCommand;
 
 class CoreServiceProvider extends ServiceProvider
 {
@@ -47,6 +49,8 @@ class CoreServiceProvider extends ServiceProvider
             $this->commands([
                 CoreMakeLivewire::class,
                 PopulateTransactionMetricTableCommand::class,
+                ClearLogs::class,
+                FetchAccountBalanceCommand::class,
                 TestApi::class,
             ]);
         }
