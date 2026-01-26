@@ -19,6 +19,9 @@ use Wallet\Core\Console\Commands\PopulateTransactionMetricTableCommand;
 use Wallet\Core\Console\Commands\TestApi;
 use Wallet\Core\Http\Livewire\LivewireRegistrar;
 use Wallet\Core\Listeners\StanbicStatusReportEventListener;
+use Illuminate\Cache\RateLimiting\Limit;
+use Illuminate\Support\Facades\RateLimiter;
+use Illuminate\Http\Request;
 
 class CoreServiceProvider extends ServiceProvider
 {
@@ -59,7 +62,14 @@ class CoreServiceProvider extends ServiceProvider
         // Load the web routes
         $this->loadRoutesFrom(__DIR__ . '/../../routes/core.php');
 
-        Route::middleware(['api', VerifyMwaloniHeaders::class])
+        // Define a custom rate limiter for the api-key
+        RateLimiter::for('mwaloni-api', function (Request $request) {
+            $apiKey = $request->header('x-api-key');
+            return Limit::perMinute(12ß0)
+                ->by($apiKey ?: $request->ip());
+        });
+
+        Route::middleware(['api', 'throttle:mwaloni-api', VerifyMwaloniHeaders::class])
             ->prefix('api')
             ->group(__DIR__ . '/../../routes/api.php');
 
