@@ -95,7 +95,16 @@
                         </div>
                         <hr>
                         <div class="form-group row">
-                            <label class="col-sm-12 col-form-label font-weight-bold">Status</label>
+                            <label class="col-sm-12 col-form-label font-weight-bold">Raw Request</label>
+                            <code class="col-sm-12">{{ $transaction->payload?->raw_request }}</code>
+                        </div>
+                        <hr>
+                        <div class="form-group row">
+                            <label class="col-sm-12 col-form-label font-weight-bold">Transaction Payload</label>
+                            <code class="col-sm-12">{{ $transaction->payload?->trx_payload }}</code>
+                        </div>
+                        <div class="form-group row">
+                            <label class="col-sm-12 col-form-label font-weight-bold">Raw Callback</label>
                             <code class="col-sm-12">{{ $transaction->payload?->raw_callback }}</code>
                         </div>
                      </div>
