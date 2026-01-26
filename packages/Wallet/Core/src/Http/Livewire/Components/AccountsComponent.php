@@ -43,6 +43,8 @@ class AccountsComponent extends Component
 
     public ?Account $account = null;
 
+    public ?float $max_cashout_amount = null;
+
     public function mount()
     {
         $this->initializeVariables();
@@ -81,47 +83,32 @@ class AccountsComponent extends Component
             $rules = [
                 'formData.withheld_amount' => 'required|numeric'
             ];
-        } else {
-            if ($this->cashout) {
-                $rules =  [
-                    'cashoutFormData.account_number' => 'required',
-                    'cashoutFormData.channel_id' => 'required|exists:payment_channels,id',
-                    'cashoutFormData.amount' => 'required',
-                    'cashoutFormData.account_reference' => 'required_if:channel_id,==,daraja-paybill',
-                ];
-            } else if ($this->add) {
-                $rules = [
-                    'formData.currency_id' => 'required',
-                    'formData.name' =>  'required',
-                ];
+        } else if ($this->cashout) {
+            $rules =  [
+                'cashoutFormData.account_number' => 'required',
+                'cashoutFormData.channel_id' => 'required|exists:payment_channels,id',
+                'cashoutFormData.amount' => 'required',
+                'cashoutFormData.account_reference' => 'required_if:channel_id,==,daraja-paybill',
+            ];
+        } else if ($this->add) {
+            $rules = [
+                'formData.currency_id' => 'required',
+                'formData.name' =>  'required',
+            ];
 
-                if ($this->formData["account_type_id"] != "1") {
-                    $rules['formData.bank_code'] = 'required';
-                    $rules['formData.branch_code'] = 'required';
-                    $rules['formData.country_name'] = 'required';
-                }
+            if ($this->formData["account_type_id"] != "1") {
+                $rules['formData.bank_code'] = 'required';
+                $rules['formData.branch_code'] = 'required';
+                $rules['formData.country_name'] = 'required';
             }
         }
 
         return $rules;
     }
 
-    public function submitCashout()
-    {
-        $this->customValidate();
-        $cashoutTransaction = app(CashoutService::class)->processCashout($this->cashoutFormData, $this->formId);
-        if ($cashoutTransaction) {
-            ProcessPayment::dispatch($cashoutTransaction->id, $cashoutTransaction->paymentChannel->slug)->onQueue('process-payments');
-            $this->notify("Cashout request has been placed successfully", "success");
-            $this->resetValues();
-        } else {
-            $this->notify("Cashout request has not been placed.", "error");
-        }
-    }
-
     public function store()
     {
-        $this->customValidate();
+        if (!$this->customValidate()) return;
 
         if ($this->formId === null) {
             $account = app(AccountRepository::class)->create($this->formData);
@@ -138,9 +125,22 @@ class AccountsComponent extends Component
         $this->resetValues();
     }
 
+    public function submitCashout()
+    {
+        if (!$this->customValidate()) return;
+        $cashoutTransaction = app(CashoutService::class)->processCashout($this->cashoutFormData, $this->formId);
+        if ($cashoutTransaction) {
+            ProcessPayment::dispatch($cashoutTransaction->id, $cashoutTransaction->paymentChannel->slug)->onQueue('process-payments');
+            $this->notify("Cashout request has been placed successfully", "success");
+            $this->resetValues();
+        } else {
+            $this->notify("Cashout request has not been placed.", "error");
+        }
+    }
+
     public function saveWithheldAmount()
     {
-        $this->customValidate();
+        if (!$this->customValidate()) return;
 
         $account = app(AccountRepository::class)->updateWithheldAmount($this->formId, (float) $this->formData['withheld_amount']);
         if (!$account) {
@@ -173,11 +173,18 @@ class AccountsComponent extends Component
     #[On("cashoutFunction")]
     public function cashoutFunction($id)
     {
+        $this->resetValues();
+
         $this->content_title = "Cashout";
-        $this->add = false;
-        $this->cashout = true;
         $this->formId = $id;
         $this->account = Account::with(['accountType'])->where("id", $this->formId)->first();
+        if (!$this->account) {
+            $this->notify("Account not found.", "error");
+            return;
+        }
+
+        $this->cashout = true;
+        $this->max_cashout_amount = $this->account?->float;
     }
 
     #[On("deactivateAccount")]
@@ -232,11 +239,12 @@ class AccountsComponent extends Component
             $this->validate();
         } catch (\Throwable $th) {
             $this->notify(
-                'There were validation errors. Please check the formData and try again.',
+                'There were validation errors. Please check your data and try again.',
                 'error'
             );
-            return;
+            return false;
         }
+        return true;
     }
 
     public function backAction()
@@ -246,7 +254,7 @@ class AccountsComponent extends Component
 
     private function resetValues()
     {
-        $this->reset("formId", "formData", "add", "editWithheldAmount", "cashout");
+        $this->reset("formId", "formData", "add", "editWithheldAmount", "cashout", "cashoutFormData");
         $this->formData = [
             "account_type_id" => "",
             "country_name" => "Kenya",

@@ -31,7 +31,7 @@
                                                 <option value="">Select Transfer Channel</option>
                                                 @forelse ($payment_channels as $channel)
                                                     @if ($account->accountType->id == $channel->account_type_id && $channel->active == 1)
-                                                        <option value="{{ $channel->id }}">{{ $channel->name }}</option>
+                                                        <option value="{{ $channel->slug }}">{{ $channel->name }}</option>
                                                     @endif
                                                 @empty
                                                     
@@ -77,7 +77,7 @@
                                 @endif
                                 <div class="row">
                                     <div class="col-sm-12">
-                                        <x-wallet::form.input label="Amount" wire:model.defer="cashoutFormData.amount" name="amount" type="number" help="Should not exceed {{ number_format($account->revenue) }}" required />
+                                        <x-wallet::form.input label="Amount" wire:model.defer="cashoutFormData.amount" name="amount" type="number" help="Should not exceed {{ number_format($max_cashout_amount) }}" min="0" max="{{ $max_cashout_amount }}" required />
                                     </div>
                                 </div>
                                 <div class="mt-4">

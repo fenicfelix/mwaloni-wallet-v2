@@ -22,7 +22,7 @@ class CashoutService
     {
         $service = Service::with('account')->find($serviceId);
         // Validate and process cashout request
-        $paymentChannel = PaymentChannel::find($cashout_form['channel_id'])->first();
+        $paymentChannel = PaymentChannel::where('slug', $cashout_form['channel_id'])->first();
         $transaction_charges = $this->getTransactionCharges($cashout_form['amount'], $paymentChannel->id);
         $key_block = sha1($cashout_form['amount'] . $cashout_form['account_number'] . $service->id . $cashout_form['channel_id'] . date('Ymd'));
 
@@ -34,7 +34,7 @@ class CashoutService
                     "id" => $service->id,
                     "account_number" => $cashout_form['account_number'],
                     "account_name" => $cashout_form['account_name'],
-                    "channel_id" => $cashout_form['channel_id'],
+                    "channel_id" => $paymentChannel->id,
                     "account_reference" => $cashout_form['account_reference'] ?? NULL,
                     "amount" => $cashout_form['amount'],
                 ];
