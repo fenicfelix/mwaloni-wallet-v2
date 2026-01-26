@@ -30,7 +30,6 @@ class QueryDarajaBalance implements ShouldQueue
      */
     public function handle()
     {
-        info('Starting Daraja balance query for account ID: ' . $this->accountId);
         $account = Account::find($this->accountId);
         if (!$account) {
             // Handle account not found
