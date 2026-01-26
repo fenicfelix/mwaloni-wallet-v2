@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Log;
 use Wallet\Core\Http\Enums\TransactionType;
 use Wallet\Core\Jobs\ProcessSMS;
 use Wallet\Core\Models\PaymentChannel;
+use Wallet\Core\Models\Transaction;
 
 trait MwaloniWallet
 {
@@ -54,9 +55,12 @@ trait MwaloniWallet
 
     private function generateOrderNumber(TransactionType $transactionType)
     {
-        $order_number = DB::table('transactions')
-            ->where('transaction_type', $transactionType->value)
-            ->max('order_number');
+        $transaction = Transaction::where('transaction_type', $transactionType->value)->orderBy('created_at', 'desc')->first();
+        if(!$transaction) {
+            return "TRX0001";
+        }
+
+        $order_number = $transaction->order_number;
         if ($order_number) {
             $order_number++;
         } else {
