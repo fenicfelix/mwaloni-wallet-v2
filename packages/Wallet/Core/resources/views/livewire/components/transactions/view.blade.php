@@ -103,7 +103,7 @@
                             <label class="col-sm-12 col-form-label font-weight-bold">Transaction Payload</label>
                             <code class="col-sm-12">{{ $transaction->payload?->trx_payload }}</code>
                         </div>
-                        @if ($transaction->payload?->file_pat)
+                        @if ($transaction->payload?->file_path)
                             <div class="form-group row">
                                 <label class="col-sm-12 col-form-label font-weight-bold">File Path</label>
                                 <code class="col-sm-12">{{ $transaction->payload?->file_path }}</code>
