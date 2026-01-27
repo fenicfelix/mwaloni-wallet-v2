@@ -72,7 +72,7 @@
                         </div>
                         <div class="form-group row">
                             <label class="col-sm-4 col-form-label font-weight-bold">Completed at</label>
-                            <label class="col-sm-8 col-form-label transaction-label">{{ date('d M, Y h:i A', strtotime($transaction->completed_at)) ?? "" }}</label>
+                            <label class="col-sm-8 col-form-label transaction-label">{{ $transaction->completed_at ? date('d M, Y h:i A', strtotime($transaction->completed_at)) : "" }}</label>
                         </div>
                         <div class="form-group row">
                             <label class="col-sm-4 col-form-label font-weight-bold">Receipt Number</label>
