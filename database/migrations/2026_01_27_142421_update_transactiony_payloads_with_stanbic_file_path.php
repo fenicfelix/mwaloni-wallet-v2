@@ -11,7 +11,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('transactions_payload', function (Blueprint $table) {
+        Schema::table('transaction_payloads', function (Blueprint $table) {
             $table->string('file_path')->nullable()->after('raw_callback');
         });
     }
@@ -21,8 +21,8 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('transactions_payload', function (Blueprint $table) {
-            //
+        Schema::table('transaction_payloads', function (Blueprint $table) {
+            $table->dropColumn('file_path');
         });
     }
 };
