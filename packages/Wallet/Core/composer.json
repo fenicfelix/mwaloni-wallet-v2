@@ -11,7 +11,7 @@
     "africastalking/africastalking": "^3.0",
     "akika/laravel-mpesa-multivendor": "^0.2.0",
     "akika/laravel-ncba": "^0.2.1",
-    "akika/laravel-stanbic": "^0.0.5",
+    "akika/laravel-stanbic": "^0.0.6",
     "league/flysystem-sftp-v3": "^3.0",
     "laravel/horizon": "^5.22",
     "laravel/sanctum": "^4.0",
