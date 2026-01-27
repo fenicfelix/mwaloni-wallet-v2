@@ -40,7 +40,7 @@ class TransactionRepository implements TransactionRepositoryContract
     public function find(int $id): ?Transaction
     {
         // Implementation for finding a transaction by ID
-        return Transaction::with(["payload", "account.currency"])->find($id);
+        return Transaction::with(["payload", "account"])->find($id);
     }
 
     public function update(int $id, array $data): ?Transaction
