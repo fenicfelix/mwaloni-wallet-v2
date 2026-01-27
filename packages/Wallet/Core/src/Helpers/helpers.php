@@ -40,9 +40,6 @@ if (!function_exists('cleanAccountName')) {
 if (!function_exists('getBalance')) {
     function getBalance($str, $type): float
     {
-        // preg_match('/' . $type . '=([\d\.]+)/', $str, $matches);
-        // $basicAmount = $matches[1] ?? 0;
-        // return (float) $basicAmount;
         $array = explode("&", $str);
         $balance = 0;
         for ($i = 0; $i < sizeof($array); $i++) {
