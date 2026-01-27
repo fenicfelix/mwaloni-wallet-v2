@@ -3,10 +3,9 @@
 namespace Wallet\Core\Repositories;
 
 use Illuminate\Database\Eloquent\Collection;
-use Wallet\Core\Contracts\TransactionRepositoryContract;
 use Wallet\Core\Models\Transaction;
 use Illuminate\Support\Facades\DB;
-use Wallet\Core\Http\Enums\TransactionStatus;
+use Wallet\Core\Contracts\TransactionRepositoryContract;
 use Wallet\Core\Jobs\PushTransactionCallback;
 
 class TransactionRepository implements TransactionRepositoryContract
@@ -41,7 +40,7 @@ class TransactionRepository implements TransactionRepositoryContract
     public function find(int $id): ?Transaction
     {
         // Implementation for finding a transaction by ID
-        return Transaction::with(["payload", "account"])->find($id);
+        return Transaction::with(["payload", "account.currency"])->find($id);
     }
 
     public function update(int $id, array $data): ?Transaction

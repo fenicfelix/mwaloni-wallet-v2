@@ -40,7 +40,7 @@
                         @endif
                         <div class="form-group row">
                             <label class="col-sm-4 col-form-label font-weight-bold">Requested Amount</label>
-                            <label class="col-sm-8 col-form-label transaction-label">KSh. {{ number_format($transaction->requested_amount, 2) }}</label>
+                            <label class="col-sm-8 col-form-label transaction-label">{{$transaction->account->current->code }} {{ number_format($transaction->requested_amount, 2) }}</label>
                         </div>
                         <div class="form-group row">
                             <label class="col-sm-4 col-form-label font-weight-bold">Payment Reason</label>
@@ -103,6 +103,12 @@
                             <label class="col-sm-12 col-form-label font-weight-bold">Transaction Payload</label>
                             <code class="col-sm-12">{{ $transaction->payload?->trx_payload }}</code>
                         </div>
+                        @if ()
+                            <div class="form-group row">
+                                <label class="col-sm-12 col-form-label font-weight-bold">File Path</label>
+                                <code class="col-sm-12">{{ $transaction->payload?->file_path }}</code>
+                            </div>
+                        @endif
                         <div class="form-group row">
                             <label class="col-sm-12 col-form-label font-weight-bold">Raw Callback</label>
                             <code class="col-sm-12">{{ $transaction->payload?->raw_callback }}</code>
