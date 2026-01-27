@@ -35,8 +35,15 @@ class ProcessDarajaPaymentStatusCheck implements ShouldQueue
      */
     public function handle()
     {
-        $transaction = Transaction::with(["account", "payload"])->where("identifier", "=", $this->id)->first();
+        info('ProcessDarajaPaymentStatusCheck started');
+        $transaction = Transaction::with(["account", "payload"])->find($this->id);
+        if (!$transaction) {
+            info("Transaction not found: {$this->id}");
+            return;
+        }
+
         $response = json_decode($this->performTransaction($transaction));
+        info("ProcessDarajaPaymentStatusCheck: Transaction status check completed for transaction: {$response->ResponseCode}");
 
         /// Only update the transaction if status has been queried successfully
         if ($response && isset($response->ResponseCode) && $response->ResponseCode == 0) {
@@ -61,12 +68,14 @@ class ProcessDarajaPaymentStatusCheck implements ShouldQueue
 
     private function performTransaction($transaction)
     {
-        info("Performing transaction status check for transaction: {$transaction->order_number}");
+        info("ProcessDarajaPaymentStatusCheck: Performing transaction status check for transaction: {$transaction->order_number}");
         $account = $transaction->account;
         $mpesa = new Mpesa($account->account_number, $account->consumer_key, $account->consumer_secret, $account->api_username, $account->api_password);
-        $promise = $mpesa->getTransactionStatus($transaction->receipt_number, "shortcode", $transaction->description, route('trx_status_result_url', $transaction->identifier), route('trx_status_timeout_url'), $transaction->original_conversation_id);
+        $promise = $mpesa->getTransactionStatus($transaction->receipt_number, "shortcode", $transaction->description, route('trx_status_result_url', ['id' => $transaction->identifier]), route('trx_status_timeout_url'), $transaction->original_conversation_id);
 
         $response = $promise->wait(); // 🔑 IMPORTANT
+
+        info("ProcessDarajaPaymentStatusCheck: Transaction status check response for transaction: {$transaction->order_number}: " . json_encode($response));
         return $response;
     }
 }

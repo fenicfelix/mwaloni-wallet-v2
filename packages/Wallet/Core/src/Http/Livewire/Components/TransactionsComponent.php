@@ -96,7 +96,7 @@ class TransactionsComponent extends Component
         if (sizeof($transactions) > 0) {
             foreach ($transactions as $transaction) {
                 //Check status only for Daraja
-                if ($transaction->account->account_type_id == 1) ProcessDarajaPaymentStatusCheck::dispatch($transaction->identifier);
+                if ($transaction->account->account_type_id == 1) ProcessDarajaPaymentStatusCheck::dispatch($transaction->id);
             }
             $this->notify(sizeof($transactions) . " transactions status being requested.", "success");
         } else {
@@ -185,30 +185,21 @@ class TransactionsComponent extends Component
     #[On('queryStatus')]
     public function queryStatus($form_id)
     {
-        $this->formId = $form_id;
-        $this->confirm(
-            'Confirm Action',
-            'Are you sure you want to query status for this transaction?',
-            'warning',
-            'Yes, Query',
-            'confirmedQueryStatus'
-        );
-    }
-
-    #[On('confirmedQueryStatus')]
-    public function confirmedQueryStatus()
-    {
-        $transaction = app(TransactionRepository::class)->find($this->formId);
+        $transaction = app(TransactionRepository::class)->find($form_id);
         if (!$transaction) {
             $this->notify("Transaction not found.", "warning");
             return;
         }
         //Check status only for Daraja
-        if ($transaction->account->account_type_id == 1) ProcessDarajaPaymentStatusCheck::dispatch($transaction->identifier);
+        if ($transaction->account->account_type_id == 1) ProcessDarajaPaymentStatusCheck::dispatch($transaction->id);
         $this->notify("Your request has been submitted.", "success");
-        $this->resetValues();
-        $this->list = true;
         $this->dispatch('refreshDatatable');
+    }
+
+    #[On('confirmedQueryStatus')]
+    public function confirmedQueryStatus()
+    {
+        
     }
 
     public function backAction()
