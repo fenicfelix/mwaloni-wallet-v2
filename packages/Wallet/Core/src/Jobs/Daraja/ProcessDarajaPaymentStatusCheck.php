@@ -61,6 +61,7 @@ class ProcessDarajaPaymentStatusCheck implements ShouldQueue
 
     private function performTransaction($transaction)
     {
+        info("Performing transaction status check for transaction: {$transaction->order_number}");
         $account = $transaction->account;
         $mpesa = new Mpesa($account->account_number, $account->consumer_key, $account->consumer_secret, $account->api_username, $account->api_password);
         $promise = $mpesa->getTransactionStatus($transaction->receipt_number, "shortcode", $transaction->description, route('trx_status_result_url', $transaction->identifier), route('trx_status_timeout_url'), $transaction->original_conversation_id);
