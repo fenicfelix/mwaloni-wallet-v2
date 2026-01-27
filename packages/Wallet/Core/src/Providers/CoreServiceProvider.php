@@ -24,6 +24,7 @@ use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Http\Request;
 use Wallet\Core\Console\Commands\ClearLogs;
 use Wallet\Core\Console\Commands\FetchAccountBalanceCommand;
+use Wallet\Core\Console\Commands\ProcessPendingPaymentCommand;
 
 class CoreServiceProvider extends ServiceProvider
 {
@@ -49,6 +50,7 @@ class CoreServiceProvider extends ServiceProvider
             $this->commands([
                 CoreMakeLivewire::class,
                 PopulateTransactionMetricTableCommand::class,
+                ProcessPendingPaymentCommand::class,
                 ClearLogs::class,
                 FetchAccountBalanceCommand::class,
                 TestApi::class,
