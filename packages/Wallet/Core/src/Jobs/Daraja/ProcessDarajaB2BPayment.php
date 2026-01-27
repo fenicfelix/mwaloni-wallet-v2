@@ -81,7 +81,7 @@ class ProcessDarajaB2BPayment implements ShouldQueue
             ];
         }
 
-        app(TransactionRepository::class)->updateTransactionAndPayload(
+        app(TransactionRepository::class)->updateWithPayload(
             $transaction->id,
             $updateData,
             $payloadData

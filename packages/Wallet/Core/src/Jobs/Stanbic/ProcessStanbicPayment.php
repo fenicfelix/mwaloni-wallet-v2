@@ -17,7 +17,9 @@ use Akika\LaravelStanbic\Enums\CountryCode;
 use Akika\LaravelStanbic\Enums\Currency;
 use Akika\LaravelStanbic\Enums\InstructionPriority;
 use Akika\LaravelStanbic\Enums\PaymentMethod;
+use Wallet\Core\Http\Enums\TransactionStatus;
 use Wallet\Core\Models\Transaction;
+use Wallet\Core\Repositories\TransactionRepository;
 
 class ProcessStanbicPayment implements ShouldQueue
 {
@@ -61,6 +63,18 @@ class ProcessStanbicPayment implements ShouldQueue
             ->store();
 
         info("Saved to: \n\t{$filePath}");
+
+        $updateData = [
+            "status" => TransactionStatus::SUBMITTED,
+            "result_description" => "Transaction submitted"
+        ];
+
+        $payloaData = [
+            'file_path' => $filePath
+        ];
+
+        // Update transaction and payload
+        app(TransactionRepository::class)->updateWithPayload($this->transaction->id, $updateData, $payloaData);
     }
 
     public function getPaymentInfo(string $companyName, string $companyAcNo): PaymentInfo

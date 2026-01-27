@@ -50,7 +50,7 @@ class ProcessDarajaPaymentStatusCallback implements ShouldQueue
         if ($transaction->status == TransactionStatus::SUCCESS) {
             return;
         }
-        
+
         $smsMessage = "";
         $payloadData = [
             "raw_callback" => json_encode($this->json)
@@ -98,7 +98,7 @@ class ProcessDarajaPaymentStatusCallback implements ShouldQueue
             $successMessage = str_replace('{transaction}', $transaction->order_number, $successMessage);
         }
 
-        app(TransactionRepository::class)->updateTransactionAndPayload($transaction->id, $updateData, $payloadData);
+        app(TransactionRepository::class)->updateWithPayload($transaction->id, $updateData, $payloadData);
         if ($this->json["Result"]["ResultCode"] == 0) {
             app(TransactionRepository::class)->completeTransaction($transaction->id);
         }

@@ -51,7 +51,7 @@ class ProcessDarajaPaymentStatusCheck implements ShouldQueue
                 "original_conversation_id" => $response->OriginatorConversationID
             ];
 
-            app(TransactionRepository::class)->updateTransactionAndPayload(
+            app(TransactionRepository::class)->updateWithPayload(
                 $transaction->id,
                 $updateData,
                 $payloadData

@@ -72,7 +72,7 @@ class StanbicStatusReportEventListener implements ShouldQueue
                     break;
                 case GroupStatusType::Pdng:
                     $updateData = [
-                        'status' => TransactionStatus::PENDING
+                        'status' => TransactionStatus::SUBMITTED
                     ];
                     break;
                 case GroupStatusType::Rcvd:
@@ -97,8 +97,9 @@ class StanbicStatusReportEventListener implements ShouldQueue
         }
     }
 
-    private function completeOperation($transaction, $groupStatus, $updateData, $payloadData, $successMessage) {
-        $updatedTransaction = app(TransactionRepository::class)->updateTransactionAndPayload(
+    private function completeOperation($transaction, $groupStatus, $updateData, $payloadData, $successMessage)
+    {
+        $updatedTransaction = app(TransactionRepository::class)->updateWithPayload(
             $transaction->id,
             $updateData,
             $payloadData

@@ -65,7 +65,7 @@ class ProcessEquityToEquityPayment implements ShouldQueue
                     "orderNumber" => $transaction->order_number,
                 ];
 
-                if (!app(TransactionRepository::class)->updateTransactionAndPayload($transaction->id, $updateData, $payloadData)) {
+                if (!app(TransactionRepository::class)->updateWithPayload($transaction->id, $updateData, $payloadData)) {
                     throw new \Exception("EQUIYTRANSFER Payment Failed to save " . $transaction->id);
                 }
 

@@ -14,6 +14,7 @@ class TransactionPayload extends Model
         'raw_request',
         'trx_payload',
         'raw_callback',
+        'file_path',
         'transaction_id'
     ];
 

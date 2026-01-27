@@ -25,7 +25,7 @@ class TransactionRepository implements TransactionRepositoryContract
                 ]
             );
 
-            if($revenue > 0){
+            if ($revenue > 0) {
                 $transaction->account->increment('revenue', $revenue);
             }
             return $transaction;
@@ -55,7 +55,7 @@ class TransactionRepository implements TransactionRepositoryContract
         return null;
     }
 
-    public function updateTransactionAndPayload(int $id, array $data, array $payloadData): ?Transaction
+    public function updateWithPayload(int $id, array $data, array $payloadData): ?Transaction
     {
         // Implementation for updating a transaction with payload
         $transaction = Transaction::find($id);

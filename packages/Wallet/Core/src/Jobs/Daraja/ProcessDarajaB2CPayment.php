@@ -71,7 +71,7 @@ class ProcessDarajaB2CPayment implements ShouldQueue
                 "status" => TransactionStatus::FAILED
             ];
         }
-        app(TransactionRepository::class)->updateTransactionAndPayload(
+        app(TransactionRepository::class)->updateWithPayload(
             $transaction->id,
             $updateData,
             $payloadData

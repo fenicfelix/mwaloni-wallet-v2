@@ -53,7 +53,7 @@ class ProcessNcbaPayments implements ShouldQueue
             }
 
             /// Update the transaction status if the transaction has been submitted
-            if($result["resultCode"] != "000") {
+            if ($result["resultCode"] != "000") {
                 info("NCBA Payment failed: " . $result["statusDescription"]);
                 throw new Exception("Error Processing Request", 1);
             }
@@ -68,7 +68,7 @@ class ProcessNcbaPayments implements ShouldQueue
                 "raw_callback" => json_encode($result)
             ];
 
-            app(TransactionRepository::class)->updateTransactionAndPayload($transaction->id, $updateData, $payloadData);
+            app(TransactionRepository::class)->updateWithPayload($transaction->id, $updateData, $payloadData);
             app(TransactionRepository::class)->completeTransaction($transaction->id);
         } catch (\Throwable $th) {
             info("NCBA Payment Exception: " . $th->getMessage());
@@ -80,7 +80,7 @@ class ProcessNcbaPayments implements ShouldQueue
             $payloadData = [
                 "raw_callback" => json_encode($th)
             ];
-            app(TransactionRepository::class)->updateTransactionAndPayload($transaction->id, $updateData, $payloadData);
+            app(TransactionRepository::class)->updateWithPayload($transaction->id, $updateData, $payloadData);
         }
     }
 

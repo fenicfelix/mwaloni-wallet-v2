@@ -13,7 +13,7 @@ interface TransactionRepositoryContract
 
     public function update(int $id, array $data): ?Transaction;
 
-    public function updateTransactionAndPayload(int $id, array $data, array $payloadData): ?Transaction;
+    public function updateWithPayload(int $id, array $data, array $payloadData): ?Transaction;
 
     public function delete(int $id): bool;
 
