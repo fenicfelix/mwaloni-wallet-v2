@@ -84,7 +84,7 @@ class AccountsComponent extends Component
         } else if ($this->cashout) {
             $rules =  [
                 'cashoutFormData.account_number' => 'required',
-                'cashoutFormData.channel_id' => 'required|exists:payment_channels,id',
+                'cashoutFormData.channel_id' => 'required|exists:payment_channels,slug',
                 'cashoutFormData.amount' => 'required',
                 'cashoutFormData.account_reference' => 'required_if:channel_id,==,daraja-paybill',
             ];
