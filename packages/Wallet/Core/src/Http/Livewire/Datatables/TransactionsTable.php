@@ -139,7 +139,15 @@ class TransactionsTable extends DataTableComponent
             Column::make("Status", "status")
                 ->sortable()
                 ->format(function ($value) {
-                    return '<span class="badge bg-' . $value->backgroundColor() . '">' . $value->label() . '</span>';
+                    if (! $value) {
+                        return '<span class="badge bg-secondary">Unknown</span>';
+                    }
+
+                    return sprintf(
+                        '<span class="badge bg-%s">%s</span>',
+                        $value->backgroundColor(),
+                        $value->label()
+                    );
                 })
                 ->html(),
 
