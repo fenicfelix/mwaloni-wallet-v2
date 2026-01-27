@@ -31,7 +31,7 @@ class QueryDarajaTransactionStatus implements ShouldQueue
      */
     public function handle()
     {
-        $transaction = Transaction::with('account')->find($this->transactionId);
+        $transaction = Transaction::with(['account', 'payload'])->find($this->transactionId);
         if (!$transaction) {
             // Handle account not found
             return;
@@ -44,6 +44,6 @@ class QueryDarajaTransactionStatus implements ShouldQueue
         $apiUsername = $account->api_username;
         $apiPassword = $account->api_password;
         $mpesa = new Mpesa($mpesaShortCode, $consumerKey, $consumerSecret, $apiUsername, $apiPassword);
-        return $mpesa->getTransactionStatus($transaction->receipt_number, "shortcode", $transaction->description, route('trx_status_result_url'), route('trx_status_timeout_url'), $transaction->payload?->original_conversation_id);
+        return $mpesa->getTransactionStatus($transaction->receipt_number, "shortcode", $transaction->description, route('trx_status_result_url', $transaction->identifier), route('trx_status_timeout_url'), $transaction->payload?->original_conversation_id);
     }
 }
