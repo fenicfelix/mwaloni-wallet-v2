@@ -62,6 +62,7 @@ class ProcessNcbaPayments implements ShouldQueue
                 "status" => TransactionStatus::SUCCESS,
                 "receipt_number" => $result["txnReferenceNo"],
                 "result_description" => $result["statusDescription"],
+                "completed_at" => now()
             ];
             $payloadData = [
                 "raw_callback" => json_encode($result)
@@ -74,6 +75,7 @@ class ProcessNcbaPayments implements ShouldQueue
             $updateData = [
                 "status" => TransactionStatus::FAILED,
                 "result_description" => $th->getMessage(),
+                "completed_at" => now()
             ];
             $payloadData = [
                 "raw_callback" => json_encode($th)
