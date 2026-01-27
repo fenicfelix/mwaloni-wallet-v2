@@ -70,7 +70,7 @@ class ServicesTable extends DataTableComponent
             Column::make("Active", "active")
                 ->sortable()
                 ->format(
-                fn($value) =>  '<span class="badge badge-circle xs text-' . ($value ? 'success' : 'danger') . ' mx-1"></span>'
+                    fn($value) =>  '<span class="badge badge-circle xs text-' . ($value ? 'success' : 'danger') . ' mx-1"></span>'
                 )->html(),
             Column::make('Action')
                 ->label(
@@ -80,7 +80,7 @@ class ServicesTable extends DataTableComponent
                         $html .= '<a href="#" data-toggle="dropdown"><img height="16" src="' . asset('themes/agile/img/icon_more.png') . '" alt=""></a>';
                         $html .= '<div class="dropdown-menu bg-light" role="menu">';
                         $html .= '<a href="#" class="dropdown-item" data-toggle="modal" wire:click="editFunction(' . $row->id . ')">Edit</a>';
-                        $html .= '<a href="#" wire:click="withdrawCharges(' . $row->id . ')"class="dropdown-item reset-2fa">Withdraw Charges</a>';
+                        $html .= '<a href="#" wire:click="withdrawFees(' . $row->id . ')"class="dropdown-item reset-2fa">Withdraw Fees</a>';
                         $html .= '</div></div>';
                         return $html;
                     }
@@ -94,8 +94,8 @@ class ServicesTable extends DataTableComponent
         $this->dispatch('editFunction', $form_id);
     }
 
-    public function withdrawCharges($form_id)
+    public function withdrawFees($form_id)
     {
-        $this->dispatch('withdrawCharges', $form_id);
+        $this->dispatch('withdrawFees', $form_id);
     }
 }

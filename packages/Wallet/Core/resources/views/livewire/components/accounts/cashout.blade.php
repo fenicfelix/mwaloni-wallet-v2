@@ -26,22 +26,8 @@
                                 </div>
                                 <div class="row">
                                     <div class="col-sm-6">
-                                        <div class="md-form-group float-label">
-                                            <select class="md-input" wire:model="cashoutFormData.channel_id" required>
-                                                <option value="">Select Transfer Channel</option>
-                                                @forelse ($payment_channels as $channel)
-                                                    @if ($account->accountType->id == $channel->account_type_id && $channel->active == 1)
-                                                        <option value="{{ $channel->slug }}">{{ $channel->name }}</option>
-                                                    @endif
-                                                @empty
-                                                    
-                                                @endforelse
-                                            </select>
-                                            <label>Transfer Channel</label>
-                                        </div>
-                                        @error('cashoutFormData.channel_id')
-                                            <small class="text-danger">{{ $message }} </small>
-                                        @enderror
+                                        <x-wallet::form.select label="Channel" wire:model.live="cashoutFormData.channel_id"
+                                            :options="$payment_channels->pluck('name', 'slug')" placeholder="Choose Channel" />
                                     </div>
                                     @if (isset($cashoutFormData['channel_id']) && $cashoutFormData['channel_id'] == "daraja-paybill")
                                         <div id="paybill-option" class="col-sm-6">

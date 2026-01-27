@@ -66,17 +66,26 @@ class ServicesComponent extends Component
 
         $this->clients = Client::get();
         $this->accounts = Account::get();
-        $this->payment_channels = PaymentChannel::get();
     }
 
-    #[On('withdrawCharges')]
-    public function withdrawCharges($formId)
+    #[On('withdrawFees')]
+    public function withdrawFees($formId)
     {
         $this->resetValues();
         $this->formId = $formId;
         $this->withdraw = true;
         $this->service = app(ServiceRepository::class)->findWithAccount($this->formId);
-        $this->max_amount = (($this->service->account->utility_balance + $this->service->account->working_balance) - $this->service->revenue);
+        if (!$this->service) {
+            $this->notify("Service not found.", "error");
+            $this->resetValues();
+            return;
+        }
+
+        $account = $this->service->account;
+        $this->max_amount = (($account->utility_balance + $account->working_balance) - $this->service->revenue);
+        $this->payment_channels = PaymentChannel::where('account_type_id', $account->account_type_id)->get();
+
+        $this->content_title = "Withdraw Fees";
     }
 
     public function rules()
@@ -160,6 +169,7 @@ class ServicesComponent extends Component
         $this->resetValues();
         $this->add = !$this->add;
         $this->formData['password'] = $this->generateRandomString('password');
+        $this->content_title = "Add Service";
     }
 
     #[On('editFunction')]
@@ -172,6 +182,7 @@ class ServicesComponent extends Component
         unset($this->formData['password']);
         unset($this->formData['created_at']);
         unset($this->formData['updated_at']);
+        $this->content_title = "Update Service";
     }
 
     public function backAction()
@@ -181,7 +192,7 @@ class ServicesComponent extends Component
 
     public function resetValues()
     {
-        $this->reset('add', 'formId', 'withdraw', 'service', 'max_amount', 'withdrawalForm', 'formData');
+        $this->reset('content_title', 'add', 'formId', 'withdraw', 'service', 'max_amount', 'withdrawalForm', 'formData');
     }
 
     public function render()

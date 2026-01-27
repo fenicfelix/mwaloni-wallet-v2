@@ -29,7 +29,7 @@ class AccountsComponent extends Component
 
     public array $cashoutFormData = [];
 
-    public ?string $content_title = null;
+    public ?string $content_title = "Accounts Manager";
 
     public bool $add = false;
 
@@ -52,8 +52,6 @@ class AccountsComponent extends Component
 
     public function initializeVariables()
     {
-        $this->content_title = "Accounts Manager";
-
         $this->account_managers = User::orderBy("first_name", "ASC")->get();
         // concatenate first_name and last_name
         $this->account_managers = $this->account_managers->mapWithKeys(function ($manager) {
@@ -70,7 +68,7 @@ class AccountsComponent extends Component
 
         $this->add = false;
 
-        $this->payment_channels = PaymentChannel::get();
+        // $this->payment_channels = PaymentChannel::get();
         $this->account_types = AccountType::get();
         $this->currencies = Currency::get();
     }
@@ -163,10 +161,11 @@ class AccountsComponent extends Component
     public function editFunction($id)
     {
         $this->resetValues();
-        $this->content_title = "Update Account";
         $this->formId = $id;
         $this->add = true;
         $this->formData = app(AccountRepository::class)->find($id)->toArray();
+
+        $this->content_title = "Update Account";
         unset($this->formData['float']);
     }
 
@@ -175,7 +174,6 @@ class AccountsComponent extends Component
     {
         $this->resetValues();
 
-        $this->content_title = "Cashout";
         $this->formId = $id;
         $this->account = Account::with(['accountType'])->where("id", $this->formId)->first();
         if (!$this->account) {
@@ -183,8 +181,16 @@ class AccountsComponent extends Component
             return;
         }
 
+        $this->payment_channels = PaymentChannel::where('account_type_id', $this->account->account_type_id)->get();
+        $this->max_cashout_amount = (float) $this->account?->revenue;
+
+        if ($this->max_cashout_amount <= 0) {
+            $this->notify("No revenue available for cashout.", "error");
+            return;
+        }
+
+        $this->content_title = "Cashout";
         $this->cashout = true;
-        $this->max_cashout_amount = $this->account?->float;
     }
 
     #[On("deactivateAccount")]
@@ -254,7 +260,7 @@ class AccountsComponent extends Component
 
     private function resetValues()
     {
-        $this->reset("formId", "formData", "add", "editWithheldAmount", "cashout", "cashoutFormData");
+        $this->reset("content_title", "formId", "formData", "add", "editWithheldAmount", "cashout", "cashoutFormData");
         $this->formData = [
             "account_type_id" => "",
             "country_name" => "Kenya",

@@ -23,7 +23,7 @@
                                 <div class="row">
                                     <div class="col-sm-6">
                                         <x-wallet::form.select label="Channel" wire:model.live="withdrawalForm.channel_id" :options="$payment_channels->pluck('name', 'slug')"
-                                            placeholder="Choose Channel" />
+                                            />
                                     </div>
                                     @if (isset($withdrawalForm['channel_id']) && $withdrawalForm['channel_id'] == "daraja-paybill")
                                         <div id="paybill-option" class="col-sm-6">
