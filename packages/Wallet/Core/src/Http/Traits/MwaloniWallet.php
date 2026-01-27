@@ -55,8 +55,8 @@ trait MwaloniWallet
 
     private function generateOrderNumber(TransactionType $transactionType)
     {
-        $transaction = Transaction::where('transaction_type', $transactionType->value)->orderBy('id', 'desc')->first();
-        if(!$transaction) {
+        $transaction = Transaction::where('transaction_type', $transactionType->value)->orderByDesc('id')->first();
+        if (!$transaction) {
             return "TRX0001";
         }
 

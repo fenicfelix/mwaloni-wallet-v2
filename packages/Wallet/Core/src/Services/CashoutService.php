@@ -39,7 +39,6 @@ class CashoutService
                     "amount" => $cashout_form['amount'],
                 ];
 
-                $orderNumber = $this->generateOrderNumber(TransactionType::REVENUE_TRANSFER);
                 $payload =  app(PayloadGeneratorService::class)->generatePayload($paymentChannel, $request, $cashout_form['amount']);
                 $transactionData = [
                     "identifier" => Str::uuid(),
@@ -55,7 +54,7 @@ class CashoutService
                     "channel_id" => $paymentChannel->id,
                     "service_id" => $service->id,
                     "transaction_type" => TransactionType::REVENUE_TRANSFER,
-                    "order_number" => $orderNumber,
+                    "order_number" => $this->generateOrderNumber(TransactionType::REVENUE_TRANSFER),
                     "status" => TransactionStatus::PENDING,
                     "system_charges" => 0,
                     "sms_charges" => 0,
