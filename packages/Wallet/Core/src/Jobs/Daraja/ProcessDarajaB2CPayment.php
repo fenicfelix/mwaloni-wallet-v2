@@ -42,7 +42,7 @@ class ProcessDarajaB2CPayment implements ShouldQueue
             return;
         }
 
-        $response = json_decode($this->performTransaction($transaction->identifier, "BusinessPayment", $transaction->account_number, floor($transaction->disbursed_amount), $transaction->description, NULL, $transaction->account));
+        $response = $this->performTransaction($transaction->identifier, "BusinessPayment", $transaction->account_number, floor($transaction->disbursed_amount), $transaction->description, NULL, $transaction->account);
         if ($response) {
             $updateData = [];
             $payloadData = [
@@ -80,7 +80,7 @@ class ProcessDarajaB2CPayment implements ShouldQueue
 
 
 
-    private function performTransaction($transactionID, $commandID, $msisdn, $amount, $remarks, $ocassion, $account): ?string
+    private function performTransaction($transactionID, $commandID, $msisdn, $amount, $remarks, $ocassion, $account): ?object
     {
         $mpesa = new Mpesa($account->account_number, $account->consumer_key, $account->consumer_secret, $account->api_username, $account->api_password);
         $response = $mpesa->b2cTransaction($commandID, $msisdn, $amount, $remarks, route('b2c_result_url', $transactionID), route('b2c_timeout_url'), $ocassion);
@@ -89,16 +89,17 @@ class ProcessDarajaB2CPayment implements ShouldQueue
          * At this point $response is already an HTTP response,
          * NOT a Promise
          */
+        // Normalize to string
         if (is_string($response)) {
-            return $response;
+            return json_decode($response);
         }
 
         if ($response instanceof \Illuminate\Http\Client\Response) {
-            return $response->object(); // Laravel HTTP client
+            return $response->body(); // ✅ string
         }
 
         if ($response instanceof \Psr\Http\Message\ResponseInterface) {
-            return json_decode((string) $response->getBody());
+            return (string) $response->getBody(); // ✅ string
         }
 
         return null;
