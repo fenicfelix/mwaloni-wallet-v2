@@ -43,6 +43,7 @@ class ProcessDarajaB2CPayment implements ShouldQueue
         }
 
         $response = $this->performTransaction($transaction->identifier, "BusinessPayment", $transaction->account_number, floor($transaction->disbursed_amount), $transaction->description, NULL, $transaction->account);
+        info('PAYMENT_RESPONSE: '.json_encode($response));
         if ($response) {
             $updateData = [];
             $payloadData = [
@@ -62,7 +63,7 @@ class ProcessDarajaB2CPayment implements ShouldQueue
             } catch (\Throwable $th) {
                 $updateData = [
                     "status" => TransactionStatus::FAILED,
-                    "result_description" => isset($response->ResultDesc) ? $response->ResultDesc : $response->errorMessage
+                    "result_description" => isset($response->ResultDesc) ? $response->ResultDesc : $th->getMessage()
                 ];
             }
         } else {
