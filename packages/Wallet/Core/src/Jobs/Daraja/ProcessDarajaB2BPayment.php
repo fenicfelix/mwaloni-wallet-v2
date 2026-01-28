@@ -17,6 +17,8 @@ class ProcessDarajaB2BPayment implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
+    public int $tries = 1;
+
     protected $transactionId;
 
     /**
