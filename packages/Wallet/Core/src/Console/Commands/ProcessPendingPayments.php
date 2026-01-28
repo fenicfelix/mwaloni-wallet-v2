@@ -42,7 +42,7 @@ class ProcessPendingPayments extends Command
     {
         $this->info('Processing pending payments...');
         // Here you would add the logic to process pending payments
-        $chunk = 20;
+        $chunk = 5;
         Transaction::where('status', TransactionStatus::PENDING)
             ->chunk($chunk, function ($transactions) {
                 foreach ($transactions as $transaction) {
