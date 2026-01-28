@@ -63,16 +63,16 @@
         },
         {
             "name": "akika/laravel-mpesa-multivendor",
-            "version": "v0.3.3",
+            "version": "v0.3.4",
             "source": {
                 "type": "git",
                 "url": "https://github.com/akikadigital/laravel-mpesa-multivendor.git",
-                "reference": "de23f4545de4ace2fb814687f9a4f4d16f338145"
+                "reference": "ed23155bd4f986fa39d1ed3751fb1cdc3c5d7561"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/akikadigital/laravel-mpesa-multivendor/zipball/de23f4545de4ace2fb814687f9a4f4d16f338145",
-                "reference": "de23f4545de4ace2fb814687f9a4f4d16f338145",
+                "url": "https://api.github.com/repos/akikadigital/laravel-mpesa-multivendor/zipball/ed23155bd4f986fa39d1ed3751fb1cdc3c5d7561",
+                "reference": "ed23155bd4f986fa39d1ed3751fb1cdc3c5d7561",
                 "shasum": ""
             },
             "require": {
@@ -119,9 +119,9 @@
             ],
             "support": {
                 "issues": "https://github.com/akikadigital/laravel-mpesa-multivendor/issues",
-                "source": "https://github.com/akikadigital/laravel-mpesa-multivendor/tree/v0.3.3"
+                "source": "https://github.com/akikadigital/laravel-mpesa-multivendor/tree/v0.3.4"
             },
-            "time": "2026-01-28T15:50:26+00:00"
+            "time": "2026-01-28T16:03:41+00:00"
         },
         {
             "name": "akika/laravel-ncba",
