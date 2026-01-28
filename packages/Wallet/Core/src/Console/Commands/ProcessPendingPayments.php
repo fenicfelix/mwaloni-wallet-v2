@@ -45,10 +45,10 @@ class ProcessPendingPayments extends Command
         // Here you would add the logic to process pending payments
         $id = $this->argument('id');
         $transaction = Transaction::where('order_number', $id)->first();
-        if($transaction) {
+        if ($transaction) {
             $this->info("Processing transaction Order Number: {$transaction->order_number}");
             // Dispatch the job to process the payment
-            app(TransactionRepository::class)->update($transaction, [
+            app(TransactionRepository::class)->update($transaction->id, [
                 'status' => TransactionStatus::PROCESSING,
             ]);
             ProcessPayment::dispatch($transaction->id, $transaction->paymentChannel->slug)->onQueue('process-payments');
