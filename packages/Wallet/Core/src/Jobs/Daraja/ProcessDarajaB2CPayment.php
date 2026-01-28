@@ -78,28 +78,51 @@ class ProcessDarajaB2CPayment implements ShouldQueue
         );
     }
 
+    private function performTransaction(
+        $transactionID,
+        $commandID,
+        $msisdn,
+        $amount,
+        $remarks,
+        $ocassion,
+        $account
+    ): ?object {
+        $mpesa = new Mpesa(
+            $account->account_number,
+            $account->consumer_key,
+            $account->consumer_secret,
+            $account->api_username,
+            $account->api_password
+        );
 
+        $response = $mpesa->b2cTransaction(
+            $commandID,
+            $msisdn,
+            $amount,
+            $remarks,
+            route('b2c_result_url', $transactionID),
+            route('b2c_timeout_url'),
+            $ocassion
+        );
 
-    private function performTransaction($transactionID, $commandID, $msisdn, $amount, $remarks, $ocassion, $account): ?object
-    {
-        $mpesa = new Mpesa($account->account_number, $account->consumer_key, $account->consumer_secret, $account->api_username, $account->api_password);
-        $response = $mpesa->b2cTransaction($commandID, $msisdn, $amount, $remarks, route('b2c_result_url', $transactionID), route('b2c_timeout_url'), $ocassion);
+        // Case 1: SDK already returns decoded object
+        if (is_object($response)) {
+            return $response;
+        }
 
-        /**
-         * At this point $response is already an HTTP response,
-         * NOT a Promise
-         */
-        // Normalize to string
+        // Case 2: Laravel HTTP client response
+        if ($response instanceof \Illuminate\Http\Client\Response) {
+            return $response->object(); // stdClass
+        }
+
+        // Case 3: PSR-7 response
+        if ($response instanceof \Psr\Http\Message\ResponseInterface) {
+            return json_decode((string) $response->getBody());
+        }
+
+        // Case 4: Raw JSON string
         if (is_string($response)) {
             return json_decode($response);
-        }
-
-        if ($response instanceof \Illuminate\Http\Client\Response) {
-            return $response->body(); // ✅ string
-        }
-
-        if ($response instanceof \Psr\Http\Message\ResponseInterface) {
-            return (string) $response->getBody(); // ✅ string
         }
 
         return null;
