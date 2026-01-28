@@ -15,7 +15,7 @@ class ProcessPendingPayments extends Command
      *
      * @var string
      */
-    protected $signature = 'wallet:process-pending-payments {id}';
+    protected $signature = 'wallet:process-pending-payments {id?}';
 
     /**
      * The console command description.
@@ -44,6 +44,16 @@ class ProcessPendingPayments extends Command
         $this->info('Processing pending payments...');
         // Here you would add the logic to process pending payments
         $id = $this->argument('id');
+
+        if ($id) {
+            return $this->processSpecificTransaction($id);
+        }
+
+        return $this->processAllPendingPayments();
+    }
+
+    private function processSpecificTransaction($id): int
+    {
         $transaction = Transaction::where('order_number', $id)->first();
         if ($transaction) {
             $this->info("Processing transaction Order Number: {$transaction->order_number}");
@@ -58,20 +68,33 @@ class ProcessPendingPayments extends Command
 
         $this->error("Transaction with Order Number: {$id} not found.");
         return Command::FAILURE;
+    }
 
-        // $chunk = 1;
-        // Transaction::where('status', TransactionStatus::PENDING)
-        //     ->chunk($chunk, function ($transactions) {
-        //         foreach ($transactions as $transaction) {
-        //             $this->info("Processing transaction Order Number: {$transaction->order_number}");
-        //             // Dispatch the job to process the payment
-        //             app(TransactionRepository::class)->update($transaction, [
-        //                 'status' => TransactionStatus::PROCESSING,
-        //             ]);
-        //             ProcessPayment::dispatch($transaction->id, $transaction->paymentChannel->slug)->onQueue('process-payments');
-        //         }
-        //     });
-        // $this->info('SUCCESS! The pending payments have been processed successfully');
-        // return Command::SUCCESS;
+    private function processAllPendingPayments(): int
+    {
+        $chunk = 1;
+
+        Transaction::where('status', TransactionStatus::PENDING)
+            ->select(['id', 'order_number', 'payment_channel_id'])
+            ->chunkById($chunk, function ($transactions) {
+
+                $ids = $transactions->pluck('id');
+
+                // ✅ ONE bulk update per chunk
+                Transaction::whereIn('id', $ids)
+                    ->update(['status' => TransactionStatus::PROCESSING]);
+
+                foreach ($transactions as $transaction) {
+                    $this->info("Processing transaction Order Number: {$transaction->order_number}");
+
+                    ProcessPayment::dispatch(
+                        $transaction->id,
+                        $transaction->paymentChannel->slug
+                    )->onQueue('process-payments');
+                }
+            });
+
+        $this->info('SUCCESS! Pending payments processed');
+        return Command::SUCCESS;
     }
 }
