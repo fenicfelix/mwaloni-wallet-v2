@@ -11,7 +11,7 @@ class ClearLogs extends Command
      *
      * @var string
      */
-    protected $signature = 'logs:clear';
+    protected $signature = 'wallet:clear-logs';
 
     /**
      * The console command description.
