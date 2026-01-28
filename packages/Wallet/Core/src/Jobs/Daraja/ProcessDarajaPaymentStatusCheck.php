@@ -42,7 +42,7 @@ class ProcessDarajaPaymentStatusCheck implements ShouldQueue
             return;
         }
 
-        $response = json_decode($this->performTransaction($transaction));
+        $response = $this->performTransaction($transaction);
         info("ProcessDarajaPaymentStatusCheck: Transaction status check completed for transaction: {$response->ResponseCode}");
 
         /// Only update the transaction if status has been queried successfully
@@ -66,11 +66,15 @@ class ProcessDarajaPaymentStatusCheck implements ShouldQueue
         }
     }
 
-    private function performTransaction($transaction)
+    private function performTransaction($transaction): ?object
     {
         info("ProcessDarajaPaymentStatusCheck: Performing transaction status check for transaction: {$transaction->order_number}");
         $account = $transaction->account;
         $mpesa = new Mpesa($account->account_number, $account->consumer_key, $account->consumer_secret, $account->api_username, $account->api_password);
-        $mpesa->getTransactionStatus($transaction->receipt_number, "shortcode", $transaction->description, route('trx_status_result_url', ['id' => $transaction->identifier]), route('trx_status_timeout_url'), $transaction->original_conversation_id);
+        $response = $mpesa->getTransactionStatus($transaction->receipt_number, "shortcode", $transaction->description, route('trx_status_result_url', ['id' => $transaction->identifier]), route('trx_status_timeout_url'), $transaction->original_conversation_id);
+
+        info('PAYMENT_RESPONSE: ' . json_encode($response));
+
+        return $response;
     }
 }

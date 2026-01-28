@@ -83,57 +83,14 @@ class ProcessDarajaB2CPayment implements ShouldQueue
         );
     }
 
-    private function performTransaction(
-        $transactionID,
-        $commandID,
-        $msisdn,
-        $amount,
-        $remarks,
-        $ocassion,
-        $account
-    ): ?object {
-        $mpesa = new Mpesa(
-            $account->account_number,
-            $account->consumer_key,
-            $account->consumer_secret,
-            $account->api_username,
-            $account->api_password
-        );
+    private function performTransaction($transactionID, $commandID, $msisdn, $amount, $remarks, $ocassion, $account): ?object
+    {
+        $mpesa = new Mpesa($account->account_number, $account->consumer_key, $account->consumer_secret, $account->api_username, $account->api_password);
 
-        $response = $mpesa->b2cTransaction(
-            $commandID,
-            $msisdn,
-            $amount,
-            $remarks,
-            route('b2c_result_url', $transactionID),
-            route('b2c_timeout_url'),
-            $ocassion
-        );
+        $response = $mpesa->b2cTransaction($commandID, $msisdn, $amount, $remarks, route('b2c_result_url', $transactionID), route('b2c_timeout_url'), $ocassion);
 
-        // Case 1: SDK already returns decoded object
-        if (is_object($response)) {
-            info('PAYMENT_RESPONSE_1: ' . json_encode($response));
-            return $response;
-        }
+        info('PAYMENT_RESPONSE: ' . json_encode($response));
 
-        // Case 2: Laravel HTTP client response
-        if ($response instanceof \Illuminate\Http\Client\Response) {
-            info('PAYMENT_RESPONSE_2: ' . json_encode($response->object()));
-            return $response->object(); // stdClass
-        }
-
-        // Case 3: PSR-7 response
-        if ($response instanceof \Psr\Http\Message\ResponseInterface) {
-            info('PAYMENT_RESPONSE_3: ' . json_encode(json_decode((string) $response->getBody())));
-            return json_decode((string) $response->getBody());
-        }
-
-        // Case 4: Raw JSON string
-        if (is_string($response)) {
-            info('PAYMENT_RESPONSE_4: ' . $response);
-            return json_decode($response);
-        }
-
-        return null;
+        return $response;
     }
 }
