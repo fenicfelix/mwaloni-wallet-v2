@@ -38,36 +38,22 @@ class ProcessPayment implements ShouldQueue
             return;
         }
 
-        info('Channel: ' . $this->channel);
-
         // convert the above cases to use a mapping
-        switch ($this->channel) {
-            case 'daraja-mobile':
-                ProcessDarajaB2CPayment::dispatch($this->transactionId);
-                break;
-            case 'daraja-paybill':
-                ProcessDarajaB2BPayment::dispatch($this->transactionId);
-                break;
-            case 'daraja-till':
-                ProcessDarajaB2BPayment::dispatch($this->transactionId);
-                break;
-            case 'daraja-transfer':
-                ProcessDarajaB2BPayment::dispatch($this->transactionId);
-                break;
-            case 'jenga-pesalink-bank':
-                ProcessJengaPayments::dispatch($this->transactionId);
-                break;
-            case 'jenga-ift':
-                ProcessJengaPayments::dispatch($this->transactionId);
-                break;
-            case 'stanbic':
-                ProcessStanbicPayment::dispatch($this->transactionId);
-                break;
+        $channelMap = [
+            'daraja-mobile' => ProcessDarajaB2CPayment::class,
+            'daraja-paybill' => ProcessDarajaB2BPayment::class,
+            'daraja-till' => ProcessDarajaB2BPayment::class,
+            'daraja-transfer' => ProcessDarajaB2BPayment::class,
+            'jenga-pesalink-bank' => ProcessJengaPayments::class,
+            'jenga-ift' => ProcessJengaPayments::class,
+            'stanbic' => ProcessStanbicPayment::class,
+        ];
 
-            default:
-                Log::warning("Transaction Channel not specified");
-                $this->unknownChannel($this->transactionId);
-                break;
+        if (array_key_exists($this->channel, $channelMap)) {
+            $channelMap[$this->channel]::dispatch($this->transactionId)->onQueue('process-payments');
+        } else {
+            Log::warning("Transaction Channel not specified");
+            $this->unknownChannel($this->transactionId);
         }
     }
 

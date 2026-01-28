@@ -78,12 +78,29 @@ class ProcessDarajaB2CPayment implements ShouldQueue
         );
     }
 
-    private function performTransaction($transactionID, $commandID, $msisdn, $amount, $remarks, $ocassion, $account)
+
+
+    private function performTransaction($transactionID, $commandID, $msisdn, $amount, $remarks, $ocassion, $account): ?string
     {
         $mpesa = new Mpesa($account->account_number, $account->consumer_key, $account->consumer_secret, $account->api_username, $account->api_password);
-        $promise = $mpesa->b2cTransaction($commandID, $msisdn, $amount, $remarks, route('b2c_result_url', $transactionID), route('b2c_timeout_url'), $ocassion);
+        $response = $mpesa->b2cTransaction($commandID, $msisdn, $amount, $remarks, route('b2c_result_url', $transactionID), route('b2c_timeout_url'), $ocassion);
 
-        $response = $promise->wait(); // 🔑 IMPORTANT
-        return $response;
+        /**
+         * At this point $response is already an HTTP response,
+         * NOT a Promise
+         */
+        if (is_string($response)) {
+            return $response;
+        }
+
+        if ($response instanceof \Illuminate\Http\Client\Response) {
+            return $response->object(); // Laravel HTTP client
+        }
+
+        if ($response instanceof \Psr\Http\Message\ResponseInterface) {
+            return json_decode((string) $response->getBody());
+        }
+
+        return null;
     }
 }
