@@ -14,7 +14,7 @@ class ProcessPendingPayments extends Command
      *
      * @var string
      */
-    protected $signature = 'wallet:process-pending-payments';
+    protected $signature = 'wallet:process-pending-payments {id}';
 
     /**
      * The console command description.
@@ -42,16 +42,28 @@ class ProcessPendingPayments extends Command
     {
         $this->info('Processing pending payments...');
         // Here you would add the logic to process pending payments
-        $chunk = 1;
-        Transaction::where('status', TransactionStatus::PENDING)
-            ->chunk($chunk, function ($transactions) {
-                foreach ($transactions as $transaction) {
-                    $this->info("Processing transaction Order Number: {$transaction->order_number}");
-                    // Dispatch the job to process the payment
-                    ProcessPayment::dispatch($transaction->id, $transaction->paymentChannel->slug)->onQueue('process-payments');
-                }
-            });
-        $this->info('SUCCESS! The pending payments have been processed successfully');
-        return Command::SUCCESS;
+        $id = $this->argument('id');
+        $transaction = Transaction::where('order_number', $id)->first();
+        if($transaction) {
+            $this->info("Processing transaction Order Number: {$transaction->order_number}");
+            // Dispatch the job to process the payment
+            ProcessPayment::dispatch($transaction->id, $transaction->paymentChannel->slug)->onQueue('process-payments');
+            $this->info('SUCCESS! The pending payment has been processed successfully');
+            return Command::SUCCESS;
+        }
+
+        $this->error("Transaction with Order Number: {$id} not found.");
+        return Command::FAILURE;
+        // $chunk = 1;
+        // Transaction::where('status', TransactionStatus::PENDING)
+        //     ->chunk($chunk, function ($transactions) {
+        //         foreach ($transactions as $transaction) {
+        //             $this->info("Processing transaction Order Number: {$transaction->order_number}");
+        //             // Dispatch the job to process the payment
+        //             ProcessPayment::dispatch($transaction->id, $transaction->paymentChannel->slug)->onQueue('process-payments');
+        //         }
+        //     });
+        // $this->info('SUCCESS! The pending payments have been processed successfully');
+        // return Command::SUCCESS;
     }
 }
