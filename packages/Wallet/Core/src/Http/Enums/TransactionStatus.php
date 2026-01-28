@@ -70,6 +70,7 @@ enum TransactionStatus: string
             self::REQUESTED => 'info-lt',
             self::CANCELLED => 'danger-lt',
             self::PENDING => 'secondary-lt',
+            self::PROCESSING => 'primary-lt',
             self::SUBMITTED => 'primary-lt',
             self::SUCCESS => 'success-lt',
             self::FAILED => 'danger-lt',
