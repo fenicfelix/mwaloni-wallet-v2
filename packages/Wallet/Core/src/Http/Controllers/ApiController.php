@@ -50,7 +50,7 @@ class ApiController extends Controller
     {
         $orderNumber = $request->post('orderNumber');
 
-        $transaction = Transaction::with(['payload', 'status', 'service.account'])
+        $transaction = Transaction::with(['payload', 'service.account'])
             ->where(
                 fn($q) =>
                 $q->where('order_number', $orderNumber)
