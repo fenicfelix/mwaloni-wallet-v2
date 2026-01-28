@@ -76,8 +76,8 @@ class TransactionsTable extends DataTableComponent
                 ->searchable()
                 ->sortable()
                 ->format(function ($value) {
-                return $value->label();
-            }),
+                    return $value->label();
+                }),
 
             Column::make("Service", 'service.name')
                 ->excludeFromColumnSelect()
@@ -108,9 +108,12 @@ class TransactionsTable extends DataTableComponent
                 ->sortable()
                 ->searchable(),
 
-            Column::make("Account Name", "account.name")
+            Column::make("Account Name", "account_name")
                 ->sortable()
-                ->searchable(),
+                ->searchable()
+                ->format(
+                    fn($value) => ucwords(strtolower($value))
+                ),
 
             Column::make("Amount", "disbursed_amount")
                 ->sortable()
