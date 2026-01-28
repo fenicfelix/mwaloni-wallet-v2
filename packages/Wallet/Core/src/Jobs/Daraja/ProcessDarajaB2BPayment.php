@@ -36,6 +36,7 @@ class ProcessDarajaB2BPayment implements ShouldQueue
      */
     public function handle()
     {
+        info('ProcessDarajaB2BPayment: ' . $this->transactionId);
         $transaction = Transaction::with(["service", "account", "payload"])->where("id", "=", $this->transactionId)->first();
         if (! $transaction) {
             // Ignore the job
@@ -49,17 +50,15 @@ class ProcessDarajaB2BPayment implements ShouldQueue
 
         $account_reference = ($transaction->account_reference) ? $transaction->account_reference : $transaction->order_number;
         $response = json_decode($this->performTransaction($transaction->identifier, $transaction->account_number, floor($transaction->disbursed_amount), $transaction->description, $account_reference, $transaction->account, $isTillNumber));
+        info('ProcessDarajaB2BPayment: ' . $this->transactionId . ' RESPONSE' . json_encode($response));
         if ($response) {
             $updateData = [];
             $payloadData = [
                 'raw_callback' => json_encode($response)
             ];
 
-
-            $payment_results_status = "";
-            $payment_results_desc = "";
-
             try {
+                info('ProcessDarajaB2BPayment: ' . $this->transactionId . ' SUBMITTED');
                 $updateData = [
                     "status" => TransactionStatus::SUBMITTED,
                     "result_description" => $response->ResponseDescription
@@ -69,12 +68,14 @@ class ProcessDarajaB2BPayment implements ShouldQueue
                     "original_conversation_id" => $response->OriginatorConversationID
                 ];
             } catch (\Throwable $th) {
+                info('ProcessDarajaB2BPayment: ' . $this->transactionId . ' ERROR: ' . $th->getMessage());
                 $updateData = [
                     "status" => TransactionStatus::FAILED,
                     "result_description" => $response->ResultDesc
                 ];
             }
         } else {
+            info('ProcessDarajaB2BPayment: ' . $this->transactionId . ' FAILED');
             //Ignore the job
             $updateData = [
                 "status" => TransactionStatus::FAILED
