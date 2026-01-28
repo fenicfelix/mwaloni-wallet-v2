@@ -21,11 +21,11 @@ class ProcessPendingPaymentCommand extends Command
     {
         // Logic to process pending payments
         $this->info('Processing pending payment...');
-        $transactionId = $this->argument('id');
-        $this->info("Processing transaction ID: {$transactionId}");
-        $transaction = Transaction::with('paymentChannel')->find($transactionId);
+        $orderNumber = $this->argument('id');
+        $this->info("Processing transaction ID: {$orderNumber}");
+        $transaction = Transaction::with('paymentChannel')->where('order_number', $orderNumber)->first();
         if (! $transaction) {
-            $this->error("Transaction with ID {$transactionId} not found.");
+            $this->error("Transaction with ID {$orderNumber} not found.");
             return;
         }
 
