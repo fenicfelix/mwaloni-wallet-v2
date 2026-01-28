@@ -18,7 +18,7 @@ class TransactionRepository implements TransactionRepositoryContract
             $transaction->payload()->create($payloadData);
             $transaction->balanceReservations()->create(
                 [
-                    'account_id' => $transaction->service_id,
+                    'account_id' => $transaction->account_id,
                     'transaction_id' => $transaction->id,
                     'amount' => $transaction->disbursed_amount
                 ]

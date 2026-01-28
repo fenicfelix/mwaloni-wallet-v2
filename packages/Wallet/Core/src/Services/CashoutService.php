@@ -9,6 +9,7 @@ use Wallet\Core\Http\Enums\TransactionStatus;
 use Wallet\Core\Http\Enums\TransactionType;
 use Wallet\Core\Http\Traits\MwaloniWallet;
 use Illuminate\Support\Str;
+use Wallet\Core\Models\Account;
 use Wallet\Core\Models\Service;
 use Wallet\Core\Models\Transaction;
 use Wallet\Core\Repositories\TransactionRepository;
@@ -18,20 +19,20 @@ class CashoutService
     use MwaloniWallet;
 
     // Cashout service methods go here
-    public function processCashout(array $cashout_form, int $serviceId)
+    public function processCashout(array $cashout_form, int $accountId)
     {
-        $service = Service::with('account')->find($serviceId);
+        $account = Account::find($accountId);
         // Validate and process cashout request
         $paymentChannel = PaymentChannel::where('slug', $cashout_form['channel_id'])->first();
         $transaction_charges = $this->getTransactionCharges($cashout_form['amount'], $paymentChannel->id);
-        $key_block = sha1($cashout_form['amount'] . $cashout_form['account_number'] . $service->id . $cashout_form['channel_id'] . date('Ymd'));
+        $key_block = sha1($cashout_form['amount'] . $cashout_form['account_number'] . $account->id . $cashout_form['channel_id'] . date('Ymd'));
 
         $transaction = DB::transaction(
-            function () use ($key_block, $paymentChannel, $transaction_charges, $cashout_form, $service) {
+            function () use ($key_block, $paymentChannel, $transaction_charges, $cashout_form, $account) {
 
                 $request = [
                     "type" => "revenue",
-                    "id" => $service->id,
+                    "id" => $account->id,
                     "account_number" => $cashout_form['account_number'],
                     "account_name" => $cashout_form['account_name'],
                     "channel_id" => $paymentChannel->id,
@@ -39,6 +40,7 @@ class CashoutService
                     "amount" => $cashout_form['amount'],
                 ];
 
+                $request['order_number'] = $this->generateOrderNumber(TransactionType::REVENUE_TRANSFER);
                 $payload =  app(PayloadGeneratorService::class)->generatePayload($paymentChannel, $request, $cashout_form['amount']);
                 $transactionData = [
                     "identifier" => Str::uuid(),
@@ -50,11 +52,11 @@ class CashoutService
                     "key_block" => $key_block,
                     "reference" => $payload["reference"] ?? date('ymdhis'),
                     "description" => "Revenue Cashout",
-                    "account_id" => $service->account->id,
+                    "account_id" => $account->id,
                     "channel_id" => $paymentChannel->id,
-                    "service_id" => $service->id,
+                    "service_id" => NULL,
                     "transaction_type" => TransactionType::REVENUE_TRANSFER,
-                    "order_number" => $this->generateOrderNumber(TransactionType::REVENUE_TRANSFER),
+                    "order_number" => $request['order_number'],
                     "status" => TransactionStatus::PENDING,
                     "system_charges" => 0,
                     "sms_charges" => 0,
@@ -75,8 +77,8 @@ class CashoutService
                 if (!$transaction) return false;
 
                 //Add to revenue
-                $service->account->revenue -= $cashout_form['amount'];
-                if (!$service->account->save()) return false;
+                $account->revenue -= $cashout_form['amount'];
+                if (!$account->save()) return false;
 
                 return $transaction;
             },
