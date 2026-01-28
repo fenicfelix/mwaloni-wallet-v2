@@ -29,7 +29,7 @@ class ProcessPendingPaymentCommand extends Command
             return;
         }
 
-        ProcessPayment::dispatch($transaction->id, $transaction->paymentChannel->slug)->onQueue('process-payments');
+        // ProcessPayment::dispatch($transaction->id, $transaction->paymentChannel->slug)->onQueue('process-payments');
         $this->info('Payment processing job dispatched successfully.');
     }
 }

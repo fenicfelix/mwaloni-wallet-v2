@@ -128,7 +128,7 @@ class AccountsComponent extends Component
         if (!$this->customValidate()) return;
         $cashoutTransaction = app(CashoutService::class)->processCashout($this->cashoutFormData, $this->formId);
         if ($cashoutTransaction) {
-            ProcessPayment::dispatch($cashoutTransaction->id, $cashoutTransaction->paymentChannel->slug)->onQueue('process-payments');
+            // ProcessPayment::dispatch($cashoutTransaction->id, $cashoutTransaction->paymentChannel->slug)->onQueue('process-payments');
             $this->notify("Cashout request has been placed successfully", "success");
             $this->resetValues();
         } else {

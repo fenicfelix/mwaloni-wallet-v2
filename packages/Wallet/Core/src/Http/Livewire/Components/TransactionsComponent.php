@@ -162,7 +162,7 @@ class TransactionsComponent extends Component
                     "trx_payload" => json_encode($trx_payload)
                 ]);
 
-                ProcessPayment::dispatch($this->transaction->id, $this->transaction->paymentChannel->slug)->onQueue('process-payments');
+                // ProcessPayment::dispatch($this->transaction->id, $this->transaction->paymentChannel->slug)->onQueue('process-payments');
                 $this->notify("The retry request has been sent.", "success");
             }
         } else {
