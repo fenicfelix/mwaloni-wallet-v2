@@ -76,7 +76,7 @@ class ApiController extends Controller
 
         return $this->success([
             'message' => $message,
-            'orderStatus' => $transaction->status->name,
+            'orderStatus' => $transaction->status->label(),
         ]);
     }
 
