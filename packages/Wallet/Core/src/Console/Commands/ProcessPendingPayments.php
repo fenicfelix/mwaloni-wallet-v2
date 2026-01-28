@@ -21,7 +21,7 @@ class ProcessPendingPayments extends Command
      *
      * @var string
      */
-    protected $description = 'Command to clear logs files to free up disk space';
+    protected $description = 'Command to process all pending payments in the system';
 
     /**
      * Create a new command instance.
