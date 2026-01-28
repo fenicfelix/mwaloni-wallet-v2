@@ -100,7 +100,7 @@ class ProcessDarajaB2BPayment implements ShouldQueue
             $response = $mpesa->b2bPaybill($destShortcode, $amount, $remarks, $accountRef, route('b2b_result_url', $transactionID), route('b2b_timeout_url'));
         }
 
-        info('PAYMENT_RESPONSE: ' . json_encode($response));
+        info('PAYMENT_RESPONSE: ' . $response);
 
         return $response;
     }

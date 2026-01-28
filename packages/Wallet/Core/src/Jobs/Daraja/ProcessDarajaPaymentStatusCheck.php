@@ -43,7 +43,7 @@ class ProcessDarajaPaymentStatusCheck implements ShouldQueue
         }
 
         $response = json_decode($this->performTransaction($transaction));
-        info("ProcessDarajaPaymentStatusCheck: Transaction status check completed for transaction: {$response->ResponseCode}");
+        info("ProcessDarajaPaymentStatusCheck: " . json_encode($response));
 
         /// Only update the transaction if status has been queried successfully
         if ($response && isset($response->ResponseCode) && $response->ResponseCode == 0) {
@@ -73,7 +73,7 @@ class ProcessDarajaPaymentStatusCheck implements ShouldQueue
         $mpesa = new Mpesa($account->account_number, $account->consumer_key, $account->consumer_secret, $account->api_username, $account->api_password);
         $response = $mpesa->getTransactionStatus($transaction->receipt_number, "shortcode", $transaction->description, route('trx_status_result_url', ['id' => $transaction->identifier]), route('trx_status_timeout_url'), $transaction->original_conversation_id);
 
-        info('PAYMENT_RESPONSE: ' . json_encode($response));
+        info('PAYMENT_RESPONSE: ' . $response);
 
         return $response;
     }
