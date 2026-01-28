@@ -155,7 +155,6 @@ class ServicesComponent extends Component
     {
         $transaction = app(WithdrawService::class)->processWithdrawal($this->service->id, $this->withdrawalForm);
         if ($transaction) {
-            // ProcessPayment::dispatch($transaction->id, $transaction->paymentChannel->slug)->onQueue('process-payments');
             $this->notify("Cashout is being processed.", "success");
             $this->resetValues();
         } else {

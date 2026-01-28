@@ -96,8 +96,6 @@ class ApiController extends Controller
 
             $transaction = $this->MakePaymentService->sendMoney($request, $service);
 
-            // ProcessPayment::dispatch($transaction->id, $transaction->paymentChannel->slug)->onQueue('process-payments');
-
             return $this->success(['message' => 'Cashout was successful.', 'reference' => $transaction->identifier]);
         } catch (\DomainException $e) {
             return $this->error($e->getMessage());
