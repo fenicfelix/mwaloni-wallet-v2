@@ -6,6 +6,7 @@
                 <span class="float-right">
                     <small class="text-muted font-italic">Last Updated: {{ $transactionMetrics?->updated_at->diffForHumans()
                         }}</small>
+                        <button class="btn btn-dark btn-sm i-con-h-a" wire:click="refreshData"><i class="i-con i-con-refresh"></i></button>
                 </span>
             </div>
         </div>

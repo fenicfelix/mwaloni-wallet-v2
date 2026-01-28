@@ -6,6 +6,7 @@ use Wallet\Core\Models\Outbox;
 use Wallet\Core\Models\TransactionMetric;
 use Illuminate\Support\Facades\DB;
 use Livewire\Component;
+use Wallet\Core\Jobs\PopulateTransactionMetricTable;
 
 class DashboardComponent extends Component
 {
@@ -65,6 +66,10 @@ class DashboardComponent extends Component
         return $result;
     }
 
+    public function refreshData()
+    {
+        PopulateTransactionMetricTable::dispatch()->onQueue('default');
+    }
 
     public function render()
     {
