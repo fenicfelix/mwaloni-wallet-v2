@@ -72,7 +72,7 @@ class ProcessPendingPayments extends Command
 
     private function processAllPendingPayments(): int
     {
-        $chunk = 1;
+        $chunk = 5;
 
         Transaction::where('status', TransactionStatus::PENDING)
             ->select(['id', 'order_number', 'payment_channel_id'])
