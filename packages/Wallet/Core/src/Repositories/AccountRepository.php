@@ -81,4 +81,28 @@ class AccountRepository implements AccountRepositoryContract
         // Implementation for listing all Accounts with filters
         return Account::where($filters)->get();
     }
+
+    public function deductRevenue(int $id, float $amount): ?Account
+    {
+        // Implementation for deducting revenue from a Account
+        $Account = Account::find($id);
+        if ($Account) {
+            $Account->revenue -= $amount;
+            $Account->save();
+            return $Account;
+        }
+        return null;
+    }
+
+    public function addRevenue(int $id, float $amount): ?Account
+    {
+        // Implementation for adding revenue to a Account
+        $Account = Account::find($id);
+        if ($Account) {
+            $Account->revenue += $amount;
+            $Account->save();
+            return $Account;
+        }
+        return null;
+    }
 }

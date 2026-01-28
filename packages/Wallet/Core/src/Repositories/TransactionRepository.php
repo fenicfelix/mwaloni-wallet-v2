@@ -25,7 +25,7 @@ class TransactionRepository implements TransactionRepositoryContract
             );
 
             if ($revenue > 0) {
-                $transaction->account->increment('revenue', $revenue);
+                app(AccountRepository::class)->addRevenue($transaction->account_id, $revenue);
             }
             return $transaction;
         });

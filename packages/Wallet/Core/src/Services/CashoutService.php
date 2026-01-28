@@ -10,8 +10,7 @@ use Wallet\Core\Http\Enums\TransactionType;
 use Wallet\Core\Http\Traits\MwaloniWallet;
 use Illuminate\Support\Str;
 use Wallet\Core\Models\Account;
-use Wallet\Core\Models\Service;
-use Wallet\Core\Models\Transaction;
+use Wallet\Core\Repositories\AccountRepository;
 use Wallet\Core\Repositories\TransactionRepository;
 
 class CashoutService
@@ -21,14 +20,15 @@ class CashoutService
     // Cashout service methods go here
     public function processCashout(array $cashout_form, int $accountId)
     {
-        $account = Account::find($accountId);
+        $accountRepository = app(AccountRepository::class);
+        $account = $accountRepository->find($accountId);
         // Validate and process cashout request
         $paymentChannel = PaymentChannel::where('slug', $cashout_form['channel_id'])->first();
         $transaction_charges = $this->getTransactionCharges($cashout_form['amount'], $paymentChannel->id);
         $key_block = sha1($cashout_form['amount'] . $cashout_form['account_number'] . $account->id . $cashout_form['channel_id'] . date('Ymd'));
 
         $transaction = DB::transaction(
-            function () use ($key_block, $paymentChannel, $transaction_charges, $cashout_form, $account) {
+            function () use ($accountRepository, $key_block, $paymentChannel, $transaction_charges, $cashout_form, $account) {
 
                 $request = [
                     "type" => "revenue",
@@ -76,9 +76,9 @@ class CashoutService
                 $transaction = app(TransactionRepository::class)->create($transactionData, $payloadData);
                 if (!$transaction) return false;
 
-                //Add to revenue
-                $account->revenue -= $cashout_form['amount'];
-                if (!$account->save()) return false;
+                // deduct revenue from account
+                $deductRevenue = $accountRepository->deductRevenue($account->id, $cashout_form['amount']);
+                if (!$deductRevenue) return false;
 
                 return $transaction;
             },

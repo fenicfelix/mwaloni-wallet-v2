@@ -20,4 +20,8 @@ interface AccountRepositoryContract
     public function delete(int $id): bool;
 
     public function all(array $filters): Collection;
+
+    public function deductRevenue(int $id, float $amount): ?Account;
+
+    public function addRevenue(int $id, float $amount): ?Account;
 }
