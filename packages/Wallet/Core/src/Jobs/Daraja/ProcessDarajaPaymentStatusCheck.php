@@ -71,11 +71,6 @@ class ProcessDarajaPaymentStatusCheck implements ShouldQueue
         info("ProcessDarajaPaymentStatusCheck: Performing transaction status check for transaction: {$transaction->order_number}");
         $account = $transaction->account;
         $mpesa = new Mpesa($account->account_number, $account->consumer_key, $account->consumer_secret, $account->api_username, $account->api_password);
-        $promise = $mpesa->getTransactionStatus($transaction->receipt_number, "shortcode", $transaction->description, route('trx_status_result_url', ['id' => $transaction->identifier]), route('trx_status_timeout_url'), $transaction->original_conversation_id);
-
-        $response = $promise->wait(); // 🔑 IMPORTANT
-
-        info("ProcessDarajaPaymentStatusCheck: Transaction status check response for transaction: {$transaction->order_number}: " . json_encode($response));
-        return $response;
+        $mpesa->getTransactionStatus($transaction->receipt_number, "shortcode", $transaction->description, route('trx_status_result_url', ['id' => $transaction->identifier]), route('trx_status_timeout_url'), $transaction->original_conversation_id);
     }
 }
