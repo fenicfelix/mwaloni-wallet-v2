@@ -108,7 +108,7 @@ class TransactionsTable extends DataTableComponent
                 ->sortable()
                 ->searchable(),
 
-            Column::make("Account Name", "account_name")
+            Column::make("Recipient Name", "account_name")
                 ->sortable()
                 ->searchable()
                 ->format(

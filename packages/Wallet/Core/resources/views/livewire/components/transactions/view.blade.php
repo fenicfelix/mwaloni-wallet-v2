@@ -25,7 +25,7 @@
                             <label class="col-sm-8 col-form-label transaction-label">{{ $transaction->account_number }}</label>
                         </div>
                         <div class="form-group row">
-                            <label class="col-sm-4 col-form-label font-weight-bold">Account Name</label>
+                            <label class="col-sm-4 col-form-label font-weight-bold">Recipient Name</label>
                             <label class="col-sm-8 col-form-label transaction-label">{{ ucwords(strtolower($transaction->account_name)) ?? 'Not Provided' }}</label>
                         </div>
                         <div class="form-group row">
