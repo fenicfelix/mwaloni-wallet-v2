@@ -38,6 +38,7 @@ class ProcessDarajaB2BCallback implements ShouldQueue
      */
     public function handle()
     {
+        info('ProcessDarajaB2BCallback: ' . $this->transactionId . ' JSON: ' . json_encode($this->json));
         $balance = NULL;
         $completed_at = date("Y-m-d H:i:s");
         $transaction = Transaction::with(["account", "service", "payload"])->where("identifier", $this->transactionId)->first();
@@ -79,10 +80,10 @@ class ProcessDarajaB2BCallback implements ShouldQueue
                     $transaction->completed_at = $completed_at;
                     $smsMessage = str_replace('{datetime}', date("Y-m-d", strtotime($completed_at)) . " at " . date("H:i:s", strtotime($completed_at)), $smsMessage);
                 }
-                if ($parameter["Key"] == "DebitAccountCurrentBalance") {
-                    $balance = getBalance($parameter["Value"], "BasicAmount");
-                    $smsMessage = str_replace('{balance}', number_format($balance), $smsMessage);
-                }
+                // if ($parameter["Key"] == "DebitAccountCurrentBalance") {
+                //     $balance = getBalance($parameter["Value"], "BasicAmount");
+                //     $smsMessage = str_replace('{balance}', number_format($balance), $smsMessage);
+                // }
             }
 
             // Final SMS Message Formatting
