@@ -9,7 +9,6 @@ use Illuminate\Support\Collection;
 use Livewire\Component;
 use Wallet\Core\Http\Traits\MwaloniWallet;
 use Wallet\Core\Http\Traits\NotifyBrowser;
-use Wallet\Core\Jobs\ProcessPayment;
 use Wallet\Core\Models\Account;
 use Wallet\Core\Models\AccountType;
 use Wallet\Core\Models\Currency;

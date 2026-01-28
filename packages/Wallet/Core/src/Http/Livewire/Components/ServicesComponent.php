@@ -4,10 +4,7 @@ declare(strict_types=1);
 
 namespace Wallet\Core\Http\Livewire\Components;
 
-use App\Models\User;
 use Illuminate\Database\Eloquent\Collection;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Livewire\Component;
 use Wallet\Core\Http\Traits\MwaloniWallet;
@@ -18,8 +15,6 @@ use Wallet\Core\Models\PaymentChannel;
 use Wallet\Core\Models\Service;
 use Illuminate\Support\Str;
 use Livewire\Attributes\On;
-use Wallet\Core\Jobs\ProcessPayment;
-use Wallet\Core\Models\Transaction;
 use Wallet\Core\Repositories\ServiceRepository;
 use Wallet\Core\Services\WithdrawService;
 

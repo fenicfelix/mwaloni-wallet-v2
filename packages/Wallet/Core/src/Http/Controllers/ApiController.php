@@ -7,7 +7,6 @@ use Wallet\Core\Http\Traits\MwaloniWallet;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Log;
-use Wallet\Core\Jobs\ProcessPayment;
 use Wallet\Core\Models\Service;
 use Wallet\Core\Models\Transaction;
 use Wallet\Core\Services\MakePaymentService;

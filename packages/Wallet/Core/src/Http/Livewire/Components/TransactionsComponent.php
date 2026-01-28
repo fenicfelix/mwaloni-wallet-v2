@@ -11,7 +11,6 @@ use Livewire\Component;
 use Wallet\Core\Http\Enums\TransactionStatus;
 use Wallet\Core\Http\Traits\NotifyBrowser;
 use Wallet\Core\Jobs\Daraja\ProcessDarajaPaymentStatusCheck;
-use Wallet\Core\Jobs\ProcessPayment;
 use Wallet\Core\Models\Transaction;
 use Wallet\Core\Models\TransactionMetric;
 use Wallet\Core\Repositories\TransactionRepository;
