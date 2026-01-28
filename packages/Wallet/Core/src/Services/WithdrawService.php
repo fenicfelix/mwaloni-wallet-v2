@@ -25,6 +25,7 @@ class WithdrawService
         $paymentChannel = PaymentChannel::where("slug", $withdrawFrom['channel_id'])->first();
         $transaction_charges = $this->getTransactionCharges($withdrawFrom['amount'], $paymentChannel->id);
 
+        $order_number = $this->generateOrderNumber(TransactionType::SERVICE_CHARGE);
         $request = [
             "type" => "withdraw",
             "id" => $service->id,
@@ -33,6 +34,7 @@ class WithdrawService
             "channel_id" => $paymentChannel->id,
             "account_reference" => $withdrawFrom['account_reference'] ?? null,
             "amount" => $withdrawFrom['amount'],
+            "order_number" => $order_number
         ];
 
         return $transaction = DB::transaction(
@@ -54,7 +56,7 @@ class WithdrawService
                     "channel_id" => $paymentChannel->id,
                     "service_id" => $service->id,
                     "transaction_type" => TransactionType::SERVICE_CHARGE,
-                    "order_number" => $this->generateOrderNumber(TransactionType::SERVICE_CHARGE),
+                    "order_number" => $order_number,
                     "status" => TransactionStatus::PENDING,
                     "system_charges" => 0,
                     "sms_charges" => 0,
