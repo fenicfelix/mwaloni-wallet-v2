@@ -63,16 +63,16 @@
         },
         {
             "name": "akika/laravel-mpesa-multivendor",
-            "version": "v0.3.2",
+            "version": "v0.3.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/akikadigital/laravel-mpesa-multivendor.git",
-                "reference": "a18dee03f9922ea831f99b47b7329dab1eb87134"
+                "reference": "de23f4545de4ace2fb814687f9a4f4d16f338145"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/akikadigital/laravel-mpesa-multivendor/zipball/a18dee03f9922ea831f99b47b7329dab1eb87134",
-                "reference": "a18dee03f9922ea831f99b47b7329dab1eb87134",
+                "url": "https://api.github.com/repos/akikadigital/laravel-mpesa-multivendor/zipball/de23f4545de4ace2fb814687f9a4f4d16f338145",
+                "reference": "de23f4545de4ace2fb814687f9a4f4d16f338145",
                 "shasum": ""
             },
             "require": {
@@ -119,9 +119,9 @@
             ],
             "support": {
                 "issues": "https://github.com/akikadigital/laravel-mpesa-multivendor/issues",
-                "source": "https://github.com/akikadigital/laravel-mpesa-multivendor/tree/v0.3.2"
+                "source": "https://github.com/akikadigital/laravel-mpesa-multivendor/tree/v0.3.3"
             },
-            "time": "2026-01-28T12:44:49+00:00"
+            "time": "2026-01-28T15:50:26+00:00"
         },
         {
             "name": "akika/laravel-ncba",
@@ -8366,11 +8366,11 @@
             "dist": {
                 "type": "path",
                 "url": "packages/Wallet/Core",
-                "reference": "91ee3cf8a2e1ddce0b86bfad2bef68ab63f1e9cf"
+                "reference": "a5d68f1d6eac93c808d04507420f2cfdc6de28fc"
             },
             "require": {
                 "africastalking/africastalking": "^3.0",
-                "akika/laravel-mpesa-multivendor": "^0.3.2",
+                "akika/laravel-mpesa-multivendor": "^0.3.3",
                 "akika/laravel-ncba": "^0.2.1",
                 "akika/laravel-stanbic": "^0.0.6",
                 "illuminate/support": "^8.0|^9.0|^10.0|^11.0|^12.0",

@@ -41,7 +41,25 @@ class QueryDarajaBalance implements ShouldQueue
         $consumerSecret = $account->consumer_secret;
         $apiUsername = $account->api_username;
         $apiPassword = $account->api_password;
+
+        $response = $this->performBalanceQuery(
+            $account,
+            $mpesaShortCode,
+            $consumerKey,
+            $consumerSecret,
+            $apiUsername,
+            $apiPassword
+        );
+
+        info('FINAL_BALANCE_RESPONSE: ' . $response);
+    }
+
+    private function performBalanceQuery($account, $mpesaShortCode, $consumerKey, $consumerSecret, $apiUsername, $apiPassword): ?string
+    {
         $mpesa = new Mpesa($mpesaShortCode, $consumerKey, $consumerSecret, $apiUsername, $apiPassword);
-        $mpesa->getBalance(route('balance_result_url', $account->identifier), route('balance_timeout_url'));
+        $response = $mpesa->getBalance(route('balance_result_url', $account->identifier), route('balance_timeout_url'));
+
+        info('BALANCE_RESPONSE: ' . $response);
+        return $response;
     }
 }
