@@ -79,6 +79,14 @@ class TransactionsTable extends DataTableComponent
                     return $value->label();
                 }),
 
+            Column::make("Account", 'account.name')
+                ->excludeFromColumnSelect()
+                ->searchable()
+                ->sortable()
+                ->format(
+                    fn($value) => $value ?? '-'
+                ),
+
             Column::make("Service", 'service.name')
                 ->excludeFromColumnSelect()
                 ->searchable()
@@ -104,7 +112,7 @@ class TransactionsTable extends DataTableComponent
                     fn($value) => $value ?? '-'
                 ),
 
-            Column::make("Account No.", "account_number")
+            Column::make("Recipient Acc.", "account_number")
                 ->sortable()
                 ->searchable(),
 
