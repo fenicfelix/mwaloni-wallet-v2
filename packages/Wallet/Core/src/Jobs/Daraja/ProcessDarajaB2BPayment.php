@@ -50,17 +50,21 @@ class ProcessDarajaB2BPayment implements ShouldQueue
             $isTillNumber = true;
         }
 
-        $account_reference = ($transaction->account_reference) ? $transaction->account_reference : $transaction->order_number;
-        $this->performTransaction($transaction->identifier, $transaction->account_number, floor($transaction->disbursed_amount), $transaction->description, $account_reference, $transaction->account, $isTillNumber);
-        $updateData = [
-            "status" => TransactionStatus::SUBMITTED,
-            "result_description" => "Transaction submitted successfully"
-        ];
+        try {
+            $account_reference = ($transaction->account_reference) ? $transaction->account_reference : $transaction->order_number;
+            $this->performTransaction($transaction->identifier, $transaction->account_number, floor($transaction->disbursed_amount), $transaction->description, $account_reference, $transaction->account, $isTillNumber);
+            $updateData = [
+                "status" => TransactionStatus::SUBMITTED,
+                "result_description" => "Transaction submitted successfully"
+            ];
 
-        app(TransactionRepository::class)->update(
-            $transaction->id,
-            $updateData
-        );
+            app(TransactionRepository::class)->update(
+                $transaction->id,
+                $updateData
+            );
+        } catch (\Throwable $th) {
+            //throw $th;
+        }
         
         /*info('ProcessDarajaB2BPayment: ' . $this->transactionId . ' RESPONSE' . json_encode($response));
         if ($response) {

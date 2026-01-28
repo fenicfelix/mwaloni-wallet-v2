@@ -44,17 +44,21 @@ class ProcessDarajaB2CPayment implements ShouldQueue
             return;
         }
 
-        $this->performTransaction($transaction->identifier, "BusinessPayment", $transaction->account_number, floor($transaction->disbursed_amount), $transaction->description, NULL, $transaction->account);
-        
-        $updateData = [
-            "status" => TransactionStatus::SUBMITTED,
-            "result_description" => "Transaction submitted successfully"
-        ];
+        try {
+            $this->performTransaction($transaction->identifier, "BusinessPayment", $transaction->account_number, floor($transaction->disbursed_amount), $transaction->description, NULL, $transaction->account);
 
-        app(TransactionRepository::class)->update(
-            $transaction->id,
-            $updateData
-        );
+            $updateData = [
+                "status" => TransactionStatus::SUBMITTED,
+                "result_description" => "Transaction submitted successfully"
+            ];
+
+            app(TransactionRepository::class)->update(
+                $transaction->id,
+                $updateData
+            );
+        } catch (\Throwable $th) {
+            //throw $th;
+        }
 
         // info('PAYMENT_RESPONSE: ' . json_encode($response));
         /*if ($response) {
