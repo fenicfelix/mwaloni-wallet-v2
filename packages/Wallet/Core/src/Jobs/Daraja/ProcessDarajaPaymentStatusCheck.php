@@ -42,7 +42,7 @@ class ProcessDarajaPaymentStatusCheck implements ShouldQueue
             return;
         }
 
-        $response = $this->performTransaction($transaction);
+        $response = json_decode($this->performTransaction($transaction));
         info("ProcessDarajaPaymentStatusCheck: Transaction status check completed for transaction: {$response->ResponseCode}");
 
         /// Only update the transaction if status has been queried successfully
@@ -66,7 +66,7 @@ class ProcessDarajaPaymentStatusCheck implements ShouldQueue
         }
     }
 
-    private function performTransaction($transaction): ?object
+    private function performTransaction($transaction): ?string
     {
         info("ProcessDarajaPaymentStatusCheck: Performing transaction status check for transaction: {$transaction->order_number}");
         $account = $transaction->account;

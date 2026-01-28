@@ -42,7 +42,7 @@ class QueryDarajaBalance implements ShouldQueue
         $apiUsername = $account->api_username;
         $apiPassword = $account->api_password;
 
-        $response = $this->performBalanceQuery(
+        $this->performBalanceQuery(
             $account,
             $mpesaShortCode,
             $consumerKey,
@@ -50,8 +50,6 @@ class QueryDarajaBalance implements ShouldQueue
             $apiUsername,
             $apiPassword
         );
-
-        info('FINAL_BALANCE_RESPONSE: ' . $response);
     }
 
     private function performBalanceQuery($account, $mpesaShortCode, $consumerKey, $consumerSecret, $apiUsername, $apiPassword): ?string

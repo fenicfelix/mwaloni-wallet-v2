@@ -44,24 +44,9 @@ class ProcessDarajaB2CPayment implements ShouldQueue
             return;
         }
 
-        try {
-            $this->performTransaction($transaction->identifier, "BusinessPayment", $transaction->account_number, floor($transaction->disbursed_amount), $transaction->description, NULL, $transaction->account);
+        $response = json_decode($this->performTransaction($transaction->identifier, "BusinessPayment", $transaction->account_number, floor($transaction->disbursed_amount), $transaction->description, NULL, $transaction->account));
 
-            $updateData = [
-                "status" => TransactionStatus::SUBMITTED,
-                "result_description" => "Transaction submitted successfully"
-            ];
-
-            app(TransactionRepository::class)->update(
-                $transaction->id,
-                $updateData
-            );
-        } catch (\Throwable $th) {
-            //throw $th;
-        }
-
-        // info('PAYMENT_RESPONSE: ' . json_encode($response));
-        /*if ($response) {
+        if ($response) {
             $updateData = [];
             $payloadData = [
                 'raw_callback' => json_encode($response)
@@ -97,17 +82,17 @@ class ProcessDarajaB2CPayment implements ShouldQueue
             $transaction->id,
             $updateData,
             $payloadData
-        );*/
+        );
     }
 
-    private function performTransaction($transactionID, $commandID, $msisdn, $amount, $remarks, $ocassion, $account): void
+    private function performTransaction($transactionID, $commandID, $msisdn, $amount, $remarks, $ocassion, $account): ?string
     {
         $mpesa = new Mpesa($account->account_number, $account->consumer_key, $account->consumer_secret, $account->api_username, $account->api_password);
 
-        $mpesa->b2cTransaction($commandID, $msisdn, $amount, $remarks, route('b2c_result_url', $transactionID), route('b2c_timeout_url'), $ocassion);
+        $response = $mpesa->b2cTransaction($commandID, $msisdn, $amount, $remarks, route('b2c_result_url', $transactionID), route('b2c_timeout_url'), $ocassion);
 
-        // info('PAYMENT_RESPONSE: ' . json_encode($response));
+        info('PAYMENT_RESPONSE: ' . json_encode($response));
 
-        // return $response;
+        return $response;
     }
 }
