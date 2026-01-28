@@ -38,6 +38,7 @@ class ProcessNcbaPayments implements ShouldQueue
     public function handle()
     {
         $transaction = Transaction::with(["service", "paymentChannel", "account.currency", "payload"])->where("id", "=", $this->transactionId)->first();
+        $transactionRepository = app(TransactionRepository::class);
         try {
             /// Check if the transaction exists
             if (!$transaction) {
@@ -68,8 +69,9 @@ class ProcessNcbaPayments implements ShouldQueue
                 "raw_callback" => json_encode($result)
             ];
 
-            app(TransactionRepository::class)->updateWithPayload($transaction->id, $updateData, $payloadData);
-            app(TransactionRepository::class)->completeTransaction($transaction->id);
+            $transactionRepository->updateWithPayload($transaction->id, $updateData, $payloadData);
+            $transactionRepository->completeTransaction($transaction->id);
+
         } catch (\Throwable $th) {
             info("NCBA Payment Exception: " . $th->getMessage());
             $updateData = [
@@ -80,7 +82,7 @@ class ProcessNcbaPayments implements ShouldQueue
             $payloadData = [
                 "raw_callback" => json_encode($th)
             ];
-            app(TransactionRepository::class)->updateWithPayload($transaction->id, $updateData, $payloadData);
+            $transactionRepository->updateWithPayload($transaction->id, $updateData, $payloadData);
         }
     }
 

@@ -44,7 +44,7 @@ class ProcessDarajaB2CPayment implements ShouldQueue
             return;
         }
 
-        $response = json_decode($this->performTransaction($transaction->identifier, "BusinessPayment", $transaction->account_number, floor($transaction->disbursed_amount), $transaction->description, NULL, $transaction->account));
+        $response = json_decode($this->performTransaction($transaction));
         info('ProcessDarajaB2CPayment: ' . $this->transactionId . ' RESPONSE' . json_encode($response));
         if ($response) {
             $updateData = [];
@@ -85,9 +85,23 @@ class ProcessDarajaB2CPayment implements ShouldQueue
         );
     }
 
-    private function performTransaction($transactionID, $commandID, $msisdn, $amount, $remarks, $ocassion, $account): ?string
+    private function performTransaction(Transaction $transaction): ?string
     {
-        $mpesa = new Mpesa($account->account_number, $account->consumer_key, $account->consumer_secret, $account->api_username, $account->api_password);
+        $account = $transaction->account;
+        $transactionID = $transaction->identifier;
+        $commandID = "BusinessPayment";
+        $msisdn = $transaction->account_number;
+        $amount = floor($transaction->disbursed_amount);
+        $remarks = $transaction->description;
+        $ocassion = NULL;
+
+        $mpesa = new Mpesa(
+            $account->account_number,
+            $account->consumer_key,
+            $account->consumer_secret,
+            $account->api_username,
+            $account->api_password
+        );
 
         $response = $mpesa->b2cTransaction($commandID, $msisdn, $amount, $remarks, route('b2c_result_url', $transactionID), route('b2c_timeout_url'), $ocassion);
 

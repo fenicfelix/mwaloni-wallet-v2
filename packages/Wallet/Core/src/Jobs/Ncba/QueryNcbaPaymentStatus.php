@@ -61,8 +61,9 @@ class QueryNcbaPaymentStatus implements ShouldQueue
             "raw_callback" => json_encode($result)
         ];
 
-        app(TransactionRepository::class)->updateWithPayload($transaction->id, $updateData, $payloadData);
-        app(TransactionRepository::class)->completeTransaction($transaction->id);
+        $transactionRepository = app(TransactionRepository::class);
+        $transactionRepository->updateWithPayload($transaction->id, $updateData, $payloadData);
+        $transactionRepository->completeTransaction($transaction->id);
     }
 
     private function performStatusQuery($transaction): ?array

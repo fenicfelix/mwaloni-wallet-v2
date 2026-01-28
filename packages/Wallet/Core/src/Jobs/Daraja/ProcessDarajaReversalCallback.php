@@ -79,9 +79,12 @@ class ProcessDarajaReversalCallback implements ShouldQueue
 
             $updateData['completed_at'] = $completed_at;
 
-            app(TransactionRepository::class)->updateWithPayload($transaction->id, $updateData, $payloadData);
+            // Update the transaction in the database
+            $transactionRepository = app(TransactionRepository::class);
+            $transactionRepository->updateWithPayload($transaction->id, $updateData, $payloadData);
+            $transactionRepository->completeTransaction($transaction->id);
 
-            //Send SMS
+            // Send SMS
             if ($successMessage != "") {
                 $successMessageTo = getOption("DARAJA-ALERT-CONTACT");
                 $this->sendSMS($successMessageTo, $successMessage);

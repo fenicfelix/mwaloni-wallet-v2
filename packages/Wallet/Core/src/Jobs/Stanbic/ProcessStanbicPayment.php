@@ -62,8 +62,6 @@ class ProcessStanbicPayment implements ShouldQueue
             ->addPaymentInfo($this->getPaymentInfo($companyName, $companyAcNo))
             ->store();
 
-        info("Saved to: \n\t{$filePath}");
-
         $updateData = [
             "status" => TransactionStatus::SUBMITTED,
             "result_description" => "Transaction submitted"

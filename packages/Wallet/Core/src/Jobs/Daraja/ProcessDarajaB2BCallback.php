@@ -47,7 +47,9 @@ class ProcessDarajaB2BCallback implements ShouldQueue
             return;
         }
 
+        $transactionRepository = app(TransactionRepository::class);
         if ($transaction->status == TransactionStatus::SUCCESS) {
+            $transactionRepository->completeTransaction($transaction->id);
             return;
         }
 
@@ -80,10 +82,6 @@ class ProcessDarajaB2BCallback implements ShouldQueue
                     $transaction->completed_at = $completed_at;
                     $smsMessage = str_replace('{datetime}', date("Y-m-d", strtotime($completed_at)) . " at " . date("H:i:s", strtotime($completed_at)), $smsMessage);
                 }
-                // if ($parameter["Key"] == "DebitAccountCurrentBalance") {
-                //     $balance = getBalance($parameter["Value"], "BasicAmount");
-                //     $smsMessage = str_replace('{balance}', number_format($balance), $smsMessage);
-                // }
             }
 
             // Final SMS Message Formatting
@@ -99,18 +97,11 @@ class ProcessDarajaB2BCallback implements ShouldQueue
             $smsMessage = str_replace('{transaction}', $transaction->order_number, $smsMessage);
         }
 
-        info('6');
-
-        info('UpdateData: ' . json_encode($updateData));
-        info('PayloadData: ' . json_encode($payloadData));
-        info('MESSAGE: ' . $smsMessage);
-        die;
-
-        app(TransactionRepository::class)->updateWithPayload($transaction->id, $updateData, $payloadData);
+        $transactionRepository->updateWithPayload($transaction->id, $updateData, $payloadData);
 
         //Save account balance
-        if ($this->json["Result"]["ResultCode"] == 0) {
-            app(TransactionRepository::class)->completeTransaction($transaction->id);
+        if (in_array($updateData['status'], [TransactionStatus::SUCCESS, TransactionStatus::FAILED])) {
+            $transactionRepository->completeTransaction($transaction->id);
             if ($balance) {
                 $account->update([
                     'utility_balance' => $balance

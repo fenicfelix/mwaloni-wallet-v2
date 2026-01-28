@@ -46,7 +46,9 @@ class ProcessDarajaB2CCallback implements ShouldQueue
             return;
         }
 
+        $transactionRepository = app(TransactionRepository::class);
         if ($transaction->status == TransactionStatus::SUCCESS) {
+            $transactionRepository->completeTransaction($transaction->id);
             return;
         }
 
@@ -116,13 +118,13 @@ class ProcessDarajaB2CCallback implements ShouldQueue
             $smsMessage = str_replace('{transaction}', $transaction->order_number, $smsMessage);
         }
 
-        app(TransactionRepository::class)->updateWithPayload($transaction->id, $updateData, $payloadData);
-
+        // Update the transaction in the database
+        $transactionRepository->updateWithPayload($transaction->id, $updateData, $payloadData);
         $account->save();
 
         //Save account balance
-        if ($this->json["Result"]["ResultCode"] == 0) {
-            app(TransactionRepository::class)->completeTransaction($transaction->id);
+        if (in_array($updateData['status'], [TransactionStatus::SUCCESS, TransactionStatus::FAILED])) {
+            $transactionRepository->completeTransaction($transaction->id);
             if ($balance) {
                 $account->update([
                     'utility_balance' => $balance
