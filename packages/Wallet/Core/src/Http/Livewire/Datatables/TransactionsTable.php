@@ -108,12 +108,9 @@ class TransactionsTable extends DataTableComponent
                 ->sortable()
                 ->searchable(),
 
-            Column::make("Account Name", "account_name")
+            Column::make("Account Name", "account.name")
                 ->sortable()
-                ->searchable()
-                ->format(
-                    fn($value) => ucwords(strtolower($value))
-                ),
+                ->searchable(),
 
             Column::make("Amount", "disbursed_amount")
                 ->sortable()
