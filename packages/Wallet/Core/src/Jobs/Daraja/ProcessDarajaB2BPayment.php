@@ -49,8 +49,18 @@ class ProcessDarajaB2BPayment implements ShouldQueue
         }
 
         $account_reference = ($transaction->account_reference) ? $transaction->account_reference : $transaction->order_number;
-        $response = $this->performTransaction($transaction->identifier, $transaction->account_number, floor($transaction->disbursed_amount), $transaction->description, $account_reference, $transaction->account, $isTillNumber);
-        info('ProcessDarajaB2BPayment: ' . $this->transactionId . ' RESPONSE' . json_encode($response));
+        $this->performTransaction($transaction->identifier, $transaction->account_number, floor($transaction->disbursed_amount), $transaction->description, $account_reference, $transaction->account, $isTillNumber);
+        $updateData = [
+            "status" => TransactionStatus::SUBMITTED,
+            "result_description" => "Transaction submitted successfully"
+        ];
+
+        app(TransactionRepository::class)->update(
+            $transaction->id,
+            $updateData
+        );
+        
+        /*info('ProcessDarajaB2BPayment: ' . $this->transactionId . ' RESPONSE' . json_encode($response));
         if ($response) {
             $updateData = [];
             $payloadData = [
@@ -86,20 +96,20 @@ class ProcessDarajaB2BPayment implements ShouldQueue
             $transaction->id,
             $updateData,
             $payloadData
-        );
+        );*/
     }
 
-    private function performTransaction($transactionID, $destShortcode, $amount, $remarks, $accountRef, $account, $isTillNumber): ?object
+    private function performTransaction($transactionID, $destShortcode, $amount, $remarks, $accountRef, $account, $isTillNumber): void
     {
         $mpesa = new Mpesa($account->account_number, $account->consumer_key, $account->consumer_secret, $account->api_username, $account->api_password);
         if ($isTillNumber) {
-            $response = $mpesa->b2bBuyGoods($destShortcode, $amount, $remarks, $accountRef, route('b2b_result_url', $transactionID), route('b2b_timeout_url'));
+            $mpesa->b2bBuyGoods($destShortcode, $amount, $remarks, $accountRef, route('b2b_result_url', $transactionID), route('b2b_timeout_url'));
         } else {
-            $response = $mpesa->b2bPaybill($destShortcode, $amount, $remarks, $accountRef, route('b2b_result_url', $transactionID), route('b2b_timeout_url'));
+            $mpesa->b2bPaybill($destShortcode, $amount, $remarks, $accountRef, route('b2b_result_url', $transactionID), route('b2b_timeout_url'));
         }
 
-        info('PAYMENT_RESPONSE: ' . json_encode($response));
+        // info('PAYMENT_RESPONSE: ' . json_encode($response));
 
-        return $response;
+        // return $response;
     }
 }

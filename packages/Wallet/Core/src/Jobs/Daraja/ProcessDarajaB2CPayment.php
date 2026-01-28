@@ -42,9 +42,20 @@ class ProcessDarajaB2CPayment implements ShouldQueue
             return;
         }
 
-        $response = $this->performTransaction($transaction->identifier, "BusinessPayment", $transaction->account_number, floor($transaction->disbursed_amount), $transaction->description, NULL, $transaction->account);
-        info('PAYMENT_RESPONSE: ' . json_encode($response));
-        if ($response) {
+        $this->performTransaction($transaction->identifier, "BusinessPayment", $transaction->account_number, floor($transaction->disbursed_amount), $transaction->description, NULL, $transaction->account);
+        
+        $updateData = [
+            "status" => TransactionStatus::SUBMITTED,
+            "result_description" => "Transaction submitted successfully"
+        ];
+
+        app(TransactionRepository::class)->update(
+            $transaction->id,
+            $updateData
+        );
+
+        // info('PAYMENT_RESPONSE: ' . json_encode($response));
+        /*if ($response) {
             $updateData = [];
             $payloadData = [
                 'raw_callback' => json_encode($response)
@@ -80,17 +91,17 @@ class ProcessDarajaB2CPayment implements ShouldQueue
             $transaction->id,
             $updateData,
             $payloadData
-        );
+        );*/
     }
 
-    private function performTransaction($transactionID, $commandID, $msisdn, $amount, $remarks, $ocassion, $account): ?object
+    private function performTransaction($transactionID, $commandID, $msisdn, $amount, $remarks, $ocassion, $account): void
     {
         $mpesa = new Mpesa($account->account_number, $account->consumer_key, $account->consumer_secret, $account->api_username, $account->api_password);
 
-        $response = $mpesa->b2cTransaction($commandID, $msisdn, $amount, $remarks, route('b2c_result_url', $transactionID), route('b2c_timeout_url'), $ocassion);
+        $mpesa->b2cTransaction($commandID, $msisdn, $amount, $remarks, route('b2c_result_url', $transactionID), route('b2c_timeout_url'), $ocassion);
 
-        info('PAYMENT_RESPONSE: ' . json_encode($response));
+        // info('PAYMENT_RESPONSE: ' . json_encode($response));
 
-        return $response;
+        // return $response;
     }
 }

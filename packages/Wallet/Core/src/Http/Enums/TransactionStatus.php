@@ -7,6 +7,7 @@ enum TransactionStatus: string
     case REQUESTED = 'requested'; // Initial state waiting for approval
     case CANCELLED = 'cancelled'; // User has cancelled the transaction
     case PENDING = 'pending'; // Transaction is pending
+    case PROCESSING = 'processing'; // Transaction is being processed
     case SUBMITTED = 'submitted'; // Transaction has been submitted
     case SUCCESS = 'success'; // Transaction was successful
     case FAILED = 'failed'; // Transaction has failed
@@ -29,6 +30,7 @@ enum TransactionStatus: string
             self::REQUESTED->value => 'Requested',
             self::CANCELLED->value => 'Cancelled',
             self::PENDING->value => 'Pending',
+            self::PROCESSING->value => 'Processing',
             self::SUBMITTED->value => 'Submitted',
             self::SUCCESS->value => 'Success',
             self::FAILED->value => 'Failed',
@@ -50,6 +52,7 @@ enum TransactionStatus: string
             'requested' => self::REQUESTED,
             'cancelled' => self::CANCELLED,
             'pending' => self::PENDING,
+            'processing' => self::PROCESSING,
             'submitted' => self::SUBMITTED,
             'success' => self::SUCCESS,
             'failed' => self::FAILED,

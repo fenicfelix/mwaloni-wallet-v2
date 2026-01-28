@@ -6,6 +6,7 @@ use Illuminate\Console\Command;
 use Wallet\Core\Http\Enums\TransactionStatus;
 use Wallet\Core\Jobs\ProcessPayment;
 use Wallet\Core\Models\Transaction;
+use Wallet\Core\Repositories\TransactionRepository;
 
 class ProcessPendingPayments extends Command
 {
@@ -47,6 +48,9 @@ class ProcessPendingPayments extends Command
         if($transaction) {
             $this->info("Processing transaction Order Number: {$transaction->order_number}");
             // Dispatch the job to process the payment
+            app(TransactionRepository::class)->update($transaction, [
+                'status' => TransactionStatus::PROCESSING,
+            ]);
             ProcessPayment::dispatch($transaction->id, $transaction->paymentChannel->slug)->onQueue('process-payments');
             $this->info('SUCCESS! The pending payment has been processed successfully');
             return Command::SUCCESS;
@@ -54,12 +58,16 @@ class ProcessPendingPayments extends Command
 
         $this->error("Transaction with Order Number: {$id} not found.");
         return Command::FAILURE;
+
         // $chunk = 1;
         // Transaction::where('status', TransactionStatus::PENDING)
         //     ->chunk($chunk, function ($transactions) {
         //         foreach ($transactions as $transaction) {
         //             $this->info("Processing transaction Order Number: {$transaction->order_number}");
         //             // Dispatch the job to process the payment
+        //             app(TransactionRepository::class)->update($transaction, [
+        //                 'status' => TransactionStatus::PROCESSING,
+        //             ]);
         //             ProcessPayment::dispatch($transaction->id, $transaction->paymentChannel->slug)->onQueue('process-payments');
         //         }
         //     });
