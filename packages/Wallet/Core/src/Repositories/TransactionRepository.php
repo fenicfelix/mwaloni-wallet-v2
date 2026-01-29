@@ -89,7 +89,7 @@ class TransactionRepository implements TransactionRepositoryContract
         $transaction = Transaction::with(['payload', 'service'])->find($id);
         if ($transaction) {
             // Release any reserved amounts
-            $transaction->releaseReservedAmount();
+            $transaction->balanceReservations()->delete();
 
             // Refresh the transaction to get the latest data
             $transaction->refresh();
