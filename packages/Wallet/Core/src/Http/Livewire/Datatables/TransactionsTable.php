@@ -232,9 +232,7 @@ class TransactionsTable extends DataTableComponent
 
     public function bulkRetry()
     {
-        foreach ($this->getSelected() as $form_id) {
-            $this->dispatch('retryPayment', (int) $form_id);
-        }
+        $this->dispatch('bulkRetry', $this->getSelected());
         $this->clearSelected();
     }
 
@@ -260,9 +258,7 @@ class TransactionsTable extends DataTableComponent
 
     public function queryMultipleStatus()
     {
-        foreach ($this->getSelected() as $form_id) {
-            $this->dispatch('queryStatus', $form_id);
-        }
+        $this->dispatch('confirmedQueryMultipleStatus', $this->getSelected());
         $this->clearSelected();
     }
 

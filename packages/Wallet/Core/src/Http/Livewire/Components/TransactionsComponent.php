@@ -31,6 +31,8 @@ class TransactionsComponent extends Component
 
     public ?int $formId = null;
 
+    public array $formIds = [];
+
     public ?array $formData = [];
 
     public bool $isSuccessful = false;
@@ -128,6 +130,32 @@ class TransactionsComponent extends Component
         }
     }
 
+    #[On('bulkRetry')]
+    public function bulkRetry(?array $formIds)
+    {
+        if (!$formIds) {
+            $this->notify("No transactions selected.", "warning");
+            return;
+        }
+
+        $this->formIds = array_map('intval', $formIds);
+        $this->confirm(
+            'Confirm Action',
+            'Are you sure you want to retry the selected transactions?',
+            'warning',
+            'Yes, Retry',
+            'confirmedBulkRetry'
+        );
+    }
+
+    #[On('confirmedBulkRetry')]
+    public function confirmedBulkRetry()
+    {
+        foreach ($this->formIds as $formId) {
+            $this->completeRetry($formId);
+        }
+    }
+
     #[On('retryPayment')]
     public function retryPayment($form_id)
     {
@@ -144,7 +172,15 @@ class TransactionsComponent extends Component
     #[On('confirmedRetryPayment')]
     public function confirmedRetryPayment()
     {
-        $this->transaction = app(TransactionRepository::class)->find($this->formId);
+        $this->completeRetry($this->formId);
+
+        $this->resetValues();
+        $this->dispatch('refreshDatatable');
+    }
+
+    private function completeRetry($formId)
+    {
+        $this->transaction = app(TransactionRepository::class)->find($formId);
         if ($this->transaction->status == TransactionStatus::FAILED || ($this->transaction->status == TransactionStatus::SUBMITTED && getElapsedTime($this->transaction->requested_on) > 120)) {
             $balance = ($this->transaction->account->utility_balance - ($this->transaction->disbursed_amount + $this->transaction->account->revenue));
 
@@ -162,9 +198,6 @@ class TransactionsComponent extends Component
         } else {
             $this->notify($this->transaction->order_number . " is still being processed.", "warning");
         }
-
-        $this->resetValues();
-        $this->dispatch('refreshDatatable');
     }
 
     #[On('paidOffline')]
@@ -207,6 +240,26 @@ class TransactionsComponent extends Component
 
         $this->resetValues();
         $this->dispatch('refreshDatatable');
+    }
+
+    #[On('queryMultipleStatus')]
+    public function queryMultipleStatus($formIds)
+    {
+        $this->formIds = array_map('intval', $formIds);
+        $this->confirm(
+            'Confirm Action',
+            'Are you sure you want to query the status of these transactions?',
+            'warning',
+            'Yes, Query Status',
+            'confirmedQueryMultipleStatus'
+        );
+    }
+
+    #[On('confirmedQueryMultipleStatus')]
+    public function confirmedQueryMultipleStatus() {
+        foreach ($this->formIds as $formId) {
+            $this->queryStatus($formId);
+        }
     }
 
     #[On('queryStatus')]
