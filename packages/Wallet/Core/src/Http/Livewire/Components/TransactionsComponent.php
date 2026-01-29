@@ -150,16 +150,13 @@ class TransactionsComponent extends Component
 
             if ($balance < 0) $this->notify("Insufficient Balance. Please reload the account and retry.", "error");
             else {
-                $reference = date('ymdHs') . rand(0, 99);
-                $trx_payload = json_decode($this->transaction->payload->trx_payload);
-                $trx_payload->reference = $reference;
-                $this->transaction->reference = $reference;
-                $this->transaction->status = TransactionStatus::SUBMITTED;
-                $this->transaction->save();
-
-                $this->transaction->payload->update([
-                    "trx_payload" => json_encode($trx_payload)
-                ]);
+                $retry = app(TransactionRepository::class)->retry($this->transaction->id);
+                if ($retry === null) {
+                    $this->notify("Unable to retry this transaction..", "error");
+                    $this->resetValues();
+                    $this->dispatch('refreshDatatable');
+                    return;
+                }
                 $this->notify("The retry request has been sent.", "success");
             }
         } else {

@@ -54,6 +54,8 @@ class ProcessDarajaPaymentStatusCallback implements ShouldQueue
         }
 
         $smsMessage = "";
+        $date = "";
+        $reasonType = "";
         $payloadData = [
             "raw_callback" => json_encode($this->json)
         ];
@@ -63,24 +65,14 @@ class ProcessDarajaPaymentStatusCallback implements ShouldQueue
         ];
 
         if ($this->json["Result"]["ResultCode"] == 0) {
-            $updateData['status'] = TransactionStatus::SUCCESS;
-
-            $smsMessage = getOption("SMS-B2C-SUCCESS-MESSAGE");
-            $smsMessage = str_replace("{order_number}", $transaction->order_number, $smsMessage);
-            $smsMessage = (isset($transaction->service)) ? str_replace("{service}", $transaction->service->name, $smsMessage) : str_replace("{service}", $transaction->account->name, $smsMessage);
-            $smsMessage = str_replace(" Utility bal. {balance}", "", $smsMessage);
-
             foreach ($this->json["Result"]["ResultParameters"]["ResultParameter"] as $parameter) {
                 if ($parameter["Key"] == "CreditPartyName") {
                     $array = explode(" - ", $parameter["Value"]);
                     $updateData['account_name'] = $array[1];
-
-                    $smsMessage = str_replace('{to}', ucwords(strtolower($parameter["Value"])), $smsMessage);
                 }
                 if ($parameter["Key"] == "FinalisedTime") {
                     $date = date("Y-m-d H:i:s", strtotime($parameter["Value"]));
                     $updateData['completed_at'] = $date;
-                    $smsMessage = str_replace('{datetime}', date("Y-m-d", strtotime($date)) . " at " . date("H:i:s", strtotime($date)), $smsMessage);
                 }
 
                 if ($parameter["Key"] == "ReceiptNo") {
@@ -88,17 +80,40 @@ class ProcessDarajaPaymentStatusCallback implements ShouldQueue
                     $smsMessage = str_replace('{receipt_number}', $parameter["Value"], $smsMessage);
                     $successMessage = str_replace('{trxid}', $parameter["Value"], $successMessage);
                 }
+
                 if ($parameter["Key"] == "Amount") {
                     $smsMessage = str_replace('{amount}', number_format($parameter["Value"], 2), $smsMessage);
                 }
-            }
-        } else {
-            $updateData['status'] = TransactionStatus::FAILED;
 
+                if ($parameter["Key"] == "TransactionStatus") {
+                    $updateData['status'] = $parameter["Value"] == "Completed" ? TransactionStatus::SUCCESS : TransactionStatus::FAILED;
+                }
+
+                if($parameter["ReasonType"]) {
+                    $reasonType = $parameter["ReasonType"];
+                }
+            }
+
+            if ($updateData['status'] == TransactionStatus::SUCCESS) {
+                $smsMessage = getOption("SMS-B2C-SUCCESS-MESSAGE");
+                $smsMessage = str_replace("{order_number}", $transaction->order_number, $smsMessage);
+                $smsMessage = (isset($transaction->service)) ? str_replace("{service}", $transaction->service->name, $smsMessage) : str_replace("{service}", $transaction->account->name, $smsMessage);
+                $smsMessage = str_replace(" Utility bal. {balance}", "", $smsMessage);
+                $smsMessage = str_replace('{to}', ucwords(strtolower($updateData['account_name'])), $smsMessage);
+                $smsMessage = str_replace('{datetime}', date("Y-m-d", strtotime($date)) . " at " . date("H:i:s", strtotime($date)), $smsMessage);
+            } else {
+                $successMessage = getOption("DARAJA-ERROR-MESSAGE");
+                $successMessage = str_replace('{error}', $reasonType, $successMessage);
+                $successMessage = str_replace('{transaction}', $transaction->order_number, $successMessage);
+            }
+            
+        } else {
             $successMessage = getOption("DARAJA-ERROR-MESSAGE");
             $successMessage = str_replace('{error}', $this->json["Result"]["ResultDesc"], $successMessage);
             $successMessage = str_replace('{transaction}', $transaction->order_number, $successMessage);
         }
+
+        
 
         // Update the transaction with the new status and payload
         $transactionRepository->updateWithPayload($transaction->id, $updateData, $payloadData);

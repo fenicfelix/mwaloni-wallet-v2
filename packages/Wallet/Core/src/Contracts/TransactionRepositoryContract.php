@@ -15,6 +15,8 @@ interface TransactionRepositoryContract
 
     public function updateWithPayload(int $id, array $data, array $payloadData): ?Transaction;
 
+    public function retry(int $id): ?Transaction;
+
     public function delete(int $id): bool;
 
     public function all(array $filters): Collection;

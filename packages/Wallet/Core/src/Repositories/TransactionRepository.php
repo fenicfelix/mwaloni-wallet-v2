@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Collection;
 use Wallet\Core\Models\Transaction;
 use Illuminate\Support\Facades\DB;
 use Wallet\Core\Contracts\TransactionRepositoryContract;
+use Wallet\Core\Http\Enums\TransactionStatus;
 use Wallet\Core\Jobs\PushTransactionCallback;
 
 class TransactionRepository implements TransactionRepositoryContract
@@ -62,6 +63,48 @@ class TransactionRepository implements TransactionRepositoryContract
             $transaction->update($data);
             $transaction->payload()->update($payloadData);
             return $transaction;
+        }
+        return null;
+    }
+
+    public function retry(int $id): ?Transaction
+    {
+        // Implementation for retrying a payment
+        $transaction = Transaction::with(['payload'])->find($id);
+        if ($transaction) {
+            $updatedTransaction = DB::transaction(function () use ($transaction) {
+                // Logic to retry the payment
+                $reference = date('ymdHs') . rand(0, 99);
+                $trx_payload = json_decode($transaction->payload->trx_payload);
+                $trx_payload->reference = $reference;
+
+                $transaction->update([
+                    "reference" => $reference,
+                    "status" => TransactionStatus::SUBMITTED
+                ]);
+
+                $transaction->payload->update([
+                    "trx_payload" => json_encode($trx_payload)
+                ]);
+
+                // reserve the amount
+                $transaction->balanceReservations()->create([
+                    'account_id' => $transaction->account_id,
+                    'transaction_id' => $transaction->id,
+                    'amount' => $transaction->disbursed_amount
+                ]);
+
+                $transaction->status = TransactionStatus::PENDING;
+                $transaction->save();
+
+                return $transaction;
+            });
+
+            if ($updatedTransaction) {
+                return $updatedTransaction;
+            }
+
+            return null;
         }
         return null;
     }
