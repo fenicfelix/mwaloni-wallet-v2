@@ -95,14 +95,12 @@ class TransactionRepository implements TransactionRepositoryContract
             $transaction->refresh();
 
             // Send callback if the service has a callback URL
-            if (isset($transaction->service) && $transaction->service->callback_url != NULL) {
-                $data = (object) $transaction->payload->raw_callback;
+            if (isset($transaction->service) && $transaction->service?->callback_url != NULL && $transaction->payload?->raw_callback) {
+                $data = (object) $transaction->payload?->raw_callback;
                 $data->orderNumber = $transaction->order_number;
                 PushTransactionCallback::dispatch($data, $transaction->service->callback_url);
             }
-
-            return $transaction;
         }
-        return null;
+        return $transaction;
     }
 }
