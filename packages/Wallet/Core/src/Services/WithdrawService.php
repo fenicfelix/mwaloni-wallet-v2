@@ -56,7 +56,7 @@ class WithdrawService
                     "channel_id" => $paymentChannel->id,
                     "service_id" => $service->id,
                     "transaction_type" => TransactionType::SERVICE_CHARGE,
-                    "order_number" => $order_number,
+                    "order_number" => $request['order_number'],
                     "status" => TransactionStatus::PENDING,
                     "system_charges" => 0,
                     "sms_charges" => 0,
