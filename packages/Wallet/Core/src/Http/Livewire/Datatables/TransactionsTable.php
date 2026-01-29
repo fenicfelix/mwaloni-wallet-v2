@@ -233,7 +233,7 @@ class TransactionsTable extends DataTableComponent
     public function bulkRetry()
     {
         foreach ($this->getSelected() as $form_id) {
-            $this->dispatch('retryPayment', $form_id);
+            $this->dispatch('retryPayment', (int) $form_id);
         }
         $this->clearSelected();
     }

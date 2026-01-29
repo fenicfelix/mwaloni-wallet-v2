@@ -179,7 +179,7 @@ class TransactionsComponent extends Component
     #[On('markAsCompleted')]
     public function markAsCompleted($form_id)
     {
-        $this->formId = (int) $form_id;
+        $this->formId = $form_id;
         $this->confirm(
             'Confirm Action',
             'Are you sure you want to mark this transaction as completed?',
