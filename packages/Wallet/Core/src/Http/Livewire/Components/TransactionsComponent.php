@@ -179,6 +179,39 @@ class TransactionsComponent extends Component
         $this->pay_offline = true;
     }
 
+    #[On('markAsCompleted')]
+    public function markAsCompleted($form_id)
+    {
+        $this->formId = $form_id;
+        $this->confirm(
+            'Confirm Action',
+            'Are you sure you want to mark this transaction as completed?',
+            'warning',
+            'Yes, Mark As Completed',
+            'confirmedMarkAsCompleted'
+        );
+    }
+
+    #[On('confirmedMarkAsCompleted')]
+    public function confirmedMarkAsCompleted()
+    {
+        $transactionRepository = app(TransactionRepository::class);
+        $transaction = $transactionRepository->find($this->formId);
+        if ($transaction) {
+            $transactionRepository->update($transaction->id, [
+                'completed_at' => date('Y-m-d H:i:s'),
+                'status' => TransactionStatus::COMPLETED,
+                'status_message' => 'Transaction marked as completed manually.'
+            ]);
+            $this->notify("Transaction marked as completed.", "success");
+        } else {
+            $this->notify("Transaction not found.", "warning");
+        }
+
+        $this->resetValues();
+        $this->dispatch('refreshDatatable');
+    }
+
     #[On('queryStatus')]
     public function queryStatus($form_id)
     {
@@ -194,10 +227,7 @@ class TransactionsComponent extends Component
     }
 
     #[On('confirmedQueryStatus')]
-    public function confirmedQueryStatus()
-    {
-        
-    }
+    public function confirmedQueryStatus() {}
 
     public function backAction()
     {

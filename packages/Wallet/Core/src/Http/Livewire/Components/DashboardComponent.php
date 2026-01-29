@@ -6,10 +6,13 @@ use Wallet\Core\Models\Outbox;
 use Wallet\Core\Models\TransactionMetric;
 use Illuminate\Support\Facades\DB;
 use Livewire\Component;
+use Wallet\Core\Http\Traits\NotifyBrowser;
 use Wallet\Core\Jobs\PopulateTransactionMetricTable;
 
 class DashboardComponent extends Component
 {
+    use NotifyBrowser;
+
     public ?string $content_title = "";
 
     public ?TransactionMetric $transactionMetrics;
@@ -30,6 +33,11 @@ class DashboardComponent extends Component
         ];
 
         $this->graph_data = $this->fetchGraphData();
+    }
+
+    public function hydrate()
+    {
+        $this->transactionMetrics = TransactionMetric::first();
     }
 
     private function fetchGraphData()
@@ -69,6 +77,7 @@ class DashboardComponent extends Component
     public function refreshData()
     {
         PopulateTransactionMetricTable::dispatch()->onQueue('default');
+        $this->notify("Data refresh has been initiated.", "success");
     }
 
     public function render()

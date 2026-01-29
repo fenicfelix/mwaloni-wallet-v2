@@ -169,8 +169,11 @@ class TransactionsTable extends DataTableComponent
                         $html .= '<a href="#" class="dropdown-item" wire:click="viewFunction(' . $row->id . ')">View Details</a>';
                         if ($row->status != TransactionStatus::SUCCESS) {
                             // if ($row->status == TransactionStatus::FAILED) $html .= '<a href="#" class="dropdown-item" wire:click="editFunction(' . $row->id . ')">Edit Details</a>';
-                            if ($row->status == TransactionStatus::FAILED) $html .= '<a href="#" class="dropdown-item" wire:click="retryPayment(' . $row->id . ')">Retry Payment</a>';
-                            $html .= '<a href="#" class="dropdown-item" wire:click="paidOffline(' . $row->id . ')">Complete Offline</a>';
+                            if ($row->status == TransactionStatus::FAILED) {
+                                $html .= '<a href="#" class="dropdown-item" wire:click="retryPayment(' . $row->id . ')">Retry Payment</a>';
+                                $html .= '<a href="#" class="dropdown-item" wire:click="paidOffline(' . $row->id . ')">Complete Offline</a>';
+                                $html .= '<a href="#" class="dropdown-item" wire:click="markAsCompleted(' . $row->id . ')">Mark As Completed</a>';
+                            }
                             if (in_array($row->status, [TransactionStatus::SUBMITTED, TransactionStatus::FAILED])) $html .= '<a href="#" class="dropdown-item" wire:click="queryStatus(' . $row->id . ')">Query Status</a>';
                         }
 
@@ -243,6 +246,11 @@ class TransactionsTable extends DataTableComponent
     public function paidOffline($form_id)
     {
         $this->dispatch('paidOffline', $form_id);
+    }
+
+    public function markAsCompleted($form_id)
+    {
+        $this->dispatch('markAsCompleted', $form_id);
     }
 
     public function queryStatus($form_id)

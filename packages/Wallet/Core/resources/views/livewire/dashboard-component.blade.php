@@ -151,7 +151,7 @@
                         <span class="flex"></span>
                      </div>
                   </div>
-                  <div style="height: 300px">
+                  <div style="height: 300px" wire:ignore>
                      <canvas data-plugin="chartjs" id="chart-line-1"></canvas>
                   </div>
                </div>

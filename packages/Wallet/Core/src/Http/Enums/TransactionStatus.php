@@ -11,6 +11,7 @@ enum TransactionStatus: string
     case SUBMITTED = 'submitted'; // Transaction has been submitted
     case SUCCESS = 'success'; // Transaction was successful
     case FAILED = 'failed'; // Transaction has failed
+    case COMPLETED = 'completed'; // Transaction is completed - Moves failed transactions from statistics
     case REVERSING = 'reversing'; // Transaction is being reversed
     case REVERSED = 'reversed'; // Transaction has been reversed
     case QUERYING_STATUS = 'querying_status'; // Transaction status is being queried
@@ -34,6 +35,7 @@ enum TransactionStatus: string
             self::SUBMITTED->value => 'Submitted',
             self::SUCCESS->value => 'Success',
             self::FAILED->value => 'Failed',
+            self::COMPLETED->value => 'Completed',
             self::REVERSING->value => 'Reversing',
             self::REVERSED->value => 'Reversed',
             self::QUERYING_STATUS->value => 'Querying Status',
@@ -56,6 +58,7 @@ enum TransactionStatus: string
             'submitted' => self::SUBMITTED,
             'success' => self::SUCCESS,
             'failed' => self::FAILED,
+            'completed' => self::COMPLETED,
             'reversing' => self::REVERSING,
             'reversed' => self::REVERSED,
             'querying_status' => self::QUERYING_STATUS,
@@ -74,6 +77,7 @@ enum TransactionStatus: string
             self::SUBMITTED => 'primary-lt',
             self::SUCCESS => 'success-lt',
             self::FAILED => 'danger-lt',
+            self::COMPLETED => 'dark-lt',
             self::REVERSING => 'primary-lt',
             self::REVERSED => 'dark-lt',
             self::QUERYING_STATUS => 'secondary-lt',
