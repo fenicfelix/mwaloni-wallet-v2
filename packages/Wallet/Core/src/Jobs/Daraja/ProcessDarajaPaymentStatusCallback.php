@@ -10,7 +10,6 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Wallet\Core\Http\Enums\TransactionStatus;
-use Wallet\Core\Jobs\PushTransactionCallback;
 use Wallet\Core\Repositories\TransactionRepository;
 
 class ProcessDarajaPaymentStatusCallback implements ShouldQueue
@@ -89,7 +88,7 @@ class ProcessDarajaPaymentStatusCallback implements ShouldQueue
                     $updateData['status'] = $parameter["Value"] == "Completed" ? TransactionStatus::SUCCESS : TransactionStatus::FAILED;
                 }
 
-                if($parameter["ReasonType"]) {
+                if ($parameter["ReasonType"]) {
                     $reasonType = $parameter["ReasonType"];
                 }
             }
@@ -106,14 +105,11 @@ class ProcessDarajaPaymentStatusCallback implements ShouldQueue
                 $successMessage = str_replace('{error}', $reasonType, $successMessage);
                 $successMessage = str_replace('{transaction}', $transaction->order_number, $successMessage);
             }
-            
         } else {
             $successMessage = getOption("DARAJA-ERROR-MESSAGE");
             $successMessage = str_replace('{error}', $this->json["Result"]["ResultDesc"], $successMessage);
             $successMessage = str_replace('{transaction}', $transaction->order_number, $successMessage);
         }
-
-        
 
         // Update the transaction with the new status and payload
         $transactionRepository->updateWithPayload($transaction->id, $updateData, $payloadData);
