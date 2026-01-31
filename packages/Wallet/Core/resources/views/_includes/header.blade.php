@@ -23,7 +23,7 @@
     <link rel="stylesheet" href="{{ asset('themes/agile/css/all.min.css') }}" type="text/css" />
     <link rel="stylesheet" href="{{ asset('themes/agile/libs/toastr/toastr.min.css') }}" type="text/css" />
     
-    <link rel="stylesheet" href="{{ asset('themes/agile/css/custom.css?v3.1.0.1') }}" type="text/css" />
+    <link rel="stylesheet" href="{{ asset('themes/agile/css/custom.css?v3.1.1') }}" type="text/css" />
 
     <!-- jQuery -->
     <script src="{{ asset('themes/agile/libs/jquery/dist/jquery.min.js') }}"></script>
