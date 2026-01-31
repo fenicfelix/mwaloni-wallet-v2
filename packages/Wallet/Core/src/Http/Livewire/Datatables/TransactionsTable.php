@@ -142,7 +142,8 @@ class TransactionsTable extends DataTableComponent
                 }),
 
             Column::make("Revenue", "revenue")
-                ->sortable(),
+                ->sortable()
+                ->deselected(),
 
             Column::make("Status", "status")
                 ->sortable()
