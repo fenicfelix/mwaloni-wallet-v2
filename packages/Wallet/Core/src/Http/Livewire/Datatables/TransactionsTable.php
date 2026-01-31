@@ -11,8 +11,10 @@ use Wallet\Core\Models\Transaction;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Auth;
 use Maatwebsite\Excel\Facades\Excel;
+use Rappasoft\LaravelLivewireTables\Views\Filters\DateRangeFilter;
 use Wallet\Core\Http\Enums\TransactionStatus;
 use Wallet\Core\Http\Exports\TransactionsExport;
+use Wallet\Core\Models\Account;
 
 class TransactionsTable extends DataTableComponent
 {
@@ -196,6 +198,12 @@ class TransactionsTable extends DataTableComponent
     public function filters(): array
     {
         return [
+            SelectFilter::make('Account', 'account')
+                ->options(['' => 'All Accounts'] + Account::all()->pluck('name', 'id',)->toArray())
+                ->filter(function (Builder $builder, string $value) {
+                    $builder
+                        ->where('transactions.account_id', $value);
+                }),
             SelectFilter::make('Service', 'service')
                 ->options(['' => 'All Services'] + Service::all()->pluck('name', 'id',)->toArray())
                 ->filter(function (Builder $builder, string $value) {
@@ -208,15 +216,22 @@ class TransactionsTable extends DataTableComponent
                     $builder
                         ->where('transactions.status', $value);
                 }),
-            DateFilter::make('Start Date', 'start_date')
-                ->filter(function (Builder $builder, string $value) {
+            DateRangeFilter::make('Transaction Date')
+                ->config([
+                    'allowInput' => true,   // Allow manual input of dates
+                    'altFormat' => 'F j, Y', // Date format that will be displayed once selected
+                    'ariaDateFormat' => 'F j, Y', // An aria-friendly date format
+                    'dateFormat' => 'Y-m-d', // Date format that will be received by the filter
+                    'earliestDate' => '2020-01-01', // The earliest acceptable date
+                    'latestDate' => date('Y-m-d', strtotime(now())), // The latest acceptable date
+                    'placeholder' => 'Enter Date Range', // A placeholder value
+                    'locale' => 'en',
+                ])
+                ->setFilterPillValues([0 => 'minDate', 1 => 'maxDate']) // The values that will be displayed for the Min/Max Date Values
+                ->filter(function (Builder $builder, array $dateRange) { // Expects an array.
                     $builder
-                        ->where('transactions.transaction_date', ">", $value);
-                }),
-            DateFilter::make('End Date', 'end_date')
-                ->filter(function (Builder $builder, string $value) {
-                    $builder
-                        ->where('transactions.transaction_date', "<", $value);
+                        ->whereDate('transactions.transaction_date', '>=', $dateRange['minDate']) // minDate is the start date selected
+                        ->whereDate('transactions.transaction_date', '<=', $dateRange['maxDate']); // maxDate is the end date selected
                 }),
         ];
     }
