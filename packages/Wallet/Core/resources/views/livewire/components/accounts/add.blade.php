@@ -24,21 +24,21 @@
                                         </div>
                                     </div>
                                     <div class="row">
-                                        <div class="col-12">
-                                            <div class="row">
-                                                <div class="col-6">
-                                                    <x-wallet::form.input label="Name" wire:model.defer="formData.name" name="amount" type="text" required />
-                                                </div>
-                                                <div class="col-6">
-                                                    <x-wallet::form.input label="Account Number" wire:model.defer="formData.account_number" name="account_number" type="text" required />
-                                                </div>
-                                            </div>
+                                        <div class="col-6">
+                                            <x-wallet::form.input label="Account Name" wire:model.defer="formData.name" name="amount" type="text" required />
+                                        </div>
+                                        <div class="col-6">
+                                            <x-wallet::form.input label="Account Number" wire:model.defer="formData.account_number" name="account_number"
+                                                type="text" required />
                                         </div>
                                     </div>
                                     <div class="row">
-                                        <div class="col-sm-12">
-                                            <x-wallet::form.select label="Managed By" wire:model.live="formData.managed_by"
-                                                :options="$account_managers" placeholder="Choose Manager" />
+                                        <div class="col-6">
+                                            <x-wallet::form.input label="Display Name" wire:model.defer="formData.display_name" name="display_name" type="text" required />
+                                        </div>
+                                        <div class="col-6">
+                                            <x-wallet::form.select label="Managed By" wire:model.live="formData.managed_by" :options="$account_managers"
+                                                placeholder="Choose Manager" />
                                         </div>
                                     </div>
                                     @if ($formData['account_type_id'] != "1")

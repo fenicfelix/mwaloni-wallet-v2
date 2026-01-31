@@ -79,7 +79,7 @@ class TransactionsTable extends DataTableComponent
                     return $value->label();
                 }),
 
-            Column::make("Account", 'account.name')
+            Column::make("Account", 'account.display_name')
                 ->excludeFromColumnSelect()
                 ->searchable()
                 ->sortable()

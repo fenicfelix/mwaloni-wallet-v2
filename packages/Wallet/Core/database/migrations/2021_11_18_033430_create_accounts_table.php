@@ -17,6 +17,7 @@ class CreateAccountsTable extends Migration
             $table->id();
             $table->uuid('identifier');
             $table->string("name", 100);
+            $table->string("display_name", 100);
             $table->string('country_code', 5)->default('KE');
             $table->string('country_name')->nullable();
             $table->string('bank_code')->nullable();

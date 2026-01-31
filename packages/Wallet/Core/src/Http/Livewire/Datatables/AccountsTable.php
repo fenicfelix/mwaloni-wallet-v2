@@ -53,7 +53,7 @@ class AccountsTable extends DataTableComponent
             Column::make('Id', 'id')
                 ->sortable()
                 ->format(fn() => $this->counter++),
-            Column::make("Account Name", "name")
+            Column::make("Account Name", "display_name")
                 ->sortable()
                 ->searchable(),
             Column::make("Account Number", "account_number")
