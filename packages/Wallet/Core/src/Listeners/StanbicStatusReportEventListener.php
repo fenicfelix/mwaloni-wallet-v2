@@ -54,7 +54,10 @@ class StanbicStatusReportEventListener implements ShouldQueue
                     }
 
                     $successMessage = getOption("SMS-B2C-SUCCESS-MESSAGE");
-                    $successMessage = str_replace("{order_number}", $transaction->order_number, $successMessage);
+                    $successMessage = str_replace("{receipt_number}", $event->report->groupHeader->messageId, $successMessage);
+                    $successMessage = str_replace("{amount}", $transaction->disbursed_amount, $successMessage);
+                    $successMessage = str_replace("{to}", $transaction->account_number . ' ' . $transaction->account_name, $successMessage);
+                    $successMessage = str_replace("{datetime}", date('d m, Y h:1 A', strtotime($event->report->groupHeader->creationDateTime)), $successMessage);
                     $successMessage = (isset($transaction->service)) ? str_replace("{service}", $transaction->service->name, $successMessage) : str_replace("{service}", $transaction->account->name, $successMessage);
 
                     break;
