@@ -49,7 +49,7 @@ class ServicesTable extends DataTableComponent
             Column::make("Manager", "client.manager.first_name")
                 ->sortable()
                 ->searchable(),
-            Column::make("Account Name", "account.name")
+            Column::make("Account Name", "account.display_name")
                 ->sortable()
                 ->searchable(),
             Column::make("Max TRX Amount", "max_trx_amount")
