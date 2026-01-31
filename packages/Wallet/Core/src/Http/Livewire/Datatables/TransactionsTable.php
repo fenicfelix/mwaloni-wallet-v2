@@ -222,9 +222,9 @@ class TransactionsTable extends DataTableComponent
                     'altFormat' => 'F j, Y', // Date format that will be displayed once selected
                     'ariaDateFormat' => 'F j, Y', // An aria-friendly date format
                     'dateFormat' => 'Y-m-d', // Date format that will be received by the filter
-                    'earliestDate' => '2020-01-01', // The earliest acceptable date
-                    'latestDate' => date('Y-m-d', strtotime(now())), // The latest acceptable date
-                    'placeholder' => 'Enter Date Range', // A placeholder value
+                    'earliestDate' => '2021-11-07', // The earliest acceptable date
+                    'latestDate' => date('Y-m-d'), // The latest acceptable date
+                    'placeholder' => 'Select Date Range', // A placeholder value
                     'locale' => 'en',
                 ])
                 ->setFilterPillValues([0 => 'minDate', 1 => 'maxDate']) // The values that will be displayed for the Min/Max Date Values
