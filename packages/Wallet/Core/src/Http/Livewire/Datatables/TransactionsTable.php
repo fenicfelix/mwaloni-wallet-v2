@@ -15,6 +15,7 @@ use Rappasoft\LaravelLivewireTables\Views\Filters\DateRangeFilter;
 use Wallet\Core\Http\Enums\TransactionStatus;
 use Wallet\Core\Http\Exports\TransactionsExport;
 use Wallet\Core\Models\Account;
+use Wallet\Core\Models\Client;
 
 class TransactionsTable extends DataTableComponent
 {
@@ -198,11 +199,12 @@ class TransactionsTable extends DataTableComponent
     public function filters(): array
     {
         return [
-            SelectFilter::make('Account', 'account')
-                ->options(['' => 'All Accounts'] + Account::all()->pluck('name', 'id',)->toArray())
+            SelectFilter::make('Client', 'account')
+                ->options(['' => 'All Clients'] + Client::all()->pluck('name', 'id',)->toArray())
                 ->filter(function (Builder $builder, string $value) {
                     $builder
-                        ->where('transactions.account_id', $value);
+                        ->join('services', 'services.id', '=', 'transactions.service_id')
+                        ->where('services.client_id', $value);
                 }),
             SelectFilter::make('Service', 'service')
                 ->options(['' => 'All Services'] + Service::all()->pluck('name', 'id',)->toArray())
