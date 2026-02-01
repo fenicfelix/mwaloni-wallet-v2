@@ -75,7 +75,8 @@ class CoreServiceProvider extends ServiceProvider
                 ->by($apiKey ?: $request->ip());
         });
 
-        Route::middleware(['api', 'throttle:mwaloni-api', VerifyMwaloniHeaders::class])
+        // 'throttle:mwaloni-api', 
+        Route::middleware(['api', VerifyMwaloniHeaders::class])
             ->prefix('api')
             ->group(__DIR__ . '/../../routes/api.php');
 
