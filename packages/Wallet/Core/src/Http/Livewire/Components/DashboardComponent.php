@@ -45,7 +45,7 @@ class DashboardComponent extends Component
     private function fetchGraphData()
     {
         // $start_date = date("Y-m-01");
-        $end_date = date("Y-m-t");
+        $end_date = date("Y-m-d");
         $start_date = date("Y-m-d", strtotime("-30 days", strtotime($end_date)));
         $days_diff = (strtotime($end_date) - strtotime($start_date)) / (60 * 60 * 24);
         $this->graph_title = "Transactions in the last " . $days_diff . " days";
@@ -53,6 +53,7 @@ class DashboardComponent extends Component
         FROM transactions a
         where date(a.transaction_date) between '" . $start_date . "' and '" . $end_date . "'
         GROUP BY DATE(a.transaction_date)";
+        info($sql);
         $data = DB::select($sql);
 
         $dates = [];
@@ -68,7 +69,7 @@ class DashboardComponent extends Component
                 }
             }
             array_push($values, $total);
-            array_push($dates, $i);
+            array_push($dates, $date);
         }
 
         $result = [
