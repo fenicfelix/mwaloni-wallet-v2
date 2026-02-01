@@ -147,7 +147,7 @@
                <div class="card p-4">
                   <div class="pb-4">
                      <div class="d-flex mb-3">
-                        <span class="text-md">Daily transactions for the month of {{ date('M Y') }}</span>
+                        <span class="text-md">{{ $graph_title }}</span>
                         <span class="flex"></span>
                      </div>
                   </div>
