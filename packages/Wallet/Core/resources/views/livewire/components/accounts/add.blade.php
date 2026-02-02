@@ -90,16 +90,6 @@
                                             </div>
                                             <div class="row">
                                                 <div class="col-sm-12">
-                                                    <x-wallet::form.input label="API Key" wire:model.defer="formData.consumer_key" name="consumer_key"
-                                                        type="text" required />
-                                                </div>
-                                                <div class="col-sm-6">
-                                                    <x-wallet::form.input label="Pesalink CIF" wire:model.defer="formData.pesalink_cif" name="pesalink_cif" type="text"
-                                                        required />
-                                                </div>
-                                            </div>
-                                            <div class="row">
-                                                <div class="col-sm-12">
                                                     <x-wallet::form.input label="API Key" wire:model.defer="formData.consumer_key" name="consumer_key" type="text"
                                                         required />
                                                 </div>
