@@ -53,12 +53,7 @@ class StanbicStatusReportEventListener implements ShouldQueue
                         $additionalData['account_name'] = $rawRequest['account_name'] ?? '';
                     }
 
-                    $successMessage = getOption("SMS-B2C-SUCCESS-MESSAGE");
-                    $successMessage = str_replace("{receipt_number}", $event->report->groupHeader->messageId, $successMessage);
-                    $successMessage = str_replace("{amount}", $transaction->disbursed_amount, $successMessage);
-                    $successMessage = str_replace("{to}", $transaction->account_number . ' ' . $transaction->account_name, $successMessage);
-                    $successMessage = str_replace("{datetime}", date('d m, Y h:1 A', strtotime($event->report->groupHeader->creationDateTime)), $successMessage);
-                    $successMessage = (isset($transaction->service)) ? str_replace("{service}", $transaction->service->name, $successMessage) : str_replace("{service}", $transaction->account->name, $successMessage);
+                    $successMessage =$this->prepareSuccessMessage($event, $transaction);
 
                     break;
                 case GroupStatusType::Rjct:
@@ -67,10 +62,7 @@ class StanbicStatusReportEventListener implements ShouldQueue
                         'result_description' => $event->report->originalGroupInfoAndStatus->statusReasonInfos->additionalInfos->first()
                     ];
 
-                    $successMessage = getOption("DARAJA-ERROR-MESSAGE");
-                    $successMessage = str_replace('{account}', $account->name, $successMessage);
-                    $successMessage = str_replace('{error}', 'rejected', $successMessage);
-                    $successMessage = str_replace('{transaction}', $transaction->order_number, $successMessage);
+                    $successMessage = $this->prepareFailedMessage($account, $transaction);
 
                     break;
                 case GroupStatusType::Pdng:
@@ -98,6 +90,40 @@ class StanbicStatusReportEventListener implements ShouldQueue
         } else {
             info("No transaction found with message_id: " . $event->report->groupHeader->messageId);
         }
+    }
+
+    private function prepareSuccessMessage($event, $transaction): ?string
+    {
+        $successMessage = "";
+        try {
+            $successMessage = getOption("SMS-B2C-SUCCESS-MESSAGE");
+            $successMessage = str_replace("{receipt_number}", $event->report->groupHeader->messageId, $successMessage);
+            $successMessage = str_replace("{amount}", $transaction->disbursed_amount, $successMessage);
+            $successMessage = str_replace("{to}", $transaction->account_number . ' ' . $transaction->account_name, $successMessage);
+            $successMessage = str_replace("{datetime}", date('d m, Y h:1 A', strtotime($event->report->groupHeader->creationDateTime)), $successMessage);
+            $successMessage = (isset($transaction->service)) ? str_replace("{service}", $transaction->service->name, $successMessage) : str_replace("{service}", $transaction->account->name, $successMessage);
+        } catch (\Throwable $th) {
+            //throw $th;
+            info("Error preparing success message: " . $th->getMessage());
+        }
+
+        return $successMessage;
+    }
+
+    private function prepareFailedMessage($account, $transaction): ?string
+    {
+        $successMessage = "";
+        try {
+            $successMessage = getOption("DARAJA-ERROR-MESSAGE");
+            $successMessage = str_replace('{account}', $account->name, $successMessage);
+            $successMessage = str_replace('{error}', 'rejected', $successMessage);
+            $successMessage = str_replace('{transaction}', $transaction->order_number, $successMessage);
+        } catch (\Throwable $th) {
+            //throw $th;
+            info("Error preparing success message: " . $th->getMessage());
+        }
+
+        return $successMessage;
     }
 
     private function completeOperation($transaction, $groupStatus, $updateData, $payloadData, $successMessage)
