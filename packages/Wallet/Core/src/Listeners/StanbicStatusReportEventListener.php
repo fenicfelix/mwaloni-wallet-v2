@@ -112,6 +112,8 @@ class StanbicStatusReportEventListener implements ShouldQueue
             info("Error preparing success message: " . $th->getMessage());
         }
 
+        info("Prepared success message: " . $successMessage);
+
         return $successMessage;
     }
 
@@ -127,6 +129,8 @@ class StanbicStatusReportEventListener implements ShouldQueue
             //throw $th;
             info("Error preparing success message: " . $th->getMessage());
         }
+
+        info("Prepared failed message: " . $successMessage);
 
         return $successMessage;
     }
