@@ -66,7 +66,11 @@ class Transaction extends Model
 
     public function scopeUnsuccessful($query)
     {
-        return $query->whereNotIn("status", [TransactionStatus::SUCCESS, TransactionStatus::CANCELLED]);
+        return $query->whereNotIn("status", [
+            TransactionStatus::SUCCESS,
+            TransactionStatus::CANCELLED,
+            TransactionStatus::COMPLETED
+        ]);
     }
 
     public function scopeFailed($query)
