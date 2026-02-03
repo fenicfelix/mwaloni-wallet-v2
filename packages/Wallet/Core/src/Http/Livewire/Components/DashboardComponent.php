@@ -53,7 +53,6 @@ class DashboardComponent extends Component
         FROM transactions a
         where date(a.transaction_date) between '" . $start_date . "' and '" . $end_date . "'
         GROUP BY DATE(a.transaction_date)";
-        info($sql);
         $data = DB::select($sql);
 
         $dates = [];
