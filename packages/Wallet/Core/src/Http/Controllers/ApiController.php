@@ -117,7 +117,7 @@ class ApiController extends Controller
 
         $transaction = Transaction::where('account_number', 'like', "%{$contact}")
             ->whereNotNull('account_name')
-            ->latest()
+            ->orderBy('requested_on', 'desc')
             ->first();
 
         if (! $transaction) {
