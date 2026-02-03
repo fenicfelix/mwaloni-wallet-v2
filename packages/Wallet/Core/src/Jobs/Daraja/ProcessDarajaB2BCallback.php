@@ -38,7 +38,6 @@ class ProcessDarajaB2BCallback implements ShouldQueue
      */
     public function handle()
     {
-        info('ProcessDarajaB2BCallback: ' . $this->transactionId . ' JSON: ' . json_encode($this->json));
         $balance = NULL;
         $completed_at = date("Y-m-d H:i:s");
         $transaction = Transaction::with(["account", "service", "payload"])->where("identifier", $this->transactionId)->first();

@@ -31,7 +31,6 @@ class ProcessPayment implements ShouldQueue
 
     public function handle()
     {
-        info('Process Payment: ' . $this->transactionId . " - Channel: " . $this->channel);
         // if $this->channel like ncba-*, then ProcessNcbaPayments::dispatch($this->transactionId);
         if (strpos($this->channel, 'ncba-') !== false) {
             ProcessNcbaPayments::dispatch($this->transactionId);

@@ -42,20 +42,17 @@ class ProcessNcbaPayments implements ShouldQueue
         try {
             /// Check if the transaction exists
             if (!$transaction) {
-                info("Transaction not found");
                 return;
             }
 
             /// Check if the transaction has been submitted
             $result = json_decode($this->submitTransaction($transaction), true);
             if (!$result) {
-                info("No response from NCBA API");
                 return;
             }
 
             /// Update the transaction status if the transaction has been submitted
             if ($result["resultCode"] != "000") {
-                info("NCBA Payment failed: " . $result["statusDescription"]);
                 throw new Exception("Error Processing Request", 1);
             }
 
@@ -93,7 +90,6 @@ class ProcessNcbaPayments implements ShouldQueue
 
         $authenticate = json_decode($ncba->authenticate(), true);
         if (!$authenticate || !isset($authenticate['accessToken'])) {
-            info("NCBA Authentication failed");
             return null;
         }
 

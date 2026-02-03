@@ -38,7 +38,6 @@ class ProcessDarajaB2BPayment implements ShouldQueue
      */
     public function handle()
     {
-        info('ProcessDarajaB2BPayment: ' . $this->transactionId);
         $transaction = Transaction::with(["service", "account", "payload"])->where("id", "=", $this->transactionId)->first();
         if (! $transaction) {
             // Ignore the job
@@ -46,7 +45,6 @@ class ProcessDarajaB2BPayment implements ShouldQueue
         }
         
         $response = json_decode($this->performTransaction($transaction));
-        info('ProcessDarajaB2BPayment: ' . $this->transactionId . ' RESPONSE' . json_encode($response));
         if ($response) {
             $updateData = [];
             $payloadData = [
@@ -54,7 +52,6 @@ class ProcessDarajaB2BPayment implements ShouldQueue
             ];
 
             try {
-                info('ProcessDarajaB2BPayment: ' . $this->transactionId . ' SUBMITTED');
                 $updateData = [
                     "status" => TransactionStatus::SUBMITTED,
                     "result_description" => $response->ResponseDescription
@@ -64,14 +61,12 @@ class ProcessDarajaB2BPayment implements ShouldQueue
                     "original_conversation_id" => $response->OriginatorConversationID
                 ];
             } catch (\Throwable $th) {
-                info('ProcessDarajaB2BPayment: ' . $this->transactionId . ' ERROR: ' . $th->getMessage());
                 $updateData = [
                     "status" => TransactionStatus::FAILED,
                     "result_description" => $response->ResultDesc
                 ];
             }
         } else {
-            info('ProcessDarajaB2BPayment: ' . $this->transactionId . ' FAILED');
             //Ignore the job
             $updateData = [
                 "status" => TransactionStatus::FAILED
@@ -111,8 +106,6 @@ class ProcessDarajaB2BPayment implements ShouldQueue
         } else {
             $response = $mpesa->b2bPaybill($destShortcode, $amount, $remarks, $accountRef, route('b2b_result_url', $transaction->identifier), route('b2b_timeout_url'));
         }
-
-        info('PAYMENT_RESPONSE: ' . $response);
 
         return $response;
     }

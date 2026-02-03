@@ -45,7 +45,6 @@ class ProcessDarajaB2CPayment implements ShouldQueue
         }
 
         $response = json_decode($this->performTransaction($transaction));
-        info('ProcessDarajaB2CPayment: ' . $this->transactionId . ' RESPONSE' . json_encode($response));
         if ($response) {
             $updateData = [];
             $payloadData = [
@@ -58,14 +57,10 @@ class ProcessDarajaB2CPayment implements ShouldQueue
                     "result_description" => $response->ResponseDescription
                 ];
 
-                info('PAYMENT_UPDATE: ' . json_encode($updateData));
-
                 $payloadData = [
                     "conversation_id" => $response->ConversationID,
                     "original_conversation_id" => $response->OriginatorConversationID
                 ];
-
-                info('PAYMENT_PAYLOAD: ' . json_encode($payloadData));
             } catch (\Throwable $th) {
                 $updateData = [
                     "status" => TransactionStatus::FAILED,
@@ -104,8 +99,6 @@ class ProcessDarajaB2CPayment implements ShouldQueue
         );
 
         $response = $mpesa->b2cTransaction($commandID, $msisdn, $amount, $remarks, route('b2c_result_url', $transactionID), route('b2c_timeout_url'), $ocassion);
-
-        info('PAYMENT_RESPONSE: ' . $response);
 
         return $response;
     }

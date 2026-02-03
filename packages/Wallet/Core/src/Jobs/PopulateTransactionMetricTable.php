@@ -60,8 +60,6 @@ class PopulateTransactionMetricTable implements ShouldQueue
             if (! $update) {
                 throw new \Exception('Failed to update transaction metrics.');
             }
-
-            Log::info('Transaction Metrics populated successfully.');
         } catch (\Throwable $th) {
             Log::error('Transaction Metrics Error: ' . $th->getMessage());
             throw $th;

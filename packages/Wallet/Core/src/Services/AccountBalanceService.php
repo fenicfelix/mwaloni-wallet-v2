@@ -18,13 +18,10 @@ class AccountBalanceService
             if(!$account) return false;
 
             if ($account->account_type_id == 1) { //Daraja
-                info('Fetching balance for daraja account');
                 QueryDarajaBalance::dispatch($account->id)->onQueue("fetch-balance");
             } else if ($account->account_type_id == 2) { //Jenga
-                info('Fetching balance for jenga account');
                 QueryJengaBalance::dispatch($account->id)->onQueue("fetch-balance");
             } else {
-                info('Fetching balance for ncba account');
                 QueryNcbaBalance::dispatch($account->id)->onQueue("fetch-balance");
             }
             return true;

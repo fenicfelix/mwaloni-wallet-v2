@@ -28,10 +28,6 @@ class StanbicStatusReportEventListener implements ShouldQueue
      */
     public function handle(Pain00200103ReportReceived $event)
     {
-        info("Received Pain00200103ReportReceived event");
-        info($event->report->originalGroupInfoAndStatus->originalMessageId);
-        info($event->report->originalGroupInfoAndStatus->groupStatus->value); // enums: ACSP, RJCT, PDNG, PARTIAL
-
         $transaction = Transaction::with(['account', 'payload'])->where('message_id', $event->report->originalGroupInfoAndStatus->originalMessageId)->first();
         if ($transaction) {
             $successMessage = "";
@@ -85,10 +81,6 @@ class StanbicStatusReportEventListener implements ShouldQueue
                 $payloadData,
                 $successMessage
             );
-
-            info("Transaction status updated to: " . $transaction->status_id);
-        } else {
-            info("No transaction found with message_id: " . $event->report->groupHeader->messageId);
         }
     }
 
@@ -112,8 +104,6 @@ class StanbicStatusReportEventListener implements ShouldQueue
             info("Error preparing success message: " . $th->getMessage());
         }
 
-        info("Prepared success message: " . $successMessage);
-
         return $successMessage;
     }
 
@@ -129,8 +119,6 @@ class StanbicStatusReportEventListener implements ShouldQueue
             //throw $th;
             info("Error preparing success message: " . $th->getMessage());
         }
-
-        info("Prepared failed message: " . $successMessage);
 
         return $successMessage;
     }
