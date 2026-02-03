@@ -79,7 +79,7 @@ class Transaction extends Model
 
     public function scopeFailed($query)
     {
-        return $query->whereIn("status", [TransactionStatus::FAILED, TransactionStatus::COMPLETED]);
+        return $query->whereIn("status", [TransactionStatus::FAILED]);
     }
 
     public function scopePending($query)
