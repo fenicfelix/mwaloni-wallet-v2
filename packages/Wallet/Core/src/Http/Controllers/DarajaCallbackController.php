@@ -33,8 +33,8 @@ class DarajaCallbackController extends Controller
     public function b2c_result(Request $request, $transactionId)
     {
         $json = $request->json()->all();
-        ProcessDarajaB2CCallback::dispatch($transactionId, $json)->onQueue("b2c-callback");
-        return response()->json(['status' => 'success'] , 200);
+        ProcessDarajaB2CCallback::dispatch($transactionId, $json)->onQueue("trx-callback");
+        return response()->json(['status' => 'success'], 200);
     }
 
     public function b2c_timeout(Request $request)
@@ -46,7 +46,7 @@ class DarajaCallbackController extends Controller
     public function b2b_result(Request $request, $transactionId)
     {
         $json = $request->json()->all();
-        ProcessDarajaB2BCallback::dispatch($transactionId, $json)->onQueue("b2b-callback");
+        ProcessDarajaB2BCallback::dispatch($transactionId, $json)->onQueue("trx-callback");
         return response()->json(['status' => 'success'], 200);
     }
 
@@ -59,7 +59,7 @@ class DarajaCallbackController extends Controller
     public function trx_status_result(Request $request, $transactionId)
     {
         $json = $request->json()->all();
-        ProcessDarajaPaymentStatusCallback::dispatch($transactionId, $json)->onQueue("b2c-callback");
+        ProcessDarajaPaymentStatusCallback::dispatch($transactionId, $json)->onQueue("trx-callback");
         return response()->json(['status' => 'success'], 200);
     }
 
@@ -72,7 +72,7 @@ class DarajaCallbackController extends Controller
     public function trx_reversal_result(Request $request)
     {
         $json = $request->json()->all();
-        ProcessDarajaReversalCallback::dispatch($json)->onQueue("b2c-callback");
+        ProcessDarajaReversalCallback::dispatch($json)->onQueue("trx-callback");
         return response()->json(['status' => 'success'], 200);
     }
 

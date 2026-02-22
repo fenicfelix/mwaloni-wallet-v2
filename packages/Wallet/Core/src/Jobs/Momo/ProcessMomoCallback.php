@@ -12,23 +12,27 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Wallet\Core\Http\Enums\TransactionStatus;
+use Wallet\Core\Http\Traits\MwaloniWallet;
 use Wallet\Core\Repositories\TransactionRepository;
 use Wallet\Core\Services\ProcessMomoStatus;
 
-class QueryMomoPaymentStatus implements ShouldQueue
+class ProcessMomoCallback implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
+    use MwaloniWallet;
 
     protected $transactionId;
+    protected $json;
 
     /**
      * Create a new job instance.
      *
      * @return void
      */
-    public function __construct($transactionId)
+    public function __construct($transactionId, $json)
     {
         $this->transactionId = $transactionId;
+        $this->json = $json;
     }
 
     /**
@@ -39,20 +43,6 @@ class QueryMomoPaymentStatus implements ShouldQueue
 
     public function handle()
     {
-        $successfulStatusLabel = 'SUCCESSFUL';
-        $transaction = Transaction::with(["account"])->where("id", "=", $this->transactionId)->first();
-        if (!$transaction) {
-            return;
-        }
-
-        $account = $transaction->account;
-
-        $status = MoMo::with(
-            'your_secondary_key',       // overrides momo.<env>.secondary_key
-            $account->api_username,   // overrides momo.<env>.user_reference_id
-            'your_api_key',
-        )->disbursement()->getTransferStatus($this->transactionId);
-
-        return app(ProcessMomoStatus::class)->process($this->transactionId, $status);
+        return app(ProcessMomoStatus::class)->process($this->transactionId, $this->json);
     }
 }
