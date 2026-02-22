@@ -52,7 +52,6 @@ class ProcessDarajaB2BCallback implements ShouldQueue
             return;
         }
 
-        $account = $transaction->account;
         $smsMessage = "";
         $payloadData = [
             "raw_callback" => json_encode($this->json)
@@ -101,11 +100,6 @@ class ProcessDarajaB2BCallback implements ShouldQueue
         //Save account balance
         if (in_array($updateData['status'], [TransactionStatus::SUCCESS, TransactionStatus::FAILED])) {
             $transactionRepository->completeTransaction($transaction->id);
-            if ($balance) {
-                $account->update([
-                    'utility_balance' => $balance
-                ]);
-            }
         }
 
         //Send SMS
