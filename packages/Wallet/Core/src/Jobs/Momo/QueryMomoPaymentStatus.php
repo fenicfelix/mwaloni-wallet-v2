@@ -39,7 +39,6 @@ class QueryMomoPaymentStatus implements ShouldQueue
 
     public function handle()
     {
-        $successfulStatusLabel = 'SUCCESSFUL';
         $transaction = Transaction::with(["account"])->where("id", "=", $this->transactionId)->first();
         if (!$transaction) {
             return;
@@ -48,9 +47,9 @@ class QueryMomoPaymentStatus implements ShouldQueue
         $account = $transaction->account;
 
         $status = MoMo::with(
-            'your_secondary_key',       // overrides momo.<env>.secondary_key
-            $account->api_username,   // overrides momo.<env>.user_reference_id
-            'your_api_key',
+            $account->consumer_secret,  // overrides momo.<env>.secondary_key
+            $account->api_username,     // overrides momo.<env>.user_reference_id
+            $account->api_password,
         )->disbursement()->getTransferStatus($this->transactionId);
 
         return app(ProcessMomoStatus::class)->process($this->transactionId, $status);

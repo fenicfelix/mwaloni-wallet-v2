@@ -101,12 +101,24 @@
                                                     required />
                                             </div>
                                         </div>
+                                        @if ($formData['account_type_id'] == 5)
+                                            <div class="row">
+                                                <div class="col-6">
+                                                    <x-wallet::form.input label="Primary Key" wire:model.defer="formData.api_username" name="api_username"
+                                                        type="text" />
+                                                </div>
+                                                <div class="col-6">
+                                                    <x-wallet::form.input label="Secondary Key" wire:model.defer="formData.api_password" name="api_password"
+                                                        type="text" />
+                                                </div>
+                                            </div>
+                                        @endif
                                         <div class="row">
                                             <div class="col-6">
-                                                <x-wallet::form.input label="API Username" wire:model.defer="formData.api_username" name="api_username" type="text"/>
+                                                <x-wallet::form.input label="API Username/User ID" wire:model.defer="formData.api_username" name="api_username" type="text"/>
                                             </div>
                                             <div class="col-6">
-                                                <x-wallet::form.input label="API Password" wire:model.defer="formData.api_password" name="api_password" type="text"/>
+                                                <x-wallet::form.input label="API Password/API Key" wire:model.defer="formData.api_password" name="api_password" type="text"/>
                                             </div>
                                         </div>
                                     @endif

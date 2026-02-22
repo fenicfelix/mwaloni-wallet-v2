@@ -13,7 +13,6 @@ class ProcessMomoStatus
     public function process($transactionId, $json)
     {
         try {
-            $successfulStatusLabel = 'SUCCESSFUL';
             $transaction = Transaction::with(["account", "payload"])->where("id", "=", $transactionId)->first();
 
             // Check if the transaction exists
@@ -21,36 +20,21 @@ class ProcessMomoStatus
                 return;
             }
 
-            /*
-            $status = [
-                "amount" => "6.00",
-                "currency" => "EUR",
-                "financialTransactionId" => "554662921",
-                "externalId" => "01KHXC2B1JQTKN16T8XHHTZX6A",
-                "payee" => [
-                    "partyIdType" => "MSISDN",
-                    "partyId" => "0296631315"
-                ],
-                "payeeNote" => "Reprehenderit sequi fugiat ipsam sed.",
-                "status" => "SUCCESSFUL"
-            ];
-            */
-
             // Process the payment status
-            if ($json['status'] === $successfulStatusLabel) {
+            if ($json['status'] === $this->successfulStatusLabel) {
                 info("Momo Payment Status Query Successful");
                 $updateData = [
                     "status" => TransactionStatus::SUCCESS,
-                    "receipt_number" => $json["externalId"],
+                    "receipt_number" => $json["financialTransactionId"],
                     "result_description" => $json["status"],
-                    "completed_at" => date('Y-m-d H:i:s')
+                    "completed_at" => now()
                 ];
             } else {
                 info("Momo Payment Status Query Unsuccessful");
                 $updateData = [
                     "status" => TransactionStatus::FAILED,
-                    /// ....Any other fields to update
-                    "completed_at" => date('Y-m-d H:i:s')
+                    "result_description" => $json["reason"],
+                    "completed_at" => now()
                 ];
             }
 
@@ -60,7 +44,7 @@ class ProcessMomoStatus
 
             $transactionRepository = app(TransactionRepository::class);
             $transactionRepository->updateWithPayload($transaction->id, $updateData, $payloadData);
-            if ($json['status'] === $successfulStatusLabel) {
+            if ($json['status'] === $this->successfulStatusLabel) {
                 // Dispatch a job to handle successful payment
                 // complete the payment process
                 $transactionRepository->completeTransaction($transaction->id);

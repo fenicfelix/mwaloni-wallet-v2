@@ -5,7 +5,6 @@ namespace Wallet\Core\Jobs\Momo;
 use Akika\MoMo\Enums\Currency;
 use Akika\MoMo\Facades\MoMo;
 use Wallet\Core\Models\Transaction;
-use Exception;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -56,14 +55,13 @@ class ProcessMomoPayment implements ShouldQueue
 
             $updateData = [
                 "status" => TransactionStatus::SUBMITTED,
-                "receipt_number" => $result,
                 "result_description" => "Payment submitted at " . now(),
             ];
 
             $payloadData = [
-                "raw_callback" => $result
+                "raw_callback" => $result,
+                "conversation_id" => $result,
             ];
-
         } catch (\Throwable $th) {
             info("MoMo Payment Exception: " . $th->getMessage());
             $updateData = [
@@ -71,7 +69,7 @@ class ProcessMomoPayment implements ShouldQueue
                 "result_description" => $th->getMessage(),
                 "completed_at" => now()
             ];
-            
+
             $payloadData = [
                 "raw_callback" => json_encode($th)
             ];
@@ -87,9 +85,9 @@ class ProcessMomoPayment implements ShouldQueue
         $payload = json_decode($transaction->payload?->trx_payload, true);
 
         $referenceId = MoMo::with(
-            'your_secondary_key',       // overrides momo.<env>.secondary_key
-            $account->api_username,   // overrides momo.<env>.user_reference_id
-            'your_api_key',
+            $account->consumer_secret,  // overrides momo.<env>.secondary_key
+            $account->api_username,     // overrides momo.<env>.user_reference_id
+            $account->api_password,
         )->disbursement()->transfer(
             $payload['amount'],
             Currency::UgandaShilling,
