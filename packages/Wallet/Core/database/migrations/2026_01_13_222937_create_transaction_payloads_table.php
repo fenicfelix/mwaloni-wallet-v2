@@ -18,11 +18,11 @@ class CreateTransactionPayloadsTable extends Migration
 
             $table->string("conversation_id", 255)->nullable();
             $table->string("original_conversation_id", 255)->nullable();
-            
+
             // API Raw Data
-            $table->text('raw_request')->nullable();
-            $table->text('trx_payload')->nullable();
-            $table->text('raw_callback')->nullable();
+            $table->json('raw_request')->nullable();
+            $table->json('trx_payload')->nullable();
+            $table->json('raw_callback')->nullable();
 
             $table->foreignId('transaction_id')->nullable()->references("id")->on("transactions")->onDelete("set null");
 

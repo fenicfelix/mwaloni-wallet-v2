@@ -5,6 +5,9 @@ namespace Database\Seeders;
 use App\Models\User;
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
+use Wallet\Core\Models\PaymentChannel;
+use Illuminate\Support\Str;
+use Wallet\Core\Models\AccountType;
 
 class DatabaseSeeder extends Seeder
 {
@@ -13,11 +16,28 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // User::factory(10)->create();
 
-        User::factory()->create([
-            'name' => 'Test User',
-            'email' => 'test@example.com',
-        ]);
+        $accountType = AccountType::updateOrCreate(
+            [
+                'slug' => 'mtn-momo',
+            ],
+            [
+                'account_type' => 'MTN MoMo',
+                'slug' => 'mtn-momo',
+            ]
+        );
+
+        PaymentChannel::updateOrCreate(
+            [
+                'slug' => 'mtn-momo',
+            ],
+            [
+                'name' => 'MTN MoMo',
+                'slug' => 'mtn-momo',
+                'description' => 'MTN Mobile Money',
+                'active' => true,
+                'account_type_id' => $accountType->id,
+            ]
+        );
     }
 }

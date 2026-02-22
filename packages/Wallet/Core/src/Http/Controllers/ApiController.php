@@ -30,14 +30,13 @@ class ApiController extends Controller
         }
 
         $account = $service->account;
-        $utilityBalance = $account->utility_balance
-            - ($account->revenue + $account->withheld_amount);
+        $utilityBalance = $account->utility_balance - ($account->revenue + $account->withheld_amount);
 
         return $this->success([
-            'balance' => $utilityBalance,
+            'balance' => $utilityBalance, // Utility balance after deductions
             'balanceBreakdown' => [
-                'utilityBalance' => $utilityBalance,
-                'workingBalance' => $account->working_balance,
+                'utilityBalance' => $utilityBalance, // Utility balance after deductions
+                'workingBalance' => $account->working_balance, // Working balance
             ],
         ]);
     }

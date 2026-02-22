@@ -2,7 +2,8 @@
 
 namespace Wallet\Core\Services;
 
-class PayloadGeneratorService {
+class PayloadGeneratorService
+{
 
     public function generatePayload($channel, $data, $amount): ?array
     {
@@ -34,6 +35,14 @@ class PayloadGeneratorService {
                 'instructionId' => 'INST0' . $body['order_number'],
                 'amount' => $data['amount'],
                 'paymentDescription' => $data['description'],
+            ];
+        } else if ($channel->slug == 'mtn-momo') {
+            $payload = [
+                'amount' => $amount,
+                'externalId' => $data['order_number'],
+                'payeeMsisdn' => $data['account_number'],
+                'payerMessage' => $data['description'] ?? 'Cashout',
+                'payeeNote' => $data['description'] ?? 'Cashout',
             ];
         } else {
             switch ($channel->slug) {

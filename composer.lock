@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "88be190484ed86220b14230295f1ec27",
+    "content-hash": "8e7a99216f2856969ac8424a19c9a1b4",
     "packages": [
         {
             "name": "africastalking/africastalking",
@@ -60,6 +60,90 @@
                 "source": "https://github.com/AfricasTalkingLtd/africastalking-php/tree/v3.0.2"
             },
             "time": "2024-03-07T12:27:18+00:00"
+        },
+        {
+            "name": "akika/laravel-momo",
+            "version": "v0.0.2",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/akikadigital/laravel-momo.git",
+                "reference": "0e73a4c45a93565811362f73a30261653d34f8b5"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/akikadigital/laravel-momo/zipball/0e73a4c45a93565811362f73a30261653d34f8b5",
+                "reference": "0e73a4c45a93565811362f73a30261653d34f8b5",
+                "shasum": ""
+            },
+            "require": {
+                "illuminate/contracts": "^11.0||^12.0",
+                "php": "^8.1",
+                "spatie/laravel-package-tools": "^1.16"
+            },
+            "require-dev": {
+                "driftingly/rector-laravel": "^2.1",
+                "larastan/larastan": "^3.0",
+                "laravel/pint": "^1.14",
+                "nunomaduro/collision": "^8.8",
+                "orchestra/testbench": "^10.0.0||^9.0.0",
+                "pestphp/pest": "^4.0",
+                "pestphp/pest-plugin-arch": "^4.0",
+                "pestphp/pest-plugin-laravel": "^4.0",
+                "phpstan/extension-installer": "^1.4",
+                "phpstan/phpstan-deprecation-rules": "^2.0",
+                "phpstan/phpstan-phpunit": "^2.0"
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "aliases": {
+                        "MoMo": "Akika\\MoMo\\Facades\\MoMo"
+                    },
+                    "providers": [
+                        "Akika\\MoMo\\MoMoServiceProvider"
+                    ]
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Akika\\MoMo\\": "src/",
+                    "Akika\\MoMo\\Database\\Factories\\": "database/factories/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Timothy Karani",
+                    "email": "kartimothy@gmail.com",
+                    "role": "Developer"
+                },
+                {
+                    "name": "Akika Digital",
+                    "email": "akika.digital@gmail.com",
+                    "role": "Developer"
+                }
+            ],
+            "description": "An unofficial package for MTN MoMo",
+            "homepage": "https://github.com/akika/laravel-momo",
+            "keywords": [
+                "Akika Digital",
+                "laravel",
+                "laravel-momo"
+            ],
+            "support": {
+                "issues": "https://github.com/akikadigital/laravel-momo/issues",
+                "source": "https://github.com/akikadigital/laravel-momo/tree/v0.0.2"
+            },
+            "funding": [
+                {
+                    "url": "https://github.com/Akika Digital",
+                    "type": "github"
+                }
+            ],
+            "time": "2026-02-22T09:46:52+00:00"
         },
         {
             "name": "akika/laravel-mpesa-multivendor",
