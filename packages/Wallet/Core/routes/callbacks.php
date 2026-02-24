@@ -2,10 +2,13 @@
 
 use Illuminate\Support\Facades\Route;
 use Wallet\Core\Http\Controllers\DarajaCallbackController;
+use Wallet\Core\Http\Controllers\MomoCallbackController;
 use Wallet\Core\Http\Controllers\NCBACallbackController;
 
 // add ncba kplc callback route
 Route::post('ncba-kplc-callback/{id}', [NCBACallbackController::class, 'ncba_kplc_callback'])->name("ncba_kplc_callback_url");
+
+Route::post('mdcb/{id}', [MomoCallbackController::class, 'disbursement'])->name("momo_callback_url");
 
 // create group route for daraja callback
 Route::group(['prefix' => 'drj-callback'], function () {
