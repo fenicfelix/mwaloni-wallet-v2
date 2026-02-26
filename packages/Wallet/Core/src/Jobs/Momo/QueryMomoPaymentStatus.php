@@ -47,11 +47,11 @@ class QueryMomoPaymentStatus implements ShouldQueue
         $account = $transaction->account;
 
         $status = MoMo::with(
-            $account->consumer_secret,  // overrides momo.<env>.secondary_key
+            $account->consumer_key,  // overrides momo.<env>.secondary_key
             $account->api_username,     // overrides momo.<env>.user_reference_id
             $account->api_password,
         )->disbursement()->getTransferStatus($this->transactionId);
 
-        return app(ProcessMomoStatus::class)->process($this->transactionId, $status);
+        return app(ProcessMomoStatus::class)->process($status);
     }
 }

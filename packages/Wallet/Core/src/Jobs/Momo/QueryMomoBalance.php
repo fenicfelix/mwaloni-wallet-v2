@@ -45,7 +45,7 @@ class QueryMomoBalance implements ShouldQueue
     private function fetchBalance(Account $account): array
     {
         return MoMo::with(
-            $account->consumer_secret,  // overrides momo.<env>.secondary_key
+            $account->consumer_key,  // overrides momo.<env>.secondary_key
             $account->api_username,     // overrides momo.<env>.user_reference_id
             $account->api_password,
         )->disbursement()->getAccountBalance();
