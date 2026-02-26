@@ -8,8 +8,8 @@ use Wallet\Core\Http\Controllers\NCBACallbackController;
 // add ncba kplc callback route
 Route::post('ncba-kplc-callback/{id}', [NCBACallbackController::class, 'ncba_kplc_callback'])->name("ncba_kplc_callback_url");
 
-Route::group(['prefix' => 'momo'], function () {
-    Route::post('callback', [MomoCallbackController::class, 'disbursement'])->name("momo_callback_url");
+Route::group(['prefix' => 'callbacks'], function () {
+    Route::post('momo', [MomoCallbackController::class, 'disbursement'])->name("momo_callback_url");
 });
 
 // create group route for daraja callback

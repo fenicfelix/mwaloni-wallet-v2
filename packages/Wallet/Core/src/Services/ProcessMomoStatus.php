@@ -10,10 +10,12 @@ class ProcessMomoStatus
 {
     protected $successfulStatusLabel = 'SUCCESSFUL';
 
-    public function process($transactionId, $json)
+    public function process($json)
     {
+        $transactionId = $json['externalId'] ?? null;
+
         try {
-            $transaction = Transaction::with(["account", "payload"])->where("id", "=", $transactionId)->first();
+            $transaction = Transaction::with(["account", "payload"])->where("order_number", $transactionId)->first();
 
             // Check if the transaction exists
             if (!$transaction) {

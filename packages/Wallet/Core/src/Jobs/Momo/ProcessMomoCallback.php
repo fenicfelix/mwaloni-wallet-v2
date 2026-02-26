@@ -15,7 +15,6 @@ class ProcessMomoCallback implements ShouldQueue
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
     use MwaloniWallet;
 
-    protected $transactionId;
     protected $json;
 
     /**
@@ -23,9 +22,8 @@ class ProcessMomoCallback implements ShouldQueue
      *
      * @return void
      */
-    public function __construct($transactionId, $json)
+    public function __construct($json)
     {
-        $this->transactionId = $transactionId;
         $this->json = $json;
     }
 
@@ -37,6 +35,6 @@ class ProcessMomoCallback implements ShouldQueue
 
     public function handle()
     {
-        return app(ProcessMomoStatus::class)->process($this->transactionId, $this->json);
+        return app(ProcessMomoStatus::class)->process($this->json);
     }
 }

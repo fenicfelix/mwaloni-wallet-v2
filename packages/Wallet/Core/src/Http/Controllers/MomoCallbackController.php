@@ -8,10 +8,10 @@ use Wallet\Core\Jobs\Momo\ProcessMomoCallback;
 
 class MomoCallbackController extends Controller
 {
-    public function disbursement(Request $request, $id)
+    public function disbursement(Request $request)
     {
         $json = $request->json()->all();
-        ProcessMomoCallback::dispatch($id, $json)->onQueue("trx-callback");
+        ProcessMomoCallback::dispatch($json)->onQueue("trx-callback");
         return response()->json(['status' => 'success'], 200);
     }
 }

@@ -83,7 +83,7 @@ class CoreServiceProvider extends ServiceProvider
         app(VerifyCsrfToken::class)->except([
             '*drj-callback/*',
             'ncba-kplc-callback/*',
-            'mdcb/*',
+            'callbacks/*',
         ]);
 
         $this->loadMigrationsFrom(__DIR__ . '/../../database/migrations');
