@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "a36cad40471841597bec5d58d76a2daa",
+    "content-hash": "acdbedda408df80e8e4b50846fddc887",
     "packages": [
         {
             "name": "africastalking/africastalking",
@@ -63,16 +63,16 @@
         },
         {
             "name": "akika/laravel-momo",
-            "version": "v0.0.3",
+            "version": "0.0.4",
             "source": {
                 "type": "git",
                 "url": "https://github.com/akikadigital/laravel-momo.git",
-                "reference": "a6e7c01a682b71ca6ca22aa152ca2734cd5bf57a"
+                "reference": "b78c1e84a095283742fafce5d66d8cb4ebb3b380"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/akikadigital/laravel-momo/zipball/a6e7c01a682b71ca6ca22aa152ca2734cd5bf57a",
-                "reference": "a6e7c01a682b71ca6ca22aa152ca2734cd5bf57a",
+                "url": "https://api.github.com/repos/akikadigital/laravel-momo/zipball/b78c1e84a095283742fafce5d66d8cb4ebb3b380",
+                "reference": "b78c1e84a095283742fafce5d66d8cb4ebb3b380",
                 "shasum": ""
             },
             "require": {
@@ -135,7 +135,7 @@
             ],
             "support": {
                 "issues": "https://github.com/akikadigital/laravel-momo/issues",
-                "source": "https://github.com/akikadigital/laravel-momo/tree/v0.0.3"
+                "source": "https://github.com/akikadigital/laravel-momo/tree/0.0.4"
             },
             "funding": [
                 {
@@ -143,7 +143,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2026-02-22T17:05:50+00:00"
+            "time": "2026-03-05T08:22:26+00:00"
         },
         {
             "name": "akika/laravel-mpesa-multivendor",
