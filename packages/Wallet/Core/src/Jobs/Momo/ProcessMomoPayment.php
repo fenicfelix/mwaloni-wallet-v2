@@ -83,7 +83,24 @@ class ProcessMomoPayment implements ShouldQueue
         // Prepare payload
         $account = $transaction->account;
         $payload = json_decode($transaction->payload?->trx_payload, true);
-        
+
+        /*
+        ?string $secondaryKey = null,
+        ?string $userReferenceId = null,
+        ?string $apiKey = null,
+        */
+
+        /*
+        API user: 7aa983ae-7910-4ead-be74-94d62225e33d
+        API key: ab3da92ccee44bac851cf4cd8dafa638
+
+        Primary key
+        dc865af95890410d85efeed378e5e570
+
+        Secondary key
+        9dc1dfaa42cb402cb29a785226405f62
+        */
+
         $referenceId = MoMo::with(
             $account->consumer_key,  // overrides momo.<env>.secondary_key
             $account->api_username,     // overrides momo.<env>.user_reference_id
