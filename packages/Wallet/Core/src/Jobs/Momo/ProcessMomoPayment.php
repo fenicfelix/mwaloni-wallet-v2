@@ -102,9 +102,9 @@ class ProcessMomoPayment implements ShouldQueue
         */
 
         $referenceId = MoMo::with(
-            $account->consumer_key,  // overrides momo.<env>.secondary_key
-            $account->api_username,     // overrides momo.<env>.user_reference_id
-            $account->api_password,
+            secondaryKey: "9dc1dfaa42cb402cb29a785226405f62",
+            userReferenceId: "7aa983ae-7910-4ead-be74-94d62225e33d",
+            apiKey: "ab3da92ccee44bac851cf4cd8dafa638"
         )->disbursement()->transfer(
             $payload['amount'],
             Currency::UgandaShilling,
