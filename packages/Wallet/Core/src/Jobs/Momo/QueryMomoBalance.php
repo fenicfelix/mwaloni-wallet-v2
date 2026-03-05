@@ -39,6 +39,7 @@ class QueryMomoBalance implements ShouldQueue
         }
 
         $balanceData = $this->fetchBalance($account);
+        info('BALANCE_DATA: ' . json_encode($balanceData));
         $account->utility_balance = $balanceData['availableBalance'] ?? 0;
         $account->save();
     }
