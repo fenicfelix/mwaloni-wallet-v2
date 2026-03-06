@@ -27,14 +27,14 @@ class CreateAccountsTable extends Migration
             $table->decimal("withheld_amount", 10, 2)->default(0);
             $table->foreignId('account_type_id')->nullable()->references("id")->on("account_types")->onDelete("set null");
             $table->foreignId('currency_id')->nullable()->references("id")->on("currencies")->onDelete("set null");
-            $table->string('api_username', 30)->nullable();
-            $table->string('api_password', 30)->nullable();
+            $table->string('api_username')->nullable();
+            $table->string('api_password')->nullable();
             $table->string('account_number', 20)->nullable();
             $table->string('cif')->nullable();
             $table->string('pesalink_cif')->nullable();
             $table->string('address')->nullable();
-            $table->string('consumer_key', 100)->nullable();
-            $table->string('consumer_secret', 100)->nullable();
+            $table->string('consumer_key')->nullable();
+            $table->string('consumer_secret')->nullable();
             $table->decimal("revenue", 10, 2)->default(0);
             $table->boolean("active")->default(true);
             $table->boolean("auto_fetch_balance")->default(true);
