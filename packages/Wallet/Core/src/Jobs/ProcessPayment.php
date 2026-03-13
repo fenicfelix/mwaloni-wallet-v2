@@ -13,6 +13,7 @@ use Wallet\Core\Http\Enums\TransactionStatus;
 use Wallet\Core\Jobs\Daraja\ProcessDarajaB2BPayment;
 use Wallet\Core\Jobs\Daraja\ProcessDarajaB2CPayment;
 use Wallet\Core\Jobs\Jenga\ProcessJengaPayments;
+use Wallet\Core\Jobs\Momo\ProcessMomoPayment;
 use Wallet\Core\Jobs\Ncba\ProcessNcbaPayments;
 use Wallet\Core\Jobs\Stanbic\ProcessStanbicPayment;
 
@@ -39,6 +40,7 @@ class ProcessPayment implements ShouldQueue
 
         // convert the above cases to use a mapping
         $channelMap = [
+            'mtn-momo' => ProcessMomoPayment::class,
             'daraja-mobile' => ProcessDarajaB2CPayment::class,
             'daraja-paybill' => ProcessDarajaB2BPayment::class,
             'daraja-till' => ProcessDarajaB2BPayment::class,
