@@ -92,7 +92,7 @@ class ProcessMomoPayment implements ShouldQueue
             targetEnvironment: MtnTargetEnvironment::Ghana,
         )->disbursement()->transfer(
             $payload['amount'],
-            Currency::UgandaShilling,
+            Currency::GhanaCedi,
             externalId: $payload['externalId'] ?? $transaction->order_number,
             payeeMsisdn: $payload['payeeMsisdn'],
             payerMessage: $payload['payerMessage'],
