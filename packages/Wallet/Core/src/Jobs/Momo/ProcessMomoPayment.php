@@ -94,11 +94,18 @@ class ProcessMomoPayment implements ShouldQueue
             $payload['amount'],
             Currency::GhanaCedi,
             externalId: $payload['externalId'] ?? $transaction->order_number,
-            payeeMsisdn: $payload['payeeMsisdn'],
+            payeeMsisdn: $this->formatMSISDN($payload['payeeMsisdn']),
             payerMessage: $payload['payerMessage'],
             payeeNote: $payload['payeeNote'],
         );
 
         return $referenceId;
+    }
+
+    private function formatMSISDN($msisdn): string
+    {
+        // Get the last 9 digits and prepend with 233
+        $msisdn = substr($msisdn, -9);
+        return '233' . $msisdn;
     }
 }
