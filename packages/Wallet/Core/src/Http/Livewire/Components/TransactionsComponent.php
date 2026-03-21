@@ -191,6 +191,11 @@ class TransactionsComponent extends Component
             return;
         }
 
+        if($this->transaction->status == TransactionStatus::SUBMITTED && getElapsedTime($this->transaction->requested_on) < 120) {
+            $this->notify("Transaction is still being processed.", "warning");
+            return;
+        }
+
         // clear reservation
         $this->transaction->balanceReservations()->delete();
 
