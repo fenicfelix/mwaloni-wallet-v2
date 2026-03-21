@@ -181,23 +181,35 @@ class TransactionsComponent extends Component
     private function completeRetry($formId)
     {
         $this->transaction = app(TransactionRepository::class)->find($formId);
-        if ($this->transaction->status == TransactionStatus::FAILED || ($this->transaction->status == TransactionStatus::SUBMITTED && getElapsedTime($this->transaction->requested_on) > 120)) {
-            $balance = ($this->transaction->account->utility_balance - ($this->transaction->disbursed_amount + $this->transaction->account->revenue));
-
-            if ($balance < 0) $this->notify("Insufficient Balance. Please reload the account and retry.", "error");
-            else {
-                $retry = app(TransactionRepository::class)->retry($this->transaction->id);
-                if ($retry === null) {
-                    $this->notify("Unable to retry this transaction..", "error");
-                    $this->resetValues();
-                    $this->dispatch('refreshDatatable');
-                    return;
-                }
-                $this->notify("The retry request has been sent.", "success");
-            }
-        } else {
-            $this->notify($this->transaction->order_number . " is still being processed.", "warning");
+        if (!$this->transaction) {
+            $this->notify("Transaction not found.", "warning");
+            return;
         }
+
+        if(!in_array($this->transaction->status, TransactionStatus::retriableStatuses())) {
+            $this->notify("Transaction is not in a retriable state.", "warning");
+            return;
+        }
+
+        // clear reservation
+        $this->transaction->balanceReservations()->delete();
+
+        // Checking balance
+        $balance = ($this->transaction->account->utility_balance - ($this->transaction->disbursed_amount + $this->transaction->account->revenue));
+        if ($balance < 0) {
+            $this->notify("Insufficient Balance. Please reload the account and retry.", "error");
+            return;
+        }
+
+        $retry = app(TransactionRepository::class)->retry($this->transaction->id);
+        if ($retry === null) {
+            $this->notify("Unable to retry this transaction..", "error");
+            $this->resetValues();
+            $this->dispatch('refreshDatatable');
+            return;
+        }
+
+        $this->notify("The retry request has been sent.", "success");
     }
 
     #[On('paidOffline')]
@@ -256,7 +268,8 @@ class TransactionsComponent extends Component
     }
 
     #[On('confirmedQueryMultipleStatus')]
-    public function confirmedQueryMultipleStatus() {
+    public function confirmedQueryMultipleStatus()
+    {
         foreach ($this->formIds as $formId) {
             $this->queryStatus($formId);
         }

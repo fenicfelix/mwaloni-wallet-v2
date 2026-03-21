@@ -31,10 +31,6 @@ class TransactionRepository implements TransactionRepositoryContract
             return $transaction;
         });
 
-        if (!$transaction) {
-            return null;
-        }
-
         return $transaction;
     }
 
@@ -48,65 +44,63 @@ class TransactionRepository implements TransactionRepositoryContract
     {
         // Implementation for updating a transaction
         $transaction = Transaction::find($id);
-        if ($transaction) {
-            $transaction->update($data);
-            return $transaction;
+        if (!$transaction) {
+            return null;
         }
-        return null;
+
+        $transaction->update($data);
+        return $transaction;
     }
 
     public function updateWithPayload(int $id, array $data, array $payloadData): ?Transaction
     {
         // Implementation for updating a transaction with payload
         $transaction = Transaction::find($id);
-        if ($transaction) {
-            $transaction->update($data);
-            $transaction->payload()->update($payloadData);
-            return $transaction;
+        if (!$transaction) {
+            return null;
         }
-        return null;
+
+        $transaction->update($data);
+        $transaction->payload()->update($payloadData);
+        return $transaction;
     }
 
     public function retry(int $id): ?Transaction
     {
         // Implementation for retrying a payment
         $transaction = Transaction::with(['payload'])->find($id);
-        if ($transaction) {
-            $updatedTransaction = DB::transaction(function () use ($transaction) {
-                // Logic to retry the payment
-                $reference = date('ymdHs') . rand(0, 99);
-                $trx_payload = json_decode($transaction->payload->trx_payload);
-                $trx_payload->reference = $reference;
-
-                $transaction->update([
-                    "reference" => $reference,
-                    "status" => TransactionStatus::SUBMITTED
-                ]);
-
-                $transaction->payload->update([
-                    "trx_payload" => json_encode($trx_payload)
-                ]);
-
-                // reserve the amount
-                $transaction->balanceReservations()->create([
-                    'account_id' => $transaction->account_id,
-                    'transaction_id' => $transaction->id,
-                    'amount' => $transaction->disbursed_amount
-                ]);
-
-                $transaction->status = TransactionStatus::PENDING;
-                $transaction->save();
-
-                return $transaction;
-            });
-
-            if ($updatedTransaction) {
-                return $updatedTransaction;
-            }
-
+        if (!$transaction) {
             return null;
         }
-        return null;
+
+        return DB::transaction(function () use ($transaction) {
+            // Logic to retry the payment
+            $reference = date('ymdHs') . rand(0, 99);
+            $trx_payload = json_decode($transaction->payload->trx_payload);
+            $trx_payload->reference = $reference;
+
+            // Update the payload
+            $transaction->payload->update([
+                "trx_payload" => json_encode($trx_payload)
+            ]);
+
+            // reserve the amount
+            $transaction->balanceReservations()->create([
+                'account_id' => $transaction->account_id,
+                'transaction_id' => $transaction->id,
+                'amount' => $transaction->disbursed_amount
+            ]);
+
+            // Update the transaction
+            $transaction->update([
+                "reference" => $reference,
+                "status" => TransactionStatus::PENDING
+            ]);
+
+            $transaction->refresh();
+
+            return $transaction;
+        });
     }
 
     public function delete(int $id): bool

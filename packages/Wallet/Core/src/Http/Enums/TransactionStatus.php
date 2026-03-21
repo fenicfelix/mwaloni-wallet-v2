@@ -84,4 +84,14 @@ enum TransactionStatus: string
             self::REVERSING_FAILED => 'danger-lt',
         };
     }
+
+    public static function retriableStatuses(): array
+    {
+        return [
+            self::PENDING,
+            self::SUBMITTED,
+            self::PROCESSING,
+            self::FAILED,
+        ];
+    }
 }

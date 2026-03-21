@@ -173,8 +173,10 @@ class TransactionsTable extends DataTableComponent
                         $html .= '<a href="#" class="dropdown-item" wire:click="viewFunction(' . $row->id . ')">View Details</a>';
                         if ($row->status != TransactionStatus::SUCCESS) {
                             // if ($row->status == TransactionStatus::FAILED) $html .= '<a href="#" class="dropdown-item" wire:click="editFunction(' . $row->id . ')">Edit Details</a>';
-                            if ($row->status == TransactionStatus::FAILED) {
+                            if (in_array($row->status, TransactionStatus::retriableStatuses())) {
                                 $html .= '<a href="#" class="dropdown-item" wire:click="retryPayment(' . $row->id . ')">Retry Payment</a>';
+                            }
+                            if ($row->status == TransactionStatus::FAILED) {
                                 $html .= '<a href="#" class="dropdown-item" wire:click="paidOffline(' . $row->id . ')">Complete Offline</a>';
                                 $html .= '<a href="#" class="dropdown-item" wire:click="markAsCompleted(' . $row->id . ')">Mark As Completed</a>';
                             }
