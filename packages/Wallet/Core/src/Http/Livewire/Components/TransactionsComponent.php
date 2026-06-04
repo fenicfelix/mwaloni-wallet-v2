@@ -82,6 +82,9 @@ class TransactionsComponent extends Component
             $this->formData['status_message'] = 'Payment completed offline';
             $update = app(TransactionRepository::class)->update($this->transaction->id, $this->formData);
             if ($update) {
+                // clear reservation
+                $this->transaction->balanceReservations()->delete();
+                
                 $this->notify("The transaction has been updated.", "success");
                 $this->resetValues();
                 $this->list = true;
@@ -108,7 +111,7 @@ class TransactionsComponent extends Component
     }
 
     #[On('viewFunction')]
-    public function viewFunction($form_id)
+    public function viewFunction(int $form_id)
     {
         $this->resetValues();
         $this->list = false;
@@ -157,9 +160,9 @@ class TransactionsComponent extends Component
     }
 
     #[On('retryPayment')]
-    public function retryPayment($form_id)
+    public function retryPayment(int $form_id)
     {
-        $this->formId = (int) $form_id;
+        $this->formId = $form_id;
         $this->confirm(
             'Confirm Action',
             'Are you sure you want to retry this transaction?',
@@ -178,7 +181,7 @@ class TransactionsComponent extends Component
         $this->dispatch('refreshDatatable');
     }
 
-    private function completeRetry($formId)
+    private function completeRetry(int $formId)
     {
         $this->transaction = app(TransactionRepository::class)->find($formId);
         if (!$this->transaction) {
@@ -218,7 +221,7 @@ class TransactionsComponent extends Component
     }
 
     #[On('paidOffline')]
-    public function paidOffline($form_id)
+    public function paidOffline(int $form_id)
     {
         $this->resetValues();
         $this->transaction = app(TransactionRepository::class)->find($form_id);
@@ -227,7 +230,7 @@ class TransactionsComponent extends Component
     }
 
     #[On('markAsCompleted')]
-    public function markAsCompleted($form_id)
+    public function markAsCompleted(int $form_id)
     {
         $this->formId = $form_id;
         $this->confirm(
@@ -245,11 +248,16 @@ class TransactionsComponent extends Component
         $transactionRepository = app(TransactionRepository::class);
         $transaction = $transactionRepository->find($this->formId);
         if ($transaction) {
+            // Update the transaction status to completed
             $transactionRepository->update($transaction->id, [
                 'completed_at' => date('Y-m-d H:i:s'),
                 'status' => TransactionStatus::COMPLETED,
                 'status_message' => 'Transaction marked as completed manually.'
             ]);
+
+            // Release any reserved amounts
+            $transaction->balanceReservations()->delete();
+
             $this->notify("Transaction marked as completed.", "success");
         } else {
             $this->notify("Transaction not found.", "warning");
@@ -260,7 +268,7 @@ class TransactionsComponent extends Component
     }
 
     #[On('queryMultipleStatus')]
-    public function queryMultipleStatus($formIds)
+    public function queryMultipleStatus(array $formIds)
     {
         $this->formIds = array_map('intval', $formIds);
         $this->confirm(
@@ -281,7 +289,7 @@ class TransactionsComponent extends Component
     }
 
     #[On('queryStatus')]
-    public function queryStatus($form_id)
+    public function queryStatus(int $form_id)
     {
         $transaction = app(TransactionRepository::class)->find($form_id);
         if (!$transaction) {

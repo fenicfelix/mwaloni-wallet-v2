@@ -3,7 +3,6 @@
 namespace Wallet\Core\Http\Livewire\Datatables;
 
 use Wallet\Core\Models\Service;
-use Rappasoft\LaravelLivewireTables\Views\Filters\DateFilter;
 use Rappasoft\LaravelLivewireTables\Views\Filters\SelectFilter;
 use Rappasoft\LaravelLivewireTables\DataTableComponent;
 use Rappasoft\LaravelLivewireTables\Views\Column;
@@ -20,7 +19,6 @@ use Wallet\Core\Models\Client;
 class TransactionsTable extends DataTableComponent
 {
     protected $model = Transaction::class;
-    protected $user;
     protected $counter = 1;
 
     public function configure(): void
@@ -166,7 +164,6 @@ class TransactionsTable extends DataTableComponent
             Column::make('Action')
                 ->label(
                     function ($row, Column $column) {
-                        $userPermission = Auth::user();
                         $html = '<div class="btn-group">';
                         $html .= '<a href="#" data-toggle="dropdown"><img height="16" src="' . asset('themes/agile/img/icon_more.png') . '" alt=""></a>';
                         $html .= '<div class="dropdown-menu bg-light" role="menu">';
