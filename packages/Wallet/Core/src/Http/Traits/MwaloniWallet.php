@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Wallet\Core\Http\Enums\TransactionType;
 use Wallet\Core\Jobs\ProcessSMS;
+use Wallet\Core\Models\Account;
 use Wallet\Core\Models\PaymentChannel;
 use Wallet\Core\Models\Transaction;
 
@@ -89,5 +90,15 @@ trait MwaloniWallet
         } else {
             return false;
         }
+    }
+
+    function getDarajaCredentials(Account $account) {
+        return [
+            'shortcode' => $account->account_number,
+            'consumer_key' => $account->consumer_key,
+            'consumer_secret' => $account->consumer_secret,
+            'api_username' => $account->api_username,
+            'api_password' => $account->api_password,
+        ];
     }
 }

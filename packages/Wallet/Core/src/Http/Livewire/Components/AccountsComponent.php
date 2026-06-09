@@ -217,7 +217,7 @@ class AccountsComponent extends Component
     }
 
     #[On("fetchBalance")]
-    public function fetchBalance($id)
+    public function fetchBalance(int $id)
     {
         $fetchBalance = app(AccountBalanceService::class)->fetchBalance($id);
         if ($fetchBalance) {

@@ -10,20 +10,22 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Wallet\Core\Http\Enums\TransactionStatus;
+use Wallet\Core\Http\Traits\MwaloniWallet;
 use Wallet\Core\Repositories\TransactionRepository;
 
 class ProcessDarajaPaymentStatusCheck implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
+    use MwaloniWallet;
 
-    protected $id;
+    protected int $id;
 
     /**
      * Create a new job instance.
      *
      * @return void
      */
-    public function __construct($id)
+    public function __construct(int $id)
     {
         $this->id = $id;
     }
@@ -40,7 +42,7 @@ class ProcessDarajaPaymentStatusCheck implements ShouldQueue
             return;
         }
 
-        $response = json_decode($this->performTransaction($transaction));
+        $response = (object) $this->performTransaction($transaction);
 
         /// Only update the transaction if status has been queried successfully
         if ($response && isset($response->ResponseCode) && $response->ResponseCode == 0) {
@@ -63,21 +65,21 @@ class ProcessDarajaPaymentStatusCheck implements ShouldQueue
         }
     }
 
-    private function performTransaction(Transaction $transaction): ?string
+    private function performTransaction(Transaction $transaction): ?array
     {
         $account = $transaction->account;
-        $receiptNumber = $transaction->receipt_number;
-        $remarks = $transaction->description;
-        $originalConversationId = $transaction->payload?->original_conversation_id;
+        if (! $account) {
+            return [];
+        }
 
-        $mpesa = new Mpesa(
-            $account->account_number,
-            $account->consumer_key,
-            $account->consumer_secret,
-            $account->api_username,
-            $account->api_password
-        );
-        $response = $mpesa->getTransactionStatus($receiptNumber, "shortcode", $remarks, route('trx_status_result_url', ['id' => $transaction->identifier]), route('trx_status_timeout_url'), $originalConversationId);
+        $response = Mpesa::using($this->getDarajaCredentials($account))
+            ->status()
+            ->query(
+                transactionId: $transaction->receipt_number,
+                resultUrl: route('trx_status_result_url', ['id' => $transaction->identifier]),
+                queueTimeoutUrl: route('trx_status_timeout_url'),
+                originalConversationId: $transaction->payload?->original_conversation_id,
+            );
 
         return $response;
     }

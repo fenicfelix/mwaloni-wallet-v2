@@ -10,23 +10,24 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Wallet\Core\Http\Enums\TransactionStatus;
-use Wallet\Core\Http\Enums\TransactionType;
+use Wallet\Core\Http\Traits\MwaloniWallet;
 use Wallet\Core\Repositories\TransactionRepository;
 
 class ProcessDarajaB2BPayment implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
+    use MwaloniWallet;
 
     public int $tries = 1;
 
-    protected $transactionId;
+    protected int $transactionId;
 
     /**
      * Create a new job instance.
      *
      * @return void
      */
-    public function __construct($transactionId)
+    public function __construct(int $transactionId)
     {
         $this->transactionId = $transactionId;
     }
@@ -44,8 +45,11 @@ class ProcessDarajaB2BPayment implements ShouldQueue
             return;
         }
         
-        $response = json_decode($this->performTransaction($transaction));
+        $response = $this->performTransaction($transaction);
         if ($response) {
+            // Convert to object
+            $response = (object) $response;
+
             $updateData = [];
             $payloadData = [
                 'raw_callback' => json_encode($response)
@@ -80,32 +84,29 @@ class ProcessDarajaB2BPayment implements ShouldQueue
         );
     }
 
-    private function performTransaction(Transaction $transaction): ?string
+    private function performTransaction(Transaction $transaction): ?array
     {
         $account = $transaction->account;
-        $destShortcode = $transaction->account_number;
-        $amount = floor($transaction->disbursed_amount);
-        $remarks = $transaction->description;
-        $accountRef = ($transaction->account_reference) ? $transaction->account_reference : $transaction->order_number;
+        if (! $account) {
+            return [];
+        }
 
         $isTillNumber = false;
         if ($transaction->payment_channel_id == 3) {
             $isTillNumber = true;
         }
 
-        $mpesa = new Mpesa(
-            $account->account_number,
-            $account->consumer_key,
-            $account->consumer_secret,
-            $account->api_username,
-            $account->api_password
-        );
-
-        if ($isTillNumber) {
-            $response = $mpesa->b2bBuyGoods($destShortcode, $amount, $remarks, $accountRef, route('b2b_result_url', $transaction->identifier), route('b2b_timeout_url'));
-        } else {
-            $response = $mpesa->b2bPaybill($destShortcode, $amount, $remarks, $accountRef, route('b2b_result_url', $transaction->identifier), route('b2b_timeout_url'));
-        }
+        $response = Mpesa::using($this->getDarajaCredentials($account))
+            ->b2b()
+            ->send(
+                toPaybill: $isTillNumber ? false : true,
+                receiverShortCode: $transaction->account_number,
+                amount: floor($transaction->disbursed_amount),
+                resultUrl: route('b2b_result_url', $transaction->identifier),
+                queueTimeoutUrl: route('b2b_timeout_url'),
+                remarks: $transaction->description,
+                accountReference: ($transaction->account_reference) ? $transaction->account_reference : $transaction->order_number
+            );
 
         return $response;
     }

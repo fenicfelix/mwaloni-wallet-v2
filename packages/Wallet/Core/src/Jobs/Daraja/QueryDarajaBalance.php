@@ -39,17 +39,17 @@ class QueryDarajaBalance implements ShouldQueue
         $this->performBalanceQuery($account);
     }
 
-    private function performBalanceQuery($account): ?string
+    private function performBalanceQuery(Account $account): ?array
     {
-        $mpesa = new Mpesa(
-            $account->account_number,
-            $account->consumer_key,
-            $account->consumer_secret,
-            $account->api_username,
-            $account->api_password
-        );
-        
-        $response = $mpesa->getBalance(route('balance_result_url', $account->identifier), route('balance_timeout_url'));
+
+        $response = Mpesa::using($this->getDarajaCredentials($account))
+            ->accountBalance()
+            ->query(
+                resultUrl: route('balance_result_url', $account->identifier),
+                queueTimeoutUrl: route('balance_timeout_url')
+            );
+
+        info('Fetch Daraja Balance: '.json_encode($response));
 
         return $response;
     }

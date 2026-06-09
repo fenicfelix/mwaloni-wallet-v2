@@ -10,22 +10,24 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Wallet\Core\Http\Enums\TransactionStatus;
+use Wallet\Core\Http\Traits\MwaloniWallet;
 use Wallet\Core\Repositories\TransactionRepository;
 
 class ProcessDarajaB2CPayment implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
+    use MwaloniWallet;
 
     public int $tries = 1;
 
-    protected $transactionId;
+    protected int $transactionId;
 
     /**
      * Create a new job instance.
      *
      * @return void
      */
-    public function __construct($transactionId)
+    public function __construct(int $transactionId)
     {
         $this->transactionId = $transactionId;
     }
@@ -44,8 +46,11 @@ class ProcessDarajaB2CPayment implements ShouldQueue
             return;
         }
 
-        $response = json_decode($this->performTransaction($transaction));
+        $response = $this->performTransaction($transaction);
         if ($response) {
+            // Convert to object
+            $response = (object) $response;
+
             $updateData = [];
             $payloadData = [
                 'raw_callback' => json_encode($response)
@@ -81,25 +86,24 @@ class ProcessDarajaB2CPayment implements ShouldQueue
         );
     }
 
-    private function performTransaction(Transaction $transaction): ?string
+    private function performTransaction(Transaction $transaction): ?array
     {
         $account = $transaction->account;
-        $transactionID = $transaction->identifier;
-        $commandID = "BusinessPayment";
-        $msisdn = $transaction->account_number;
-        $amount = floor($transaction->disbursed_amount);
-        $remarks = $transaction->description;
-        $ocassion = NULL;
+        if(! $account) {
+            return [];
+        }
 
-        $mpesa = new Mpesa(
-            $account->account_number,
-            $account->consumer_key,
-            $account->consumer_secret,
-            $account->api_username,
-            $account->api_password
-        );
-
-        $response = $mpesa->b2cTransaction($commandID, $msisdn, $amount, $remarks, route('b2c_result_url', $transactionID), route('b2c_timeout_url'), $ocassion);
+        $response = Mpesa::using($this->getDarajaCredentials($account))
+            ->b2c()
+            ->send(
+                phoneNumber: $transaction->account_number,
+                amount: floor($transaction->disbursed_amount),
+                resultUrl: route('b2c_result_url', $transaction->identifier),
+                queueTimeoutUrl: route('balance_timeout_url'),
+                remarks: $transaction->description,
+                occasion: "",
+                commandId: "BusinessPayment",
+            );
 
         return $response;
     }

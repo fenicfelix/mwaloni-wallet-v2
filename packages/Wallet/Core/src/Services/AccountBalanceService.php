@@ -11,7 +11,7 @@ use Wallet\Core\Repositories\AccountRepository;
 class AccountBalanceService
 {
     // Account balance service methods go here
-    public function fetchBalance($accountId): bool
+    public function fetchBalance(int $accountId): bool
     {
         // Logic to fetch account balance
         try {
