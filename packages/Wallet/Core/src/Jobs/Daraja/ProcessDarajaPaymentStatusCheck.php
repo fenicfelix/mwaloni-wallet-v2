@@ -76,9 +76,9 @@ class ProcessDarajaPaymentStatusCheck implements ShouldQueue
             ->status()
             ->query(
                 transactionId: $transaction->receipt_number,
+                originalConversationId: $transaction->payload?->original_conversation_id,
                 resultUrl: route('trx_status_result_url', ['id' => $transaction->identifier]),
                 queueTimeoutUrl: route('trx_status_timeout_url'),
-                originalConversationId: $transaction->payload?->original_conversation_id,
             );
 
         return $response;
