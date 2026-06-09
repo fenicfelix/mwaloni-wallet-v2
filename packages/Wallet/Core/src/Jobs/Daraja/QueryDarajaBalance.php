@@ -49,8 +49,6 @@ class QueryDarajaBalance implements ShouldQueue
                 queueTimeoutUrl: route('balance_timeout_url')
             );
 
-        info('Fetch Daraja Balance: '.json_encode($response));
-
         return $response;
     }
 }
