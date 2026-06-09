@@ -93,18 +93,29 @@ class ProcessDarajaB2CPayment implements ShouldQueue
             return [];
         }
 
-        $response = Mpesa::using($this->getDarajaCredentials($account))
-            ->b2c()
-            ->send(
-                phoneNumber: $transaction->account_number,
-                amount: floor($transaction->disbursed_amount),
-                resultUrl: route('b2c_result_url', $transaction->identifier),
-                queueTimeoutUrl: route('balance_timeout_url'),
-                remarks: $transaction->description,
-                occasion: "",
-                commandId: "BusinessPayment",
-            );
+        try {
+            $response = Mpesa::using($this->getDarajaCredentials($account))
+                ->b2c()
+                ->send(
+                    phoneNumber: $transaction->account_number,
+                    amount: floor($transaction->disbursed_amount),
+                    resultUrl: route('b2c_result_url', $transaction->identifier),
+                    queueTimeoutUrl: route('balance_timeout_url'),
+                    remarks: $transaction->description,
+                    occasion: "",
+                    commandId: "BusinessPayment",
+                );
 
-        return $response;
+            return $response;
+        } catch (\Throwable $th) {
+            $updateData = [
+                "status" => TransactionStatus::SUBMITTED,
+                "result_description" => $th->getMessage()
+            ];
+
+            app(TransactionRepository::class)->update($transaction->id, $updateData);
+
+            return [];
+        }
     }
 }

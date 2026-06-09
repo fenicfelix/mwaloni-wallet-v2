@@ -96,18 +96,29 @@ class ProcessDarajaB2BPayment implements ShouldQueue
             $isTillNumber = true;
         }
 
-        $response = Mpesa::using($this->getDarajaCredentials($account))
-            ->b2b()
-            ->send(
-                toPaybill: $isTillNumber ? false : true,
-                receiverShortCode: $transaction->account_number,
-                amount: floor($transaction->disbursed_amount),
-                resultUrl: route('b2b_result_url', $transaction->identifier),
-                queueTimeoutUrl: route('b2b_timeout_url'),
-                remarks: $transaction->description,
-                accountReference: ($transaction->account_reference) ? $transaction->account_reference : $transaction->order_number
-            );
+        try {
+            $response = Mpesa::using($this->getDarajaCredentials($account))
+                ->b2b()
+                ->send(
+                    toPaybill: $isTillNumber ? false : true,
+                    receiverShortCode: $transaction->account_number,
+                    amount: floor($transaction->disbursed_amount),
+                    resultUrl: route('b2b_result_url', $transaction->identifier),
+                    queueTimeoutUrl: route('b2b_timeout_url'),
+                    remarks: $transaction->description,
+                    accountReference: ($transaction->account_reference) ? $transaction->account_reference : $transaction->order_number
+                );
 
-        return $response;
+            return $response;
+        } catch (\Throwable $th) {
+            $updateData = [
+                "status" => TransactionStatus::SUBMITTED,
+                "result_description" => $th->getMessage()
+            ];
+
+            app(TransactionRepository::class)->update($transaction->id, $updateData);
+
+            return [];
+        }
     }
 }
