@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "fadc49d00430dc213eb88aa958d70d9e",
+    "content-hash": "6dd9a6805552d47090484498f5f86f25",
     "packages": [
         {
             "name": "africastalking/africastalking",
@@ -147,16 +147,16 @@
         },
         {
             "name": "akika/laravel-mpesa-multivendor",
-            "version": "v0.4.3",
+            "version": "v0.4.4",
             "source": {
                 "type": "git",
                 "url": "https://github.com/akikadigital/laravel-mpesa-multivendor.git",
-                "reference": "d5849de5135a18963ce59fc426e1035ef848408a"
+                "reference": "162d978af70c4bb3f3d36a793a5ab7ad6cac426c"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/akikadigital/laravel-mpesa-multivendor/zipball/d5849de5135a18963ce59fc426e1035ef848408a",
-                "reference": "d5849de5135a18963ce59fc426e1035ef848408a",
+                "url": "https://api.github.com/repos/akikadigital/laravel-mpesa-multivendor/zipball/162d978af70c4bb3f3d36a793a5ab7ad6cac426c",
+                "reference": "162d978af70c4bb3f3d36a793a5ab7ad6cac426c",
                 "shasum": ""
             },
             "require": {
@@ -209,9 +209,9 @@
             ],
             "support": {
                 "issues": "https://github.com/akikadigital/laravel-mpesa-multivendor/issues",
-                "source": "https://github.com/akikadigital/laravel-mpesa-multivendor/tree/v0.4.3"
+                "source": "https://github.com/akikadigital/laravel-mpesa-multivendor/tree/v0.4.4"
             },
-            "time": "2026-06-09T12:18:28+00:00"
+            "time": "2026-06-10T10:57:10+00:00"
         },
         {
             "name": "akika/laravel-ncba",
