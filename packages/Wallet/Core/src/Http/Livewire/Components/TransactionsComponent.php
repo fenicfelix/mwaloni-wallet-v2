@@ -202,9 +202,16 @@ class TransactionsComponent extends Component
         // clear reservation
         $this->transaction->balanceReservations()->delete();
 
+        $balance = 0;
+        $required_amount = ($this->transaction->disbursed_amount + $this->transaction->account->revenue);
+        if(in_array($this->transaction->payment_channel_id, [2, 3])) {
+            $balance = $this->transaction->account->working_balance;
+        } else {
+            $balance = $this->transaction->account->utility_balance;
+        }
+
         // Checking balance
-        $balance = ($this->transaction->account->utility_balance - ($this->transaction->disbursed_amount + $this->transaction->account->revenue));
-        if ($balance < 0) {
+        if ($balance < $required_amount) {
             $this->notify("Insufficient Balance. Please reload the account and retry.", "error");
             return;
         }
