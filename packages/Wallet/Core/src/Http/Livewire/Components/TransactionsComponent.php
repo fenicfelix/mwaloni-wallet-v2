@@ -84,7 +84,7 @@ class TransactionsComponent extends Component
             if ($update) {
                 // clear reservation
                 $this->transaction->balanceReservations()->delete();
-                
+
                 $this->notify("The transaction has been updated.", "success");
                 $this->resetValues();
                 $this->list = true;
@@ -189,12 +189,12 @@ class TransactionsComponent extends Component
             return;
         }
 
-        if(!in_array($this->transaction->status, TransactionStatus::retriableStatuses())) {
+        if (!in_array($this->transaction->status, TransactionStatus::retriableStatuses())) {
             $this->notify("Transaction is not in a retriable state.", "warning");
             return;
         }
 
-        if($this->transaction->status == TransactionStatus::SUBMITTED && getElapsedTime($this->transaction->requested_on) < 120) {
+        if ($this->transaction->status == TransactionStatus::SUBMITTED && getElapsedTime($this->transaction->requested_on) < 120) {
             $this->notify("Transaction is still being processed.", "warning");
             return;
         }
@@ -204,7 +204,7 @@ class TransactionsComponent extends Component
 
         $balance = 0;
         $required_amount = ($this->transaction->disbursed_amount + $this->transaction->account->revenue);
-        if(in_array($this->transaction->payment_channel_id, [2, 3])) {
+        if (in_array($this->transaction->payment_channel_id, [2, 3])) {
             $balance = $this->transaction->account->working_balance;
         } else {
             $balance = $this->transaction->account->utility_balance;
