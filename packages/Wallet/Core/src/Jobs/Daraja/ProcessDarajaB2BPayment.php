@@ -102,6 +102,7 @@ class ProcessDarajaB2BPayment implements ShouldQueue
                 ->send(
                     toPaybill: $isTillNumber ? false : true,
                     receiverShortCode: $transaction->account_number,
+                    receiverIdentifierType: $isTillNumber ? 'tillnumber' : 'shortcode',
                     amount: floor($transaction->disbursed_amount),
                     resultUrl: route('b2b_result_url', $transaction->identifier),
                     queueTimeoutUrl: route('b2b_timeout_url'),
