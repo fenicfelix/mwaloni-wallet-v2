@@ -49,7 +49,7 @@ class ClientsTable extends DataTableComponent
 
     public function columns(): array
     {
-        return [
+        $columns = [
             Column::make('Id', 'id')
                 ->sortable()
                 ->format(fn() => $this->counter++),
@@ -69,23 +69,28 @@ class ClientsTable extends DataTableComponent
                 ->sortable()
                 ->format(
                     fn($value) => date('d M, Y', strtotime($value))
-                ),
-            Column::make('Action')
-                ->label(
-                    function ($row, Column $column) {
-                        $html = '<div class="btn-group">';
-                        $html .= '<a href="#" data-toggle="dropdown"><img height="16" src="' . asset('themes/agile/img/icon_more.png') . '" alt=""></a>';
-                        $html .= '<div class="dropdown-menu bg-light" role="menu">';
-                        $html .= '<a href="#" class="dropdown-item" wire:click="editFunction(' . $row->id . ')">Edit</a>';
-                        $html .= '</div></div>';
-                        return $html;
-                    }
                 )
-                ->html(),
         ];
+
+        $columns[] = Column::make('Action')
+            ->label(
+                function ($row, Column $column) {
+                $html = '<div class="dropdown">
+                                <a href="#" class="dropdown-toggle arrow-none card-drop" data-bs-toggle="dropdown" aria-expanded="false">
+                                    <i class="mdi mdi-dots-vertical"></i>
+                                </a>
+                        <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">';
+                    $html .= '<a href="#" class="dropdown-item" wire:click="editFunction(' . $row->id . ')">Edit</a>';
+                    $html .= '</div></div>';
+                    return $html;
+                }
+            )
+            ->html();
+
+        return $columns;
     }
 
-    public function editFunction($form_id)
+    public function editFunction(int $form_id)
     {
         $this->dispatch('editFunction', $form_id);
     }

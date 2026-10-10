@@ -1,4 +1,4 @@
-<div>
+<div class="container-fluid">
     @if ($add)
         @include('core::livewire.components.services.add')
     @elseif($withdraw)

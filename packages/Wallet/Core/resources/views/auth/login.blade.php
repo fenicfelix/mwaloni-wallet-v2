@@ -16,10 +16,10 @@
                             <div class="text-fade">Intelligent Systems</div>
                             <div class="d-flex flex align-items-center justify-content-center">
                                 <div class="animate fadeIn">
-                                    <img src="{{ asset('themes/agile/img/logo-white-lg.png') }}" alt="Mwaloni Limited Logo" width="250">
+                                    <img src="{{ asset('assets/images/logo-white-lg.png') }}" alt="Mwaloni Limited Logo" width="250">
                                 </div>
                             </div>
-                            <div class="text-right text-inherit"><a href="#" class="text-fade">Version 3.0.0</a></div>
+                            <div class="text-right text-inherit"><a href="#" class="text-muted">Version 3.0.0</a></div>
                         </div>
                     </div>
                     <div class="col-md-6" id="content-body">
@@ -30,15 +30,17 @@
                             </p>
                             <form method="POST" action="{{ route('login') }}">
                                 @csrf
-                                <div class="form-group">
+                                <div class="form-group mb-3">
                                     <label for="login-email">Email</label>
                                     <input type="email" class="form-control" id="email" name="email" placeholder="Enter your email" value="" autocomplete="false" required>
                                 </div>
-                                <div class="form-group">
+                                <div class="form-group mb-2">
                                     <label for="password">Password</label>
                                     <input type="password" class="form-control" id="password" name="password" placeholder="Enter your password" value="" autocomplete="false" required>
-                                    <div class="my-3 text-right"><span class="forgot-password"></span> <span class="forgot-password forgot-link"><a href="{{ route('forgot-password') }}" title="Forgot password link" class="text-muted">Forgot password?</a></span></div>
                                 </div>
+                                <div class="mb-2 text-end"><span class="forgot-password"></span> <span class="forgot-password forgot-link"><a
+                                            href="{{ route('forgot-password') }}" title="Forgot password link" class="text-muted">Forgot
+                                            password?</a></span></div>
                                 <div class="checkbox mb-3">
                                     <label class="ui-check">
                                     <input type="checkbox" id="remember_me" name="remember"><i></i> Remember me

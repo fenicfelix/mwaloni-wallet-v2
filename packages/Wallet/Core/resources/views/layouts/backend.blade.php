@@ -1,6 +1,6 @@
-@include('core::_includes.header')
+@include('core::includes.header')
 
-@include('core::_includes.top_header')
+@include('core::includes.top_header')
 
     <div id="main" class="layout-row flex">
         <!-- ############ LAYOUT START-->
@@ -9,4 +9,4 @@
 
     </div>
 
-@include('core::_includes.footer')
+@include('core::includes.footer')

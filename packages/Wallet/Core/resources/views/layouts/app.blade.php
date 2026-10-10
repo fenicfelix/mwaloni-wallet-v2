@@ -1,21 +1,47 @@
-@include('core::_includes.header')
+{{-- include header file --}}
+@include('core::includes.header')
 
-@include('core::_includes.top_header')
+<body>
+    <!-- Begin page -->
+    <div class="wrapper">
 
-    <div id="main" class="layout-row flex">
+        <!-- ========== Topbar Start ========== -->
+        @include('core::includes.topbar')
+        <!-- ========== Topbar End ========== -->
 
-        <!-- ############ Content START-->
-        <div class="flex">
-            <!-- ############ Main START-->
-            <div class="page-container" id="page-container">
-        
-                {{ $slot }}
+        <!-- ========== Left Sidebar Start ========== -->
+        @include('core::includes.menu')
+        <!-- ========== Left Sidebar End ========== -->
 
-            </div>
+        <!-- ============================================================== -->
+        <!-- Start Page Content here -->
+        <!-- ============================================================== -->
+
+        <div class="content-page">
+
+            {{ $slot }}
+
+            <!-- Footer Start -->
+            <footer class="footer">
+                <div class="container-fluid">
+                    <div class="row">
+                        <div class="col-md-12 text-center">
+                            <script>
+                                document.write(new Date().getFullYear())
+                            </script> © {{ config('app.name') }}
+                        </div>
+                    </div>
+                </div>
+            </footer>
+            <!-- end Footer -->
+
         </div>
 
+        <!-- ============================================================== -->
+        <!-- End Page content -->
+        <!-- ============================================================== -->
+
     </div>
+    <!-- END wrapper -->
 
-@include('core::components.alerts')
-
-@include('core::_includes.footer')
+    @include('core::includes.footer')

@@ -24,6 +24,8 @@ class UsersComponent extends Component
 
     public ?bool $add = false;
 
+    public ?bool $view = false;
+
     public ?int $formId = null;
 
     public ?array $formData = [];
@@ -122,7 +124,7 @@ class UsersComponent extends Component
     }
 
     #[On("deleteAccountFunction")]
-    public function deleteAccountFunction($id)
+    public function deleteAccountFunction(int $id)
     {
         $this->formId = $id;
         $this->confirm(
@@ -147,7 +149,7 @@ class UsersComponent extends Component
     }
 
     #[On("resetPasswordFunction")]
-    public function resetPasswordFunction($id)
+    public function resetPasswordFunction(int $id)
     {
         $this->formId = $id;
         $this->confirm(
@@ -184,7 +186,7 @@ class UsersComponent extends Component
     }
 
     #[On("generateApiDetails")]
-    public function generateApiDetails($id)
+    public function generateApiDetails(int $id)
     {
         $this->formId = $id;
         $this->confirm(
@@ -211,10 +213,21 @@ class UsersComponent extends Component
         $this->notify("API credentials have been generated.", "success");
     }
 
-    #[On("editFunction")]
-    public function editFunction($id)
+    #[On("viewFunction")]
+    public function viewFunction(int $id)
     {
         $this->resetValues();
+        $this->content_title = "View User";
+        $this->formId = $id;
+        $this->view = !$this->view;
+        $this->formData = app(UserRepository::class)->find($this->formId)->toArray();
+    }
+
+    #[On("editFunction")]
+    public function editFunction(int $id)
+    {
+        $this->resetValues();
+        $this->content_title = "Edit User";
         $this->formId = $id;
         $this->add = !$this->add;
         $this->formData = app(UserRepository::class)->find($this->formId)->toArray();
@@ -223,6 +236,7 @@ class UsersComponent extends Component
     public function addFunction()
     {
         $this->resetValues();
+        $this->content_title = "Add User";
         $this->add = !$this->add;
     }
 
@@ -233,7 +247,8 @@ class UsersComponent extends Component
 
     public function resetValues()
     {
-        $this->reset('add', 'formId', 'formData', 'displayApiDetails');
+        $this->reset('add', 'view', 'formId', 'formData', 'displayApiDetails');
+        $this->content_title = "Users Manager";
     }
 
     public function render()

@@ -5,7 +5,7 @@
 ])
 
 <button type="{{ $type }}" {{ $attributes->merge([
-    'class' => "btn btn-{$variant} btn-rounded",
+    'class' => "btn btn-{$variant} btn-rounded me-1",
     ]) }}
     >
     @if($icon)

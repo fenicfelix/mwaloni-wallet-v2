@@ -70,18 +70,18 @@ enum TransactionStatus: string
     public function backgroundColor(): string
     {
         return match ($this) {
-            self::REQUESTED => 'info-lt',
-            self::CANCELLED => 'danger-lt',
-            self::PENDING => 'secondary-lt',
-            self::PROCESSING => 'primary-lt',
-            self::SUBMITTED => 'primary-lt',
-            self::SUCCESS => 'success-lt',
-            self::FAILED => 'danger-lt',
-            self::COMPLETED => 'dark-lt',
-            self::REVERSING => 'primary-lt',
-            self::REVERSED => 'dark-lt',
-            self::QUERYING_STATUS => 'secondary-lt',
-            self::REVERSING_FAILED => 'danger-lt',
+            self::REQUESTED => 'info',
+            self::CANCELLED => 'danger',
+            self::PENDING => 'secondary',
+            self::PROCESSING => 'primary',
+            self::SUBMITTED => 'primary',
+            self::SUCCESS => 'success',
+            self::FAILED => 'danger',
+            self::COMPLETED => 'dark',
+            self::REVERSING => 'primary',
+            self::REVERSED => 'dark',
+            self::QUERYING_STATUS => 'secondary',
+            self::REVERSING_FAILED => 'danger',
         };
     }
 

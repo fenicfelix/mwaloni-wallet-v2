@@ -53,9 +53,13 @@ class UsersTable extends DataTableComponent
                 ->searchable(),
             Column::make("Status", "active")
                 ->sortable()
-                ->format(
-                    fn($value) =>  '<span class="badge badge-circle xs text-' . ($value ? 'success' : 'danger') . ' mx-1"></span>'
-                )->html(),
+                ->format(function ($value) {
+                    if (! $value) {
+                        return '<span class="badge bg-danger">Inactive</span>';
+                    }
+
+                    return '<span class="badge bg-success">Active</span>';
+                })->html(),
             Column::make("Member Since", "created_at")
                 ->format(
                     fn($value) => date('d M, Y', strtotime($value))
@@ -68,10 +72,13 @@ class UsersTable extends DataTableComponent
             ->label(
                 function ($row, Column $column) {
                     if ($row->active == true) {
-                        $html = '<div class="btn-group">';
-                        $html .= '<a href="#" data-toggle="dropdown"><img height="16" src="' . asset('themes/agile/img/icon_more.png') . '" alt=""></a>';
-                        $html .= '<div class="dropdown-menu bg-light" role="menu">';
+                    $html = '<div class="dropdown">
+                                <a href="#" class="dropdown-toggle arrow-none card-drop" data-bs-toggle="dropdown" aria-expanded="false">
+                                    <i class="mdi mdi-dots-vertical"></i>
+                                </a>
+                        <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">';
                         $html .= '<a href="#" class="dropdown-item" wire:click="showApiDetails(' . $row->id . ')">Get API Details</a>';
+                        $html .= '<a href="#" class="dropdown-item" wire:click="viewFunction(' . $row->id . ')">View</a>';
                         $html .= '<a href="#" class="dropdown-item" wire:click="editFunction(' . $row->id . ')">Edit</a>';
                         $html .= '<a href="#" class="dropdown-item"wire:click="resetPasswordFunction(' . $row->id . ')">Reset Password</a>';
                         $html .= '<a href="#" class="dropdown-item"wire:click="deleteAccountFunction(' . $row->id . ')">Delete Account</a>';
@@ -85,22 +92,27 @@ class UsersTable extends DataTableComponent
         return $columns;
     }
 
-    public function showApiDetails($form_id)
+    public function viewFunction(int $form_id)
+    {
+        $this->dispatch('viewFunction', $form_id);
+    }
+
+    public function showApiDetails(int $form_id)
     {
         $this->dispatch('generateApiDetails', $form_id);
     }
 
-    public function editFunction($form_id)
+    public function editFunction(int $form_id)
     {
         $this->dispatch('editFunction', $form_id);
     }
 
-    public function resetPasswordFunction($form_id)
+    public function resetPasswordFunction(int $form_id)
     {
         $this->dispatch('resetPasswordFunction', $form_id);
     }
 
-    public function deleteAccountFunction($form_id)
+    public function deleteAccountFunction(int $form_id)
     {
         $this->dispatch('deleteAccountFunction', $form_id);
     }
