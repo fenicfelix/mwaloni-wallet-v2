@@ -18,10 +18,16 @@ a {
     color: rgb(6 107 91);
 }
 .active>.page-link,
-.page-link.active {
-    background-color: black;
-    border-color: black;
+.page-link.active, .dark-link.active {
+    background-color: black!important;
+    border-color: black!important;
 }
+
+.dark-link.active {
+    background-color: #3b3b3f !important;
+    border-color: #3b3b3f !important;
+}
+
 .sub-text {
     font-size: 0.75rem;
 }

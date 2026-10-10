@@ -136,14 +136,13 @@
                                     </div>
                                 @endif
                             </div>
-                            <div class="mt-4">
-                                <x-wallet::button class="w-sm" variant="danger" icon="uil-times" wire:click.prevent="backAction">
-                                    Cancel
-                                </x-wallet::button>
-                                <x-wallet::button type="submit" class="w-sm" icon="uil-check" variant="dark">
-                                    Submit
-                                </x-wallet::button>
-                            </div>
+                            <hr>
+                            <x-wallet::button class="w-sm" variant="danger" icon="uil-times" wire:click.prevent="backAction">
+                                Cancel
+                            </x-wallet::button>
+                            <x-wallet::button type="submit" class="w-sm" icon="uil-check" variant="dark">
+                                Submit
+                            </x-wallet::button>
                         </form>
                     </div>
                 </div>

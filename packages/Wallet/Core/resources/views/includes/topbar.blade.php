@@ -57,7 +57,7 @@
                     <span class="d-lg-flex flex-column gap-1 d-none">
                         <h5 class="my-0">{{ auth()->user()->full_name }}</h5>
                         <h6 class="my-0 fw-normal">
-                            {{ auth()->user()->roles?->pluck('name')->map(fn($role) => ucwords($role))->join(', ') }}
+                            {{ auth()->user()->role->name ?? '' }}
                         </h6>
                     </span>
                 </a>
