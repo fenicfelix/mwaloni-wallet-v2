@@ -46,8 +46,8 @@
                 <div class="card-body">
                     <i class="uil-check"></i>
                     <h6 class="text-uppercase mt-0">Successful Transactions</h6>
-                    <h2 class="my-2"><span class="sub-text">KES</span> {{ number_format($transactionMetrics->successful_transactions ??
-                        0, 2) }}</h2>
+                    <h2 class="my-2">{{ number_format($transactionMetrics->successful_transactions ??
+                        0) }}</h2>
                 </div> <!-- end card-body-->
             </div>
         </div>
@@ -57,8 +57,9 @@
                 <div class="card-body">
                     <i class="mdi mdi-spin mdi-loading text-white font-24"></i>
                     <h6 class="text-uppercase mt-0">Incomplete Transactions</h6>
-                    <h2 class="my-2"><span class="sub-text">KES</span> {{ number_format($transactionMetrics->pending_transactions ??
-                        0, 2) }}</h2>
+                    <h2 class="my-2">
+                        {{ number_format($transactionMetrics->pending_transactions ??
+                        0) }}</h2>
                 </div> <!-- end card-body-->
             </div>
         </div>
@@ -67,9 +68,9 @@
                 <div class="card-body">
                     <i class="uil-envelope-alt"></i>
                     <h6 class="text-uppercase mt-0">Total Messages</h6>
-                    <h2 class="my-2"><span class="sub-text">KES</span> {{
+                    <h2 class="my-2">{{
                         number_format($analytics['total_messages'] ??
-                        0, 2) }}</h2>
+                        0) }}</h2>
                 </div> <!-- end card-body-->
             </div>
         </div>
