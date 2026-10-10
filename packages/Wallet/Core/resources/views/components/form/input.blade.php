@@ -16,11 +16,16 @@ $errorKey = $wireModel ? str_replace(['wire:model', '.defer', '.lazy', '.live', 
 @endphp
 
 <div class="md-form-group float-label">
-    <label>{{ $label }}</label>
+    <label class="form-label" for="{{ $name }}">{{ $label }}
+        @if ($required)
+        <span class="text-danger">*</span>
+        @endif
+    </label>
     
     <input type="{{ $type }}" name="{{ $name }}" {{ $attributes->merge(['class' => 'form-control']) }}
     @if($required) required @endif
     @if($disabled) disabled @endif
+    placeholder="{{ $label }}"
     >
 
     @if($help)

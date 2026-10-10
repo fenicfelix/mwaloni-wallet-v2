@@ -31,7 +31,7 @@
                 <p class="text-muted font-14">
                     Here you can {{ $formId ? 'edit a' : 'add a new' }} role. Please fill in the details below.
                     <br>
-                    <span class="text-danger">* Required fields</span>
+                    <span class="text-danger">Fields with (*) are required</span>
                 </p>
                 <form wire:submit.prevent="store">
                     <div class="p-lg">

@@ -8,6 +8,12 @@
 ])
 
 <div class="md-form-group float-label">
+    <label class="form-label" for="{{ $name }}">{{ $label }}
+        @if ($required)
+        <span class="text-danger">*</span>
+        @endif
+    </label>
+    
     <select name="{{ $name }}" {{ $attributes->merge(['class' => 'form-control']) }}
         @if($required) required @endif
         @if($disabled) disabled @endif
@@ -20,8 +26,6 @@
         <option value="{{ $value }}">{{ $text }}</option>
         @endforeach
     </select>
-
-    <label>{{ $label }}</label>
 
     @error($attributes->get('wire:model'))
     <span class="text-danger text-sm">{{ $message }}</span>

@@ -217,6 +217,7 @@ class UsersComponent extends Component
     public function viewFunction(int $id)
     {
         $this->resetValues();
+        $this->content_title = "View User";
         $this->formId = $id;
         $this->view = !$this->view;
         $this->formData = app(UserRepository::class)->find($this->formId)->toArray();
@@ -226,6 +227,7 @@ class UsersComponent extends Component
     public function editFunction(int $id)
     {
         $this->resetValues();
+        $this->content_title = "Edit User";
         $this->formId = $id;
         $this->add = !$this->add;
         $this->formData = app(UserRepository::class)->find($this->formId)->toArray();
@@ -234,6 +236,7 @@ class UsersComponent extends Component
     public function addFunction()
     {
         $this->resetValues();
+        $this->content_title = "Add User";
         $this->add = !$this->add;
     }
 
@@ -245,6 +248,7 @@ class UsersComponent extends Component
     public function resetValues()
     {
         $this->reset('add', 'view', 'formId', 'formData', 'displayApiDetails');
+        $this->content_title = "Users Manager";
     }
 
     public function render()

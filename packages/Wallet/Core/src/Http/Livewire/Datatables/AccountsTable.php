@@ -104,9 +104,13 @@ class AccountsTable extends DataTableComponent
                 }),
             Column::make("Status", "active")
                 ->sortable()
-                ->format(
-                    fn($value) =>  '<span class="badge badge-circle xs text-' . ($value ? 'success' : 'danger') . ' mx-1"></span>'
-                )->html(),
+                ->format(function ($value) {
+                    if (! $value) {
+                        return '<span class="badge bg-danger">Inactive</span>';
+                    }
+
+                return '<span class="badge bg-success">Active</span>';
+                })->html(),
         ];
 
         $columns[] = Column::make('Action')

@@ -40,7 +40,7 @@
     <div class="col-sm-6 col-lg-3">
         <div class="card text-bg-danger">
             <div class="card-body text-center">
-                <i class="uil-check text-white font-24"></i>
+                <i class="uil-times text-white font-24"></i>
                 <h3><span>{{ number_format($analytics->failed_transactions ?? 0) }}</span>
                 </h3>
                 <p class="text-white font-15 mb-0">Failed Transactions</p>
