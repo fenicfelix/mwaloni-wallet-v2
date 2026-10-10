@@ -2,6 +2,7 @@
 
 namespace Wallet\Core\Models;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -38,12 +39,12 @@ class Account extends Model
         return $this->hasMany(BalanceReservation::class);
     }
 
-    public function scopeIsActive($query)
+    public function scopeIsActive(Builder $query)
     {
         return $query->where('active', "1");
     }
 
-    public function scopeIsAutoFetch($query)
+    public function scopeIsAutoFetch(Builder $query)
     {
         return $query->where('auto_fetch_balance', "1");
     }

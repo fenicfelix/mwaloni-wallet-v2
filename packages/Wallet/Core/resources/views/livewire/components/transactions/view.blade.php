@@ -4,7 +4,7 @@
         <div class="col-12">
             <div class="page-title-box">
                 <div class="page-title-right">
-                    <button class="btn btn-dark btn-rounded w-sm" wire:click="backAction">Back to List</button></a>
+                    <button class="btn btn-danger btn-rounded w-sm" wire:click="backAction"> <i class="uil-arrow-left"></i> Back to List</button></a>
                 </div>
                 <h4 class="page-title">{{ $content_title }}</h4>
             </div>

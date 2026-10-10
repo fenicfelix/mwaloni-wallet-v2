@@ -191,26 +191,6 @@ class TransactionsTable extends DataTableComponent
                     $html .= '</div></div>';
 
                     return $html;
-                    /*$html = '
-                            <div class="dropdown table-action-dropdown">
-                                <a href="#" class="dropdown-toggle arrow-none card-drop" data-bs-toggle="dropdown" aria-expanded="false">
-                                    <i class="mdi mdi-dots-vertical"></i>
-                                </a>
-                                <div class="dropdown-menu dropdown-menu-end" style="">';
-                    $html .= '<a href="#" wire:click="viewFunction(' . $row->id . ')" class="dropdown-item">View Details</a>';
-                    if ($row->status != TransactionStatus::SUCCESS) {
-                        // if ($row->status == TransactionStatus::FAILED) $html .= '<a href="#" class="dropdown-item" wire:click="editFunction(' . $row->id . ')">Edit Details</a>';
-                        if (in_array($row->status, TransactionStatus::retriableStatuses())) {
-                            $html .= '<a href="#" class="dropdown-item" wire:click="retryPayment(' . $row->id . ')">Retry Payment</a>';
-                        }
-                        if ($row->status == TransactionStatus::FAILED) {
-                            $html .= '<a href="#" class="dropdown-item" wire:click="paidOffline(' . $row->id . ')">Complete Offline</a>';
-                            $html .= '<a href="#" class="dropdown-item" wire:click="markAsCompleted(' . $row->id . ')">Mark As Completed</a>';
-                        }
-                        if (in_array($row->status, [TransactionStatus::SUBMITTED, TransactionStatus::FAILED])) $html .= '<a href="#" class="dropdown-item" wire:click="queryStatus(' . $row->id . ')">Query Status</a>';
-                    }
-                    $html .= '</div></div>';
-                    return $html;*/
                 }
             )
             ->html();
@@ -260,12 +240,12 @@ class TransactionsTable extends DataTableComponent
         ];
     }
 
-    public function viewFunction($form_id)
+    public function viewFunction(int $form_id)
     {
         $this->dispatch('viewFunction', $form_id);
     }
 
-    public function editFunction($form_id)
+    public function editFunction(int $form_id)
     {
         $this->dispatch('editFunction', $form_id);
     }
@@ -276,22 +256,22 @@ class TransactionsTable extends DataTableComponent
         $this->clearSelected();
     }
 
-    public function retryPayment($form_id)
+    public function retryPayment(int $form_id)
     {
         $this->dispatch('retryPayment', $form_id);
     }
 
-    public function paidOffline($form_id)
+    public function paidOffline(int $form_id)
     {
         $this->dispatch('paidOffline', $form_id);
     }
 
-    public function markAsCompleted($form_id)
+    public function markAsCompleted(int $form_id)
     {
         $this->dispatch('markAsCompleted', $form_id);
     }
 
-    public function queryStatus($form_id)
+    public function queryStatus(int $form_id)
     {
         $this->dispatch('queryStatus', $form_id);
     }
@@ -309,7 +289,7 @@ class TransactionsTable extends DataTableComponent
         return Excel::download(new TransactionsExport($transactions), 'transactions.xlsx');
     }
 
-    public function reverse($form_id)
+    public function reverse(int $form_id)
     {
         $this->dispatch('reverse', $form_id);
     }
