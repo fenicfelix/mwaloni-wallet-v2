@@ -20,43 +20,44 @@
                 <h5 class="header-title">{{ ($add) ? ($formId) ? 'Update Preference' : 'Add Preference' : 'All
                     Preference' }}</h5>
                 <div class="float-end ms-2">
-                    <button class="btn btn-dark btn-rounded px-4" wire:click="{{ ($add) ? 'backAction' : 'addFunction' }}">{{
-                        ($add) ? 'Back To List' :
-                        'Add New' }}</button>
+                    <button class="btn btn-dark btn-rounded px-4" wire:click="{{ ($add) ? 'backAction' : 'addFunction' }}">
+                        <i class="{{ $add ? 'uil-arrow-left' : 'uil-plus' }}"></i>
+                        {{ ($add) ? 'Back To List' : 'Add New' }}
+                    </button>
                 </div>
-        
+                
                 <div class="clearfix"></div>
         
                 @if ($add)
-                <p class="text-muted font-14">
-                    Here you can {{ $formId ? 'edit a' : 'add a new' }} role. Please fill in the details below.
-                    <br>
-                    <span class="text-danger">Fields with (*) are required</span>
-                </p>
-                <form wire:submit.prevent="store">
-                    <div class="p-lg">
-                        <div class="row row-sm">
-                            <div class="col-sm-12">
-                                <div class="md-form-group float-label">
-                                    <x-wallet::form.input label="Title" wire:model.defer="formData.title" name="title"
-                                        required />
-                                </div>
-                            </div>
-                            <div class="col-sm-12 mt-4">
-                                <x-wallet::form.input label="Value" wire:model.defer="formData.value" name="value" required />
+                <div class="row">
+                    <div class="col-12 col-md-6">
+                        <div class="card">
+                            <div class="card-body">
+                                <p><span class="text-danger">Fields with (*) are required</span></p>
+                                <hr>
+                                <form wire:submit.prevent="store">
+                                    <div class="p-lg">
+                                        <div class="row row-sm">
+                                            <div class="col-sm-12 mb-3">
+                                                <x-wallet::form.input label="Title" wire:model.defer="formData.title" name="title" required />
+                                            </div>
+                                            <div class="col-sm-12">
+                                                <x-wallet::form.textarea label="Value" wire:model.defer="formData.value" name="value" required />
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <hr>
+                                    <x-wallet::button variant="danger" icon="uil-times" wire:click.prevent="backAction">
+                                        Cancel
+                                    </x-wallet::button>
+                                    <x-wallet::button type="submit" icon="uil-check" variant="dark">
+                                        Submit
+                                    </x-wallet::button>
+                                </form>
                             </div>
                         </div>
                     </div>
-                    <hr>
-                    <div class="mt-4">
-                        <x-wallet::button class="w-sm" variant="danger" wire:click.prevent="backAction">
-                            Cancel
-                        </x-wallet::button>
-                        <x-wallet::button type="submit" class="w-sm" variant="dark">
-                            Submit
-                        </x-wallet::button>
-                    </div>
-                </form>
+                </div>
                 @else
                 <div class="table-responsive">
                     @livewire('core-datatables.system-preferences-table')

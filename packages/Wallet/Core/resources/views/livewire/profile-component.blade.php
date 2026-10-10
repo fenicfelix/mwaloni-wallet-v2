@@ -47,7 +47,7 @@
                                         </div>
                                     </div>
                                     <hr>
-                                    <x-wallet::button type="submit" class="w-sm" icon="uil-check" variant="dark">
+                                    <x-wallet::button type="submit" icon="uil-check" variant="dark">
                                         Submit
                                     </x-wallet::button>
                                 </form>

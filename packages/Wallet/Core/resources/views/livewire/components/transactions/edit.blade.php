@@ -61,10 +61,10 @@
                             </div>
                             @endif
                             <div class="mt-4">
-                                <x-wallet::button class="w-sm" variant="danger" wire:click.prevent="backAction">
+                                <x-wallet::button variant="danger" wire:click.prevent="backAction">
                                     Cancel
                                 </x-wallet::button>
-                                <x-wallet::button type="submit" class="w-sm" variant="dark">
+                                <x-wallet::button type="submit" variant="dark">
                                     Submit
                                 </x-wallet::button>
                             </div>

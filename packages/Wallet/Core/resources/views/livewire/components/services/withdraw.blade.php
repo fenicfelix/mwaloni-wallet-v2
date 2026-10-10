@@ -79,10 +79,10 @@
                                     </div>
                                 @endif
                                 <hr>
-                                <x-wallet::button class="w-sm" variant="danger" icon="uil-times" wire:click.prevent="backAction">
+                                <x-wallet::button variant="danger" icon="uil-times" wire:click.prevent="backAction">
                                     Cancel
                                 </x-wallet::button>
-                                <x-wallet::button type="submit" class="w-sm" icon="uil-check" variant="dark">
+                                <x-wallet::button type="submit" icon="uil-check" variant="dark">
                                     Submit
                                 </x-wallet::button>
                             </form>
