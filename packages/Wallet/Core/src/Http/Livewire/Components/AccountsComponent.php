@@ -14,6 +14,7 @@ use Wallet\Core\Models\AccountType;
 use Wallet\Core\Models\Currency;
 use Wallet\Core\Models\PaymentChannel;
 use Livewire\Attributes\On;
+use Wallet\Core\Models\BalanceReservation;
 use Wallet\Core\Repositories\AccountRepository;
 use Wallet\Core\Services\AccountBalanceService;
 use Wallet\Core\Services\CashoutService;
@@ -44,6 +45,8 @@ class AccountsComponent extends Component
 
     public ?float $max_cashout_amount = null;
 
+    public ?array $summaries = [];
+
     public function mount()
     {
         $this->initializeVariables();
@@ -70,6 +73,21 @@ class AccountsComponent extends Component
         // $this->payment_channels = PaymentChannel::get();
         $this->account_types = AccountType::get();
         $this->currencies = Currency::get();
+
+        $balances = Account::query()
+            ->selectRaw('
+        COALESCE(SUM(working_balance), 0) AS working_balance,
+        COALESCE(SUM(utility_balance), 0) AS utility_balance,
+        COALESCE(SUM(withheld_amount), 0) AS withheld_amount
+    ')
+            ->first();
+
+        $this->summaries = [
+            'working_balance' => $balances->working_balance,
+            'utility_balance' => $balances->utility_balance,
+            'withheld_amount' => $balances->withheld_amount,
+            'reserved_amount' => BalanceReservation::sum('amount'),
+        ];
     }
 
     public function rules()
