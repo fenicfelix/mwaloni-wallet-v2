@@ -13,7 +13,7 @@
     <meta name="developer" content="Naivas eCommerce Technology Team">
 
     <!-- App favicon -->
-    <link rel="shortcut icon" href="{{ asset('themes/hyper/images/favicon.ico') }}">
+    <link rel="shortcut icon" href="{{ asset('themes/hyper/images/favicon.png') }}">
 
     <!-- Plugin css -->
     <link href="{{ asset('themes/hyper/vendor/daterangepicker/daterangepicker.css') }}" rel="stylesheet" type="text/css">

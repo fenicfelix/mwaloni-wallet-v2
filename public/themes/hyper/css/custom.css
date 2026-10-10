@@ -45,6 +45,21 @@ input[data-switch]:checked+label {
     background-color: var(--ct-primary)!important;
 }
 
+.auth-div {
+    justify-content: inherit;
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    flex-grow: 10;
+    width: 70%;
+    min-height: calc(100vh - 7em);
+    margin: 0 auto;
+}
+
+.b-t {
+    border-top: 1px solid rgba(135, 150, 165, 0.1);
+}
+
 /* // mb-sm-2 for small devices */
 @media (max-width: 576px) {
     .mb-sm-2 {

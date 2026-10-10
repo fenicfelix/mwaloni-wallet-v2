@@ -1,4 +1,4 @@
-@include('includes.header')
+@include('core::includes.header')
 
 <body class="authentication-bg position-relative">
     <div class="position-absolute start-0 end-0 start-0 bottom-0 w-100 h-100">

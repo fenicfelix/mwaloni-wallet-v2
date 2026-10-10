@@ -20,7 +20,7 @@
                                     <img src="{{ asset('themes/agile/img/logo-white-lg.png') }}" alt="Mwaloni Limited Logo" width="250">
                                 </div>
                             </div>
-                            <div class="text-right text-inherit"><a href="#" class="text-fade">Version 3.0.0</a></div>
+                            <div class="text-right text-inherit"><a href="#" class="text-muted">Version 3.0.0</a></div>
                         </div>
                     </div>
                     <div class="col-md-6" id="content-body">
@@ -33,14 +33,14 @@
                             </div>
                             <form method="POST" action="{{ route('forgot-password.email') }}" class="py-4 my-md-4">
                                 @csrf
-                                <div class="form-group">
+                                <div class="form-group mb-3">
                                     <input type="email" id="email" name="email" value="{{ old('email') }}" placeholder="Email" class="form-control" required="">
                                 </div>
                                 <button type="submit" class="btn btn-dark btn-block rounded">Send</button>
                             </form>
                             <div class="pt-1">
                                 Return to 
-                                <a href="{{ route('login') }}" class="text-dark font-weight-bold" data-pjax-state="">Sign in</a>
+                                <a href="{{ route('login') }}" class="text-dark font-weight-bold text-decoration-underline" data-pjax-state="">Sign in</a>
                             </div>
                         </div>
                     </div>
