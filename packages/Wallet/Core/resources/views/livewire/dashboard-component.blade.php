@@ -35,7 +35,7 @@
                 <div class="card-body">
                     <i class="uil-analysis"></i>
                     <h6 class="text-uppercase mt-0">Account Balance</h6>
-                    <h2 class="my-2"><span class="sub-text">KES</span> {{ number_format($transactionMetrics->account_balance ??
+                    <h2 class="my-2"><span class="sub-text">KES</span> {{ number_format($analytics['account_balance'] ??
                         0, 2) }}</h2>
                 </div> <!-- end card-body-->
             </div>
