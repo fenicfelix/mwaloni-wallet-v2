@@ -60,11 +60,15 @@ class ClientsTable extends DataTableComponent
                 ->sortable()
                 ->searchable()
                 ->label(fn($row) => $row->first_name . ' ' . $row->last_name),
-            Column::make("Active", "active")
+            Column::make("Status", "active")
                 ->sortable()
-                ->format(
-                    fn($value) =>  '<span class="badge badge-circle xs text-' . ($value ? 'success' : 'danger') . ' mx-1"></span>'
-                )->html(),
+                ->format(function ($value) {
+                    if (! $value) {
+                        return '<span class="badge bg-danger">Inactive</span>';
+                    }
+
+                    return '<span class="badge bg-success">Active</span>';
+                })->html(),
             Column::make("Registered On", "created_at")
                 ->sortable()
                 ->format(
