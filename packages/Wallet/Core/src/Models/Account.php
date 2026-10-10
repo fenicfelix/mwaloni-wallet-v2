@@ -5,6 +5,8 @@ namespace Wallet\Core\Models;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Account extends Model
 {
@@ -23,33 +25,33 @@ class Account extends Model
         'auto_fetch_balance' => 'boolean',
     ];
 
-    public function accountType()
+    public function accountType(): BelongsTo
     {
         return $this->belongsTo(AccountType::class, "account_type_id");
     }
 
-    public function currency()
+    public function currency(): BelongsTo
     {
         return $this->belongsTo(Currency::class, "currency_id");
     }
 
     // balance reservation
-    public function balanceReservation()
+    public function balanceReservation(): HasMany
     {
         return $this->hasMany(BalanceReservation::class);
     }
 
-    public function scopeIsActive(Builder $query)
+    public function scopeIsActive(Builder $query): Builder
     {
         return $query->where('active', "1");
     }
 
-    public function scopeIsAutoFetch(Builder $query)
+    public function scopeIsAutoFetch(Builder $query): Builder
     {
         return $query->where('auto_fetch_balance', "1");
     }
 
-    public function getFloatAttribute()
+    public function getFloatAttribute(): float
     {
         $balanceReservations = 0;
         try {

@@ -2,8 +2,11 @@
 
 namespace Wallet\Core\Models;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Wallet\Core\Http\Enums\TransactionStatus;
 use Wallet\Core\Http\Enums\TransactionType;
 
@@ -59,7 +62,7 @@ class Transaction extends Model
         return $this->hasOne(TransactionPayload::class);
     }
 
-    public function scopeSuccessful($query)
+    public function scopeSuccessful(Builder $query): Builder
     {
         return $query->whereIn("status", [
             TransactionStatus::SUCCESS,
@@ -68,7 +71,7 @@ class Transaction extends Model
         ]);
     }
 
-    public function scopeUnsuccessful($query)
+    public function scopeUnsuccessful(Builder $query): Builder
     {
         return $query->whereNotIn("status", [
             TransactionStatus::SUCCESS,
@@ -77,37 +80,37 @@ class Transaction extends Model
         ]);
     }
 
-    public function scopeFailed($query)
+    public function scopeFailed(Builder $query): Builder
     {
         return $query->whereIn("status", [TransactionStatus::FAILED]);
     }
 
-    public function scopePending($query)
+    public function scopePending(Builder $query): Builder
     {
         return $query->whereIn("status", [TransactionStatus::PENDING, TransactionStatus::PROCESSING]);
     }
 
-    public function service()
+    public function service(): BelongsTo
     {
         return $this->belongsTo(Service::class, "service_id");
     }
 
-    public function account()
+    public function account(): BelongsTo
     {
         return $this->belongsTo(Account::class, "account_id");
     }
 
-    public function paymentChannel()
+    public function paymentChannel(): BelongsTo
     {
         return $this->belongsTo(PaymentChannel::class, "payment_channel_id");
     }
 
-    public function balanceReservations()
+    public function balanceReservations(): HasMany
     {
         return $this->hasMany(BalanceReservation::class);
     }
 
-    public function reserveAmount()
+    public function reserveAmount(): void
     {
         if ($this->requested_amount > 0 && $this->account_id) {
             BalanceReservation::create([

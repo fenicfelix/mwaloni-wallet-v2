@@ -4,6 +4,7 @@ namespace Wallet\Core\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class TransactionMetric extends Model
 {
@@ -31,7 +32,7 @@ class TransactionMetric extends Model
         'total_sms_cost' => 'decimal:2',
     ];
 
-    public function transaction()
+    public function transaction(): BelongsTo
     {
         return $this->belongsTo(Transaction::class);
     }
