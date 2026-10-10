@@ -53,9 +53,13 @@ class UsersTable extends DataTableComponent
                 ->searchable(),
             Column::make("Status", "active")
                 ->sortable()
-                ->format(
-                    fn($value) =>  '<span class="badge badge-circle xs text-' . ($value ? 'success' : 'danger') . ' mx-1"></span>'
-                )->html(),
+                ->format(function ($value) {
+                    if (! $value) {
+                        return '<span class="badge bg-danger">Inactive</span>';
+                    }
+
+                    return '<span class="badge bg-success">Active</span>';
+                })->html(),
             Column::make("Member Since", "created_at")
                 ->format(
                     fn($value) => date('d M, Y', strtotime($value))

@@ -13,6 +13,8 @@
             <div class="col-sm-12 col-md-6 d-table h-100">
                 <div class="card card-border">
                     <div class="card-body">
+                        <p><span class="text-danger">Fields with (*) are required</span></p>
+                        <hr>
                         <form wire:submit.prevent="{{ ($pay_offline) ? 'completePaymentOffline' : 'store'}}">
                             <div class="form-group row">
                                 <label class="col-sm-4 col-form-label font-weight-bold">Order Number</label>

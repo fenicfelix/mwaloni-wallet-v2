@@ -65,12 +65,14 @@
         <div class="col-sm-12">
             <div class="row">
                 <div class="col-12">
-                    <div class="">
-                        <div class="">
-                            <div class="table-responsive">
-                                @livewire('core-datatables.transactions-table')
-                            </div>
-                        </div>
+                    <h4 class="header-title">List of Transactions</h4>
+                    <p class="text-muted font-14 d-none d-md-block">
+                        Here you can manage all transactions. You can add, edit, delete and view transactions.
+                        <br>
+                    </p>
+                    <div class="clearfix"></div>
+                    <div class="table-responsive">
+                        @livewire('core-datatables.transactions-table')
                     </div>
                 </div>
             </div>

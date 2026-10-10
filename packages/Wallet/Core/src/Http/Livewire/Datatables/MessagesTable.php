@@ -59,11 +59,14 @@ class MessagesTable extends DataTableComponent
 
             Column::make("Status", "sent")
                 ->sortable()
-                ->format(
-                    fn($value) =>  '<span class="badge badge-circle xs text-' . ($value ? 'success' : 'danger') . ' mx-1"></span>'
-                )->html(),
+                ->format(function ($value) {
+                    if (! $value) {
+                        return '<span class="badge bg-danger">Not Sent</span>';
+                    }
+
+                    return '<span class="badge bg-success">Sent</span>';
+                })->html(),
         ];
-        
         return $columns;
     }
 }

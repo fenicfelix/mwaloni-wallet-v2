@@ -13,7 +13,7 @@
     
     <div class="padding">
         <div class="row">
-            <div class="col-12 col-md-4 h-100">
+            <div class="col-12 col-md-5 h-100">
                 <div class="card card-border">
                     <div class="card-body">
                     <div class="form-group row">
@@ -82,7 +82,7 @@
                 </div>
             </div>
 
-            <div class="col-12 col-md-8 h-100">
+            <div class="col-12 col-md-7 h-100">
                 <div class="card card-border">
                     <div class="card-body">
                     <div class="form-group row">

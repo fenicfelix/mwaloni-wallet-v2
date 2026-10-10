@@ -20,12 +20,10 @@
             <div class="col-sm-12">
                 <div class="row">
                     <div class="col-12">
-                        <div class="">
-                            <div class="">
-                                <div class="table-responsive">
-                                    @livewire('core-datatables.messages-table')
-                                </div>
-                            </div>
+                        <h4 class="header-title">List of Messages</h4>
+                        <div class="clearfix"></div>
+                        <div class="table-responsive">
+                            @livewire('core-datatables.messages-table')
                         </div>
                     </div>
                 </div>

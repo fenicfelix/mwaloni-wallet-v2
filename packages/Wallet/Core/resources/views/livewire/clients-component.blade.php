@@ -15,6 +15,8 @@
                 <div class="col-sm-12 col-md-6 d-table h-100">
                     <div class="card card-border">
                         <div class="card-body">
+                            <p><span class="text-danger">Fields with (*) are required</span></p>
+                            <hr>
                             <form wire:submit.prevent="store">
                                 <div class="row">
                                     <div class="mb-3">
