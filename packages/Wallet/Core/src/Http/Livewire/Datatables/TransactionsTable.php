@@ -23,27 +23,24 @@ class TransactionsTable extends DataTableComponent
     {
         $this->setPrimaryKey('id');
         $this->setDefaultSort('id', 'desc');
-        // $this->setTableAttributes([
-        //     'class' => 'table-theme table-row v-middle',
-        // ]);
         $this->setTableAttributes([
-            'class' => 'border table-bordered display',
+            'class' => 'table-theme table-row v-middle',
         ]);
-        // $this->setFilterPillsItemAttributes([
-        //     'class' => 'badge badge-pill badge-dark d-inline-flex align-items-center', // Add these classes to the filter pills item
-        //     'default-colors' => false, // Do not output the default colors
-        //     'default-styling' => true // Output the default styling
-        // ]);
-        // $this->setSortingPillsItemAttributes([
-        //     'class' => 'badge badge-pill badge-dark d-inline-flex align-items-center', // Add these classes to the sorting pills item
-        //     'default-colors' => false, // Do not output the default colors
-        //     'default-styling' => true // Output the default styling
-        // ]);
-        // $this->setBulkActionsRowButtonAttributes([
-        //     'class' => 'btn btn-sm btn-outline-dark',
-        //     'icon' => 'fas fa-ellipsis-v',
-        //     'label' => 'Actions',
-        // ]);
+        $this->setFilterPillsItemAttributes([
+            'class' => 'badge badge-pill badge-dark d-inline-flex align-items-center', // Add these classes to the filter pills item
+            'default-colors' => false, // Do not output the default colors
+            'default-styling' => true // Output the default styling
+        ]);
+        $this->setSortingPillsItemAttributes([
+            'class' => 'badge badge-pill badge-dark d-inline-flex align-items-center', // Add these classes to the sorting pills item
+            'default-colors' => false, // Do not output the default colors
+            'default-styling' => true // Output the default styling
+        ]);
+        $this->setBulkActionsRowButtonAttributes([
+            'class' => 'btn btn-sm btn-outline-dark',
+            'icon' => 'fas fa-ellipsis-v',
+            'label' => 'Actions',
+        ]);
         $this->setFilterLayout('slide-down');
 
         $this->setBulkActions([
@@ -68,11 +65,18 @@ class TransactionsTable extends DataTableComponent
                     return '<a href="#" wire:click="viewFunction(' . $row->id . ')" class="text-decoration-underline">' . $value . '</a>';
                 })->html(),
 
+            Column::make("Date", "transaction_date")
+                ->sortable()
+                ->excludeFromColumnSelect()
+                ->format(
+                    fn($value) => date('d M, Y', strtotime($value))
+                ),
+
             Column::make("Time", "transaction_date")
                 ->sortable()
                 ->excludeFromColumnSelect()
                 ->format(
-                    fn($value) => date('d M, Y h:i A', strtotime($value))
+                    fn($value) => date('h:i A', strtotime($value))
                 ),
 
             Column::make("Type", 'transaction_type')
