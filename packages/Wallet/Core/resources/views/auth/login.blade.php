@@ -16,7 +16,7 @@
                             <div class="text-fade">Intelligent Systems</div>
                             <div class="d-flex flex align-items-center justify-content-center">
                                 <div class="animate fadeIn">
-                                    <img src="{{ asset('assets/themes/agile/img/logo-white-lg.png') }}" alt="Mwaloni Limited Logo" width="250">
+                                    <img src="{{ asset('assets/images/logo-white-lg.png') }}" alt="Mwaloni Limited Logo" width="250">
                                 </div>
                             </div>
                             <div class="text-right text-inherit"><a href="#" class="text-muted">Version 3.0.0</a></div>
