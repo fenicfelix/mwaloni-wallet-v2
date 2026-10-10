@@ -23,7 +23,7 @@
         <div class="col-md-3">
             <div class="card tilebox-one">
                 <div class="card-body">
-                    <i class="uil-analysis"></i>
+                    <i class="uil-bill"></i>
                     <h6 class="text-uppercase mt-0">Total Spent</h6>
                     <h2 class="my-2"><span class="sub-text">KES</span> {{ number_format($transactionMetrics->total_spent ??
                         0) }}</h2>
@@ -33,7 +33,7 @@
         <div class="col-md-3">
             <div class="card tilebox-one">
                 <div class="card-body">
-                    <i class="uil-analysis"></i>
+                    <i class="uil-briefcase-alt"></i>
                     <h6 class="text-uppercase mt-0">Account Balance</h6>
                     <h2 class="my-2"><span class="sub-text">KES</span> {{ number_format($analytics['account_balance'] ??
                         0, 2) }}</h2>
@@ -44,7 +44,7 @@
         <div class="col-md-3">
             <div class="card tilebox-one">
                 <div class="card-body">
-                    <i class="uil-analysis"></i>
+                    <i class="uil-check"></i>
                     <h6 class="text-uppercase mt-0">Successful Transactions</h6>
                     <h2 class="my-2"><span class="sub-text">KES</span> {{ number_format($transactionMetrics->successful_transactions ??
                         0, 2) }}</h2>
@@ -53,9 +53,9 @@
         </div>
 
         <div class="col-md-3">
-            <div class="card tilebox-one">
+            <div class="card text-bg-warning tilebox-one">
                 <div class="card-body">
-                    <i class="uil-analysis"></i>
+                    <i class="mdi mdi-spin mdi-loading text-white font-24"></i>
                     <h6 class="text-uppercase mt-0">Incomplete Transactions</h6>
                     <h2 class="my-2"><span class="sub-text">KES</span> {{ number_format($transactionMetrics->pending_transactions ??
                         0, 2) }}</h2>
@@ -77,7 +77,7 @@
         <div class="col-md-3">
             <div class="card tilebox-one">
                 <div class="card-body">
-                    <i class="uil-analysis"></i>
+                    <i class="uil-bill"></i>
                     <h6 class="text-uppercase mt-0">Total SMS Cost</h6>
                     <h2 class="my-2"><span class="sub-text">KES</span> {{
                         number_format($transactionMetrics->total_sms_cost ??
@@ -89,7 +89,7 @@
         <div class="col-md-3">
             <div class="card tilebox-one">
                 <div class="card-body">
-                    <i class="uil-analysis"></i>
+                    <i class="uil-dollar-sign"></i>
                     <h6 class="text-uppercase mt-0">Total Revenue</h6>
                     <h2 class="my-2"><span class="sub-text">KES</span> {{
                         number_format($transactionMetrics->total_revenue ??
@@ -101,7 +101,7 @@
         <div class="col-md-3">
             <div class="card text-bg-success tilebox-one">
                 <div class="card-body">
-                    <i class="uil-analysis"></i>
+                    <i class="uil-money-withdraw"></i>
                     <h6 class="text-uppercase mt-0">Available Revenue</h6>
                     <h2 class="my-2"><span class="sub-text">KES</span> {{
                         number_format($transactionMetrics->available_revenue ??
