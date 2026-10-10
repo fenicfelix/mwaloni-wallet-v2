@@ -76,7 +76,7 @@ class PreferencesComponent extends Component
     }
 
     #[On('editFunction')]
-    public function editFunction($id)
+    public function editFunction(int $id)
     {
         $this->resetValues();
         $this->formId = $id;

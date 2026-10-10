@@ -24,7 +24,7 @@ class RolesComponent extends Component
 
     public ?array $formData = [];
 
-    public $permissionTypes;
+    public mixed $permissionTypes = null;
 
     public ?array $permissionsConfig = [];
 
@@ -122,7 +122,7 @@ class RolesComponent extends Component
         $this->add = !$this->add;
     }
 
-    public function editFunction($id)
+    public function editFunction(int $id)
     {
         $this->formId = $id;
 

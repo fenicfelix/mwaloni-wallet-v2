@@ -64,7 +64,7 @@ class ServicesComponent extends Component
     }
 
     #[On('withdrawFees')]
-    public function withdrawFees($formId)
+    public function withdrawFees(int $formId)
     {
         $this->resetValues();
         $this->formId = $formId;
@@ -167,7 +167,7 @@ class ServicesComponent extends Component
     }
 
     #[On('editFunction')]
-    public function editFunction($formId)
+    public function editFunction(int $formId)
     {
         $this->resetValues();
         $this->add = true;

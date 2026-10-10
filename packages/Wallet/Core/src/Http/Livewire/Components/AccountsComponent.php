@@ -228,7 +228,7 @@ class AccountsComponent extends Component
     }
 
     #[On("updateWithheldAmount")]
-    public function updateWithheldAmount($id)
+    public function updateWithheldAmount(int $id)
     {
         $this->resetValues();
         $this->content_title = "Update Withheld Amount";
