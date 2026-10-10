@@ -15,7 +15,7 @@ class ApiController extends Controller
 {
     use MwaloniWallet;
 
-    public function __construct(protected MakePaymentService $MakePaymentService) {}
+    public function __construct(protected MakePaymentService $makePaymentService) {}
 
     /* -----------------------------------------------------------------
      | BALANCE
@@ -92,7 +92,7 @@ class ApiController extends Controller
                 return $this->error('Service not found');
             }
 
-            $transaction = $this->MakePaymentService->sendMoney($request, $service);
+            $transaction = $this->makePaymentService->sendMoney($request, $service);
 
             return $this->success(['message' => 'Cashout was successful.', 'reference' => $transaction->identifier]);
         } catch (\DomainException $e) {
@@ -148,7 +148,7 @@ class ApiController extends Controller
 
     protected function resolveService(string $serviceId): ?Service
     {
-        return $this->MakePaymentService
+        return $this->makePaymentService
             ->resolveService($serviceId, auth()->user());
     }
 

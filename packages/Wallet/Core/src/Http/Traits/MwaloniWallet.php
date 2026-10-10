@@ -74,7 +74,7 @@ trait MwaloniWallet
         return $order_number;
     }
 
-    function getPaymentChannel($account, $channel)
+    function getPaymentChannel(Account $account, string $channel)
     {
         $channel_slug = "";
         if (in_array($channel, ["ift", "eft", "rtgs", "pesalink"])) {

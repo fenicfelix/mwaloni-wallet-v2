@@ -72,6 +72,7 @@ class UsersTable extends DataTableComponent
                         $html .= '<a href="#" data-toggle="dropdown"><img height="16" src="' . asset('themes/agile/img/icon_more.png') . '" alt=""></a>';
                         $html .= '<div class="dropdown-menu bg-light" role="menu">';
                         $html .= '<a href="#" class="dropdown-item" wire:click="showApiDetails(' . $row->id . ')">Get API Details</a>';
+                        $html .= '<a href="#" class="dropdown-item" wire:click="viewFunction(' . $row->id . ')">View</a>';
                         $html .= '<a href="#" class="dropdown-item" wire:click="editFunction(' . $row->id . ')">Edit</a>';
                         $html .= '<a href="#" class="dropdown-item"wire:click="resetPasswordFunction(' . $row->id . ')">Reset Password</a>';
                         $html .= '<a href="#" class="dropdown-item"wire:click="deleteAccountFunction(' . $row->id . ')">Delete Account</a>';
@@ -85,22 +86,27 @@ class UsersTable extends DataTableComponent
         return $columns;
     }
 
-    public function showApiDetails($form_id)
+    public function viewFunction(int $form_id)
+    {
+        $this->dispatch('viewFunction', $form_id);
+    }
+
+    public function showApiDetails(int $form_id)
     {
         $this->dispatch('generateApiDetails', $form_id);
     }
 
-    public function editFunction($form_id)
+    public function editFunction(int $form_id)
     {
         $this->dispatch('editFunction', $form_id);
     }
 
-    public function resetPasswordFunction($form_id)
+    public function resetPasswordFunction(int $form_id)
     {
         $this->dispatch('resetPasswordFunction', $form_id);
     }
 
-    public function deleteAccountFunction($form_id)
+    public function deleteAccountFunction(int $form_id)
     {
         $this->dispatch('deleteAccountFunction', $form_id);
     }

@@ -1,0 +1,53 @@
+html[data-layout="topnav"] .topnav {
+    background: #3b3b3f;
+}
+html[data-layout="topnav"] .topnav .nav-item .nav-link,
+html[data-layout="topnav"] .topnav .nav-item>a {
+    color: #bbbcc0;
+}
+.bg-brand {
+    background-color: rgb(6 107 91);
+}
+span.guest-logo img {
+    height: 60px;
+}
+a.nav-link.arrow-none.active {
+    color: #f9fafd!important;
+}
+a {
+    color: rgb(6 107 91);
+}
+.active>.page-link,
+.page-link.active {
+    background-color: rgb(6 107 91);
+    border-color: rgb(6 107 91);
+}
+.sub-text {
+    font-size: 0.75rem;
+}
+.table-action-dropdown {
+    position: absolute;
+}
+.profile.text-white {
+    color: #fff!important;
+}
+
+html[data-layout="topnav"] .topnav .nav-item .nav-link:hover,
+html[data-layout="topnav"] .topnav .nav-item>a:hover {
+    color: #e7e3e3 !important;
+}
+
+.mb-sm-2 {
+    margin-bottom: 0rem !important;
+}
+
+input[data-switch]:checked+label {
+    background-color: var(--ct-primary)!important;
+}
+
+/* // mb-sm-2 for small devices */
+@media (max-width: 576px) {
+    .mb-sm-2 {
+        margin-bottom: 0.75rem !important;
+    }
+}

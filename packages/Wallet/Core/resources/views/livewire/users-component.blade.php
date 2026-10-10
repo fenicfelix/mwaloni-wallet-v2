@@ -57,6 +57,7 @@
             </div>
         </div>
     </div>
+    @elseif($view)
     @elseif($displayApiDetails)
     <div class="mt-4 padding">
         <div class="row">
