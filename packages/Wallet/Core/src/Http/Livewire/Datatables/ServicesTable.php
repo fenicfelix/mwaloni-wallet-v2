@@ -33,7 +33,7 @@ class ServicesTable extends DataTableComponent
 
     public function columns(): array
     {
-        return [
+        $columns = [
             Column::make('Id', 'id')
                 ->sortable()
                 ->format(fn() => $this->counter++),
@@ -67,11 +67,15 @@ class ServicesTable extends DataTableComponent
                 ->format(
                     fn($value, $row, Column $column) => $row->sms_charges
                 ),
-            Column::make("Active", "active")
+            Column::make("Status", "active")
                 ->sortable()
-                ->format(
-                    fn($value) =>  '<span class="badge badge-circle xs text-' . ($value ? 'success' : 'danger') . ' mx-1"></span>'
-                )->html(),
+                ->format(function ($value) {
+                    if (! $value) {
+                        return '<span class="badge bg-danger">Inactive</span>';
+                    }
+
+                    return '<span class="badge bg-success">Active</span>';
+                })->html(),
         ];
 
         $columns[] = Column::make('Action')
