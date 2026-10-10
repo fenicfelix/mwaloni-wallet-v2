@@ -16,8 +16,8 @@ use Wallet\Core\Http\Livewire\Components\UsersComponent;
 
 Route::middleware(['auth', 'web'])->group(function () {
     // Route::get('/dashboard', DashboardComponent::class)->name('dashboard');
-    Route::get('/', DashboardComponent::class)->name("dashboard");
-    Route::redirect('/dashboard', '/');
+    Route::get('/', DashboardComponent::class)->name("home");
+    Route::redirect('/home', '/');
 
     Route::get('users', UsersComponent::class)->name('users');
     Route::get('clients', ClientsComponent::class)->name('clients');

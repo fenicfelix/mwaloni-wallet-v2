@@ -5,8 +5,8 @@
             <div class="collapse navbar-collapse" id="topnav-menu-content">
                 <ul class="navbar-nav">
                     <li class="nav-item dropdown">
-                        <a class="nav-link arrow-none" href="{{ route('dashboard') }}" role="button">
-                            <i class="uil-home-alt"></i>Dashboard
+                        <a class="nav-link arrow-none" href="{{ route('home') }}" role="button">
+                            <i class="uil-home-alt"></i>Home
                         </a>
                     </li>
                     <li class="nav-item dropdown">
