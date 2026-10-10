@@ -1,53 +1,62 @@
-<!-- ############ Content START-->
-<div class="flex">
-    <!-- ############ Main START-->
-    <div class="page-container">
-        <div class="page-title padding pb-0 ">
-            <span class="float-left"><h2 class="text-md mb-0 headliner">{{ $content_title }}</h2></span>
+<!-- ############ Main START-->
+<div class="page-container">
+    <div class="row">
+        <div class="col-12">
+            <div class="page-title-box">
+                <h4 class="page-title">{{ $content_title }}</h4>
+            </div>
         </div>
-        <div class="mt-4"></div>
-        <!-- *************************** Top Analytics Data ************************** -->
-        
-        <div class="padding">
-            <div class="row">
-               <div class="col-sm-12 col-md-6 d-table h-100">
-                  <div class="card card-border">
-                     <div class="card-body">
+    </div>
+
+    <div class="padding">
+        <div class="row">
+            <div class="col-sm-12 col-md-6 d-table h-100">
+                <div class="card card-border">
+                    <div class="card-body">
                         <form wire:submit.prevent="{{ ($pay_offline) ? 'completePaymentOffline' : 'store'}}">
                             <div class="form-group row">
                                 <label class="col-sm-4 col-form-label font-weight-bold">Order Number</label>
-                                <label class="col-sm-8 col-form-label transaction-label">{{ ucwords(strtolower($transaction->order_number)) ?? 'Not Provided' }}</label>
+                                <label class="col-sm-8 col-form-label transaction-label">{{
+                                    ucwords(strtolower($transaction->order_number)) ?? 'Not Provided' }}</label>
                             </div>
                             <div class="form-group row">
                                 <label class="col-sm-4 col-form-label font-weight-bold">Account Name</label>
-                                <label class="col-sm-8 col-form-label transaction-label">{{ ucwords(strtolower($transaction->account->name)) ?? 'Not Provided' }}</label>
+                                <label class="col-sm-8 col-form-label transaction-label">{{
+                                    ucwords(strtolower($transaction->account->name)) ?? 'Not Provided' }}</label>
                             </div>
                             <div class="form-group row">
                                 <label class="col-sm-4 col-form-label font-weight-bold">Service Name</label>
-                                <label class="col-sm-8 col-form-label transaction-label">{{ ($transaction->service) ?  ucwords(strtolower($transaction->service->name)) : 'Not Provided' }}</label>
+                                <label class="col-sm-8 col-form-label transaction-label">{{ ($transaction->service) ?
+                                    ucwords(strtolower($transaction->service->name)) : 'Not Provided' }}</label>
                             </div>
                             <div class="form-group row">
                                 <label class="col-sm-4 col-form-label font-weight-bold">Payment Channel</label>
-                                <label class="col-sm-8 col-form-label transaction-label">{{$transaction->paymentChannel->name }}</label>
+                                <label
+                                    class="col-sm-8 col-form-label transaction-label">{{$transaction->paymentChannel->name
+                                    }}</label>
                             </div>
                             @if ($edit)
-                                <div class="form-group row">
-                                    <label class="col-sm-4 col-form-label font-weight-bold">Requested Amount</label>
-                                    <input type="number" class="col-sm-8 md-input" wire:model.defer="formData.requested_amount" name="requested_amount" />
-                                </div>
-                                <div class="form-group row">
-                                    <label class="col-sm-4 col-form-label font-weight-bold">Account Number</label>
-                                    <input type="number" class="col-sm-8 md-input" wire:model.defer="formData.account_number" name="requested_amount" />
-                                </div>
+                            <div class="form-group row">
+                                <label class="col-sm-4 col-form-label font-weight-bold">Requested Amount</label>
+                                <input type="number" class="col-sm-8 form-control"
+                                    wire:model.defer="formData.requested_amount" name="requested_amount" />
+                            </div>
+                            <div class="form-group row">
+                                <label class="col-sm-4 col-form-label font-weight-bold">Account Number</label>
+                                <input type="number" class="col-sm-8 form-control"
+                                    wire:model.defer="formData.account_number" name="requested_amount" />
+                            </div>
                             @elseif($pay_offline)
-                                <div class="form-group row">
-                                    <label class="col-sm-4 col-form-label font-weight-bold">Receipt Number</label>
-                                    <input type="text" class="col-sm-8 md-input" wire:model.defer="formData.receipt_number" name="receipt_number" />
-                                </div>
-                                <div class="form-group row">
-                                    <label class="col-sm-4 col-form-label font-weight-bold">Account Name</label>
-                                    <input type="text" class="col-sm-8 md-input" wire:model.defer="formData.account_name" name="account_name" />
-                                </div>
+                            <div class="form-group row">
+                                <label class="col-sm-4 col-form-label font-weight-bold">Receipt Number</label>
+                                <input type="text" class="col-sm-8 form-control" wire:model.defer="formData.receipt_number"
+                                    name="receipt_number" />
+                            </div>
+                            <div class="form-group row">
+                                <label class="col-sm-4 col-form-label font-weight-bold">Account Name</label>
+                                <input type="text" class="col-sm-8 form-control" wire:model.defer="formData.account_name"
+                                    name="account_name" />
+                            </div>
                             @endif
                             <div class="mt-4">
                                 <x-wallet::button class="w-sm" variant="danger" wire:click.prevent="backAction">
@@ -58,12 +67,10 @@
                                 </x-wallet::button>
                             </div>
                         </form>
-                     </div>
-                  </div>
-               </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
-    <!-- ############ Main END-->
 </div>
-<!-- ############ Content END-->
+<!-- ############ Main END-->

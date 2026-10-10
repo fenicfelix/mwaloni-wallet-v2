@@ -8,12 +8,10 @@ use Rappasoft\LaravelLivewireTables\DataTableComponent;
 use Rappasoft\LaravelLivewireTables\Views\Column;
 use Wallet\Core\Models\Transaction;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Support\Facades\Auth;
 use Maatwebsite\Excel\Facades\Excel;
 use Rappasoft\LaravelLivewireTables\Views\Filters\DateRangeFilter;
 use Wallet\Core\Http\Enums\TransactionStatus;
 use Wallet\Core\Http\Exports\TransactionsExport;
-use Wallet\Core\Models\Account;
 use Wallet\Core\Models\Client;
 
 class TransactionsTable extends DataTableComponent
@@ -25,24 +23,27 @@ class TransactionsTable extends DataTableComponent
     {
         $this->setPrimaryKey('id');
         $this->setDefaultSort('id', 'desc');
+        // $this->setTableAttributes([
+        //     'class' => 'table-theme table-row v-middle',
+        // ]);
         $this->setTableAttributes([
-            'class' => 'table-theme table-row v-middle',
+            'class' => 'border table-bordered display',
         ]);
-        $this->setFilterPillsItemAttributes([
-            'class' => 'badge badge-pill badge-dark d-inline-flex align-items-center', // Add these classes to the filter pills item
-            'default-colors' => false, // Do not output the default colors
-            'default-styling' => true // Output the default styling
-        ]);
-        $this->setSortingPillsItemAttributes([
-            'class' => 'badge badge-pill badge-dark d-inline-flex align-items-center', // Add these classes to the sorting pills item
-            'default-colors' => false, // Do not output the default colors
-            'default-styling' => true // Output the default styling
-        ]);
-        $this->setBulkActionsRowButtonAttributes([
-            'class' => 'btn btn-sm btn-outline-dark',
-            'icon' => 'fas fa-ellipsis-v',
-            'label' => 'Actions',
-        ]);
+        // $this->setFilterPillsItemAttributes([
+        //     'class' => 'badge badge-pill badge-dark d-inline-flex align-items-center', // Add these classes to the filter pills item
+        //     'default-colors' => false, // Do not output the default colors
+        //     'default-styling' => true // Output the default styling
+        // ]);
+        // $this->setSortingPillsItemAttributes([
+        //     'class' => 'badge badge-pill badge-dark d-inline-flex align-items-center', // Add these classes to the sorting pills item
+        //     'default-colors' => false, // Do not output the default colors
+        //     'default-styling' => true // Output the default styling
+        // ]);
+        // $this->setBulkActionsRowButtonAttributes([
+        //     'class' => 'btn btn-sm btn-outline-dark',
+        //     'icon' => 'fas fa-ellipsis-v',
+        //     'label' => 'Actions',
+        // ]);
         $this->setFilterLayout('slide-down');
 
         $this->setBulkActions([
@@ -59,18 +60,19 @@ class TransactionsTable extends DataTableComponent
                 ->sortable()
                 ->format(fn() => $this->counter++),
 
-            Column::make("Date", "transaction_date")
+            Column::make("TRX ID", "order_number")
                 ->sortable()
+                ->searchable()
                 ->excludeFromColumnSelect()
-                ->format(
-                    fn($value) => date('d M, Y', strtotime($value))
-                ),
+                ->format(function ($value, $row) {
+                    return '<a href="#" wire:click="viewFunction(' . $row->id . ')" class="text-decoration-underline">' . $value . '</a>';
+                })->html(),
 
             Column::make("Time", "transaction_date")
-                ->excludeFromColumnSelect()
                 ->sortable()
+                ->excludeFromColumnSelect()
                 ->format(
-                    fn($value) => date('h:i A', strtotime($value))
+                    fn($value) => date('d M, Y h:i A', strtotime($value))
                 ),
 
             Column::make("Type", 'transaction_type')
@@ -100,11 +102,6 @@ class TransactionsTable extends DataTableComponent
                 ->excludeFromColumnSelect()
                 ->searchable()
                 ->sortable(),
-
-            Column::make("TRX ID", "order_number")
-                ->sortable()
-                ->searchable()
-                ->excludeFromColumnSelect(),
 
             Column::make("Receipt No.", "receipt_number")
                 ->sortable()
@@ -161,36 +158,37 @@ class TransactionsTable extends DataTableComponent
                 })
                 ->html(),
 
-            Column::make('Action')
-                ->label(
-                    function ($row, Column $column) {
-                        $html = '<div class="btn-group">';
-                        $html .= '<a href="#" data-toggle="dropdown"><img height="16" src="' . asset('themes/agile/img/icon_more.png') . '" alt=""></a>';
-                        $html .= '<div class="dropdown-menu bg-light" role="menu">';
-                        $html .= '<a href="#" class="dropdown-item" wire:click="viewFunction(' . $row->id . ')">View Details</a>';
-                        if ($row->status != TransactionStatus::SUCCESS) {
-                            // if ($row->status == TransactionStatus::FAILED) $html .= '<a href="#" class="dropdown-item" wire:click="editFunction(' . $row->id . ')">Edit Details</a>';
-                            if (in_array($row->status, TransactionStatus::retriableStatuses())) {
-                                $html .= '<a href="#" class="dropdown-item" wire:click="retryPayment(' . $row->id . ')">Retry Payment</a>';
-                            }
-                            if ($row->status == TransactionStatus::FAILED) {
-                                $html .= '<a href="#" class="dropdown-item" wire:click="paidOffline(' . $row->id . ')">Complete Offline</a>';
-                                $html .= '<a href="#" class="dropdown-item" wire:click="markAsCompleted(' . $row->id . ')">Mark As Completed</a>';
-                            }
-                            if (in_array($row->status, [TransactionStatus::SUBMITTED, TransactionStatus::FAILED])) $html .= '<a href="#" class="dropdown-item" wire:click="queryStatus(' . $row->id . ')">Query Status</a>';
-                        }
-
-                        // if ($row->status == TransactionStatus::SUCCESS) $html .= '<a href="#" class="dropdown-item" wire:click="reverse(' . $row->id . ')">Reverse</a>';
-                        $html .= '</div></div>';
-                        return $html;
-                    }
-                )
-                ->html(),
-
             Column::make("System charges", "system_charges")->deselected(),
 
             Column::make("SMS Charges", "sms_charges")->deselected(),
         ];
+
+        $columns[] = Column::make('Action')
+            ->label(
+                function ($row, Column $column) {
+                    $html = '
+                            <div class="dropdown table-action-dropdown">
+                                <a href="#" class="dropdown-toggle arrow-none card-drop" data-bs-toggle="dropdown" aria-expanded="false">
+                                    <i class="mdi mdi-dots-vertical"></i>
+                                </a>
+                                <div class="dropdown-menu dropdown-menu-end" style="">';
+                    $html .= '<a href="#" wire:click="viewFunction(' . $row->id . ')" class="dropdown-item">View Details</a>';
+                    if ($row->status != TransactionStatus::SUCCESS) {
+                        // if ($row->status == TransactionStatus::FAILED) $html .= '<a href="#" class="dropdown-item" wire:click="editFunction(' . $row->id . ')">Edit Details</a>';
+                        if (in_array($row->status, TransactionStatus::retriableStatuses())) {
+                            $html .= '<a href="#" class="dropdown-item" wire:click="retryPayment(' . $row->id . ')">Retry Payment</a>';
+                        }
+                        if ($row->status == TransactionStatus::FAILED) {
+                            $html .= '<a href="#" class="dropdown-item" wire:click="paidOffline(' . $row->id . ')">Complete Offline</a>';
+                            $html .= '<a href="#" class="dropdown-item" wire:click="markAsCompleted(' . $row->id . ')">Mark As Completed</a>';
+                        }
+                        if (in_array($row->status, [TransactionStatus::SUBMITTED, TransactionStatus::FAILED])) $html .= '<a href="#" class="dropdown-item" wire:click="queryStatus(' . $row->id . ')">Query Status</a>';
+                    }
+                    $html .= '</div></div>';
+                    return $html;
+                }
+            )
+            ->html();
 
         return $columns;
     }

@@ -2,7 +2,7 @@
 	padding: 18px 0 24px 0;
 	position: relative;
 }
-.md-input{
+.form-control{
 	background: transparent;
 	position: relative;
 	z-index: 5;
@@ -61,11 +61,11 @@
     }
 }
 
-textarea.md-input{
+textarea.form-control{
     height: auto;
 }
 
-.md-input-white{
+.form-control-white{
     &:focus,
     &.focus{
         border-color: #fff;
@@ -75,12 +75,12 @@ textarea.md-input{
     }
 }
 
-.md-input-msg{
+.form-control-msg{
     position: absolute;
     bottom: 0;
     line-height: 24px;
     font-size: 0.85em;
 }
-.md-input-msg.right{
+.form-control-msg.right{
     right: 0;
 }

@@ -4211,7 +4211,7 @@ Size
   padding: 18px 0 24px 0;
   position: relative; }
 
-.md-input {
+.form-control {
   background: transparent;
   position: relative;
   z-index: 5;
@@ -4223,22 +4223,22 @@ Size
   height: 34px;
   padding: 2px;
   color: inherit; }
-  .md-input:focus, .md-input.focus {
+  .form-control:focus, .form-control.focus {
     border-color: #137eff;
     border-bottom-width: 2px;
     padding-bottom: 1px; }
-    .md-input:focus ~ label, .md-input.focus ~ label {
+    .form-control:focus ~ label, .form-control.focus ~ label {
       color: #137eff;
       opacity: 1;
       top: 0 !important;
       font-size: 0.85em !important; }
-  .float-label .md-input ~ label {
+  .float-label .form-control ~ label {
     top: 20px;
     font-size: 1em; }
-  .float-label .md-input:not([value=""]) ~ label, .float-label .md-input:valid ~ label {
+  .float-label .form-control:not([value=""]) ~ label, .float-label .form-control:valid ~ label {
     top: 0;
     font-size: 0.85em; }
-  .md-input ~ label {
+  .form-control ~ label {
     transition: all 0.2s;
     font-size: 0.85em;
     position: absolute;
@@ -4248,30 +4248,30 @@ Size
     top: 0px;
     left: 0; }
     @media screen and (prefers-reduced-motion: reduce) {
-      .md-input ~ label {
+      .form-control ~ label {
         transition: none; } }
-  .md-input.is-invalid {
+  .form-control.is-invalid {
     border-color: #fe4d62; }
-  .md-input.is-valid {
+  .form-control.is-valid {
     border-color: #5bc146; }
-  .md-input.disabled, .md-input[disabled] {
+  .form-control.disabled, .form-control[disabled] {
     opacity: 0.5; }
 
-textarea.md-input {
+textarea.form-control {
   height: auto; }
 
-.md-input-white:focus, .md-input-white.focus {
+.form-control-white:focus, .form-control-white.focus {
   border-color: #fff; }
-  .md-input-white:focus ~ label, .md-input-white.focus ~ label {
+  .form-control-white:focus ~ label, .form-control-white.focus ~ label {
     color: #fff; }
 
-.md-input-msg {
+.form-control-msg {
   position: absolute;
   bottom: 0;
   line-height: 24px;
   font-size: 0.85em; }
 
-.md-input-msg.right {
+.form-control-msg.right {
   right: 0; }
 
 .md-check {

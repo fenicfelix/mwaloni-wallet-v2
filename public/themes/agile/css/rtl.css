@@ -165,7 +165,7 @@ body {
     margin-right: 0;
     margin-left: 8px; }
 
-.md-input ~ label {
+.form-control ~ label {
   left: auto;
   right: 0; }
 

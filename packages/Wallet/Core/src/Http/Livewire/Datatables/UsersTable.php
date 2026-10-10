@@ -68,9 +68,12 @@ class UsersTable extends DataTableComponent
             ->label(
                 function ($row, Column $column) {
                     if ($row->active == true) {
-                        $html = '<div class="btn-group">';
-                        $html .= '<a href="#" data-toggle="dropdown"><img height="16" src="' . asset('themes/agile/img/icon_more.png') . '" alt=""></a>';
-                        $html .= '<div class="dropdown-menu bg-light" role="menu">';
+                        $html = '
+                            <div class="dropdown table-action-dropdown">
+                                <a href="#" class="dropdown-toggle arrow-none card-drop" data-bs-toggle="dropdown" aria-expanded="false">
+                                    <i class="mdi mdi-dots-vertical"></i>
+                                </a>
+                                <div class="dropdown-menu dropdown-menu-end" style="">';
                         $html .= '<a href="#" class="dropdown-item" wire:click="showApiDetails(' . $row->id . ')">Get API Details</a>';
                         $html .= '<a href="#" class="dropdown-item" wire:click="viewFunction(' . $row->id . ')">View</a>';
                         $html .= '<a href="#" class="dropdown-item" wire:click="editFunction(' . $row->id . ')">Edit</a>';

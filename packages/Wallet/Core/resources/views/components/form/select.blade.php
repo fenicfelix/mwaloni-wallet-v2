@@ -8,7 +8,7 @@
 ])
 
 <div class="md-form-group float-label">
-    <select name="{{ $name }}" {{ $attributes->merge(['class' => 'md-input']) }}
+    <select name="{{ $name }}" {{ $attributes->merge(['class' => 'form-control']) }}
         @if($required) required @endif
         @if($disabled) disabled @endif
         >

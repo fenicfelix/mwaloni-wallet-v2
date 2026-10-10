@@ -1,4 +1,4 @@
-<div>
+<div class="container-fluid">
     <div class="page-title padding pb-0 ">
         <span class="float-left">
             <h2 class="text-md mb-0 headliner">{{ $content_title }}</h2>
@@ -23,7 +23,7 @@
                                         <div class="row row-sm">
                                             <div class="col-sm-12">
                                                 <div class="md-form-group float-label">
-                                                    <input wire:model="name" class="md-input" name="name" value="" required>
+                                                    <input wire:model="name" class="form-control" name="name" value="" required>
                                                     <label>Permission Name</label>
                                                 </div>
                                                 @error('name')

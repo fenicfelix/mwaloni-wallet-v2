@@ -32,7 +32,7 @@ class MessagesTable extends DataTableComponent
 
     public function columns(): array
     {
-        return [
+        $columns = [
             Column::make('Id', 'id')
                 ->sortable()
                 ->format(fn() => $this->counter++),
@@ -63,5 +63,7 @@ class MessagesTable extends DataTableComponent
                     fn($value) =>  '<span class="badge badge-circle xs text-' . ($value ? 'success' : 'danger') . ' mx-1"></span>'
                 )->html(),
         ];
+        
+        return $columns;
     }
 }

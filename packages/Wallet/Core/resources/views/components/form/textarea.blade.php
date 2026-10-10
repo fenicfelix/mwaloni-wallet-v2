@@ -7,7 +7,7 @@
 ])
 
 <div class="md-form-group float-label">
-    <textarea name="{{ $name }}" rows="{{ $rows }}" {{ $attributes->merge(['class' => 'md-input']) }}
+    <textarea name="{{ $name }}" rows="{{ $rows }}" {{ $attributes->merge(['class' => 'form-control']) }}
         @if($required) required @endif
         @if($disabled) disabled @endif
     ></textarea>

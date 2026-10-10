@@ -1,4 +1,4 @@
-<div>
+<div class="container-fluid">
     <div class="page-title padding pb-0 ">
         <span class="float-left">
             <h2 class="text-md mb-0 headliner">{{ $content_title }}</h2>
@@ -25,7 +25,7 @@
                                         <div class="row row-sm">
                                             <div class="col-sm-12">
                                                 <div class="md-form-group float-label">
-                                                    <input type="password" class="md-input"
+                                                    <input type="password" class="form-control"
                                                         wire:model="current_password" name="current_password" value=""
                                                         required>
                                                     <label>Current Password</label>
@@ -36,7 +36,7 @@
                                             </div>
                                             <div class="col-sm-12">
                                                 <div class="md-form-group float-label">
-                                                    <input type="password" class="md-input" wire:model="new_password"
+                                                    <input type="password" class="form-control" wire:model="new_password"
                                                         name="new_password" value="" required>
                                                     <label>New Password</label>
                                                 </div>
@@ -46,7 +46,7 @@
                                             </div>
                                             <div class="col-sm-12">
                                                 <div class="md-form-group float-label">
-                                                    <input type="password" class="md-input"
+                                                    <input type="password" class="form-control"
                                                         wire:model="confirm_password" name="confirm_password" value=""
                                                         required>
                                                     <label>Confirm Password</label>

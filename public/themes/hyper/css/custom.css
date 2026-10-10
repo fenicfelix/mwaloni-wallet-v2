@@ -12,15 +12,15 @@ span.guest-logo img {
     height: 60px;
 }
 a.nav-link.arrow-none.active {
-    color: #f9fafd!important;
+    color: #FFFFFF!important;
 }
 a {
     color: rgb(6 107 91);
 }
 .active>.page-link,
 .page-link.active {
-    background-color: rgb(6 107 91);
-    border-color: rgb(6 107 91);
+    background-color: black;
+    border-color: black;
 }
 .sub-text {
     font-size: 0.75rem;
@@ -58,6 +58,30 @@ input[data-switch]:checked+label {
 
 .b-t {
     border-top: 1px solid rgba(135, 150, 165, 0.1);
+}
+
+.transaction-label {
+    border-bottom: solid 1px #a8afbb;
+}
+
+.col-form-label {
+    line-height: 2.5;
+}
+
+.content-fluid {
+    max-width: 85%;
+    margin-right: auto;
+    margin-left: auto;
+    --ct-gutter-x: 1.5rem;
+    --ct-gutter-y: 0;
+    padding-right: 1.5rem;
+    padding-left: 1.5rem;
+}
+
+@media (min-width: 992px) {
+    .container-fluid {
+        max-width: 95%;
+    }
 }
 
 /* // mb-sm-2 for small devices */

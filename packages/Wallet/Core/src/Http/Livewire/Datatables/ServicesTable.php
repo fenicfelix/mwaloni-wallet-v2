@@ -72,29 +72,35 @@ class ServicesTable extends DataTableComponent
                 ->format(
                     fn($value) =>  '<span class="badge badge-circle xs text-' . ($value ? 'success' : 'danger') . ' mx-1"></span>'
                 )->html(),
-            Column::make('Action')
-                ->label(
-                    function ($row, Column $column) {
-                        $userPermission = Auth::user();
-                        $html = '<div class="btn-group">';
-                        $html .= '<a href="#" data-toggle="dropdown"><img height="16" src="' . asset('themes/agile/img/icon_more.png') . '" alt=""></a>';
-                        $html .= '<div class="dropdown-menu bg-light" role="menu">';
-                        $html .= '<a href="#" class="dropdown-item" data-toggle="modal" wire:click="editFunction(' . $row->id . ')">Edit</a>';
-                        $html .= '<a href="#" wire:click="withdrawFees(' . $row->id . ')"class="dropdown-item reset-2fa">Withdraw Fees</a>';
-                        $html .= '</div></div>';
-                        return $html;
-                    }
-                )
-                ->html(),
         ];
+
+        $columns[] = Column::make('Action')
+            ->label(
+                function ($row, Column $column) {
+                    $userPermission = Auth::user();
+                    $html = '
+                            <div class="dropdown table-action-dropdown">
+                                <a href="#" class="dropdown-toggle arrow-none card-drop" data-bs-toggle="dropdown" aria-expanded="false">
+                                    <i class="mdi mdi-dots-vertical"></i>
+                                </a>
+                                <div class="dropdown-menu dropdown-menu-end" style="">';
+                    $html .= '<a href="#" class="dropdown-item" data-toggle="modal" wire:click="editFunction(' . $row->id . ')">Edit</a>';
+                    $html .= '<a href="#" wire:click="withdrawFees(' . $row->id . ')"class="dropdown-item reset-2fa">Withdraw Fees</a>';
+                    $html .= '</div></div>';
+                    return $html;
+                }
+            )
+            ->html();
+
+        return $columns;
     }
 
-    public function editFunction($form_id)
+    public function editFunction(int $form_id)
     {
         $this->dispatch('editFunction', $form_id);
     }
 
-    public function withdrawFees($form_id)
+    public function withdrawFees(int $form_id)
     {
         $this->dispatch('withdrawFees', $form_id);
     }
