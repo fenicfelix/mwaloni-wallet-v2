@@ -117,12 +117,11 @@ class AccountsTable extends DataTableComponent
             ->label(
                 function ($row, Column $column) {
                     $userPermission = Auth::user();
-                    $html = '
-                            <div class="dropdown table-action-dropdown">
+                $html = '<div class="dropdown">
                                 <a href="#" class="dropdown-toggle arrow-none card-drop" data-bs-toggle="dropdown" aria-expanded="false">
                                     <i class="mdi mdi-dots-vertical"></i>
                                 </a>
-                                <div class="dropdown-menu dropdown-menu-end" style="">';
+                        <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">';
                     if ($row->active) $html .= '<a href="#" class="dropdown-item" wire:click="editFunction(' . $row->id . ')">Edit</a>';
                     if ($row->active) $html .= '<a href="#" class="dropdown-item" wire:click="deactivateAccount(' . $row->id . ', `deactivate`)">Deactivate</a>';
                     if (!$row->active) $html .= '<a href="#" class="dropdown-item" wire:click="deactivateAccount(' . $row->id . ', `activate`)">Activate</a>';

@@ -52,12 +52,11 @@ class RolesTable extends DataTableComponent
         $columns[] = Column::make('Action')
             ->label(
                 function ($row, Column $column) {
-                    $html = '
-                            <div class="dropdown table-action-dropdown">
+                $html = '<div class="dropdown">
                                 <a href="#" class="dropdown-toggle arrow-none card-drop" data-bs-toggle="dropdown" aria-expanded="false">
                                     <i class="mdi mdi-dots-vertical"></i>
                                 </a>
-                                <div class="dropdown-menu dropdown-menu-end" style="">';
+                        <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">';
                     $html .= '<a href="#" class="dropdown-item" wire:click="editFunction(' . $row->id . ')">Edit</a>';
                     $html .= '</div></div>';
                     return $html;

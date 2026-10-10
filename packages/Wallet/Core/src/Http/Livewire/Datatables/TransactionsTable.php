@@ -166,7 +166,28 @@ class TransactionsTable extends DataTableComponent
         $columns[] = Column::make('Action')
             ->label(
                 function ($row, Column $column) {
-                    $html = '
+                    $html = '<div class="dropdown">
+                                <a href="#" class="dropdown-toggle arrow-none card-drop" data-bs-toggle="dropdown" aria-expanded="false">
+                                    <i class="mdi mdi-dots-vertical"></i>
+                                </a>
+                        <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">';
+                    $html .= '<a href="#" wire:click="viewFunction(' . $row->id . ')" class="dropdown-item">View Details</a>';
+                    if ($row->status != TransactionStatus::SUCCESS) {
+                        // if ($row->status == TransactionStatus::FAILED) $html .= '<a href="#" class="dropdown-item" wire:click="editFunction(' . $row->id . ')">Edit Details</a>';
+                        if (in_array($row->status, TransactionStatus::retriableStatuses())) {
+                            $html .= '<a href="#" class="dropdown-item" wire:click="retryPayment(' . $row->id . ')">Retry Payment</a>';
+                        }
+                        if ($row->status == TransactionStatus::FAILED) {
+                            $html .= '<a href="#" class="dropdown-item" wire:click="paidOffline(' . $row->id . ')">Complete Offline</a>';
+                            $html .= '<a href="#" class="dropdown-item" wire:click="markAsCompleted(' . $row->id . ')">Mark As Completed</a>';
+                        }
+                        if (in_array($row->status, [TransactionStatus::SUBMITTED, TransactionStatus::FAILED])) $html .= '<a href="#" class="dropdown-item" wire:click="queryStatus(' . $row->id . ')">Query Status</a>';
+                    }
+
+                    $html .= '</div></div>';
+
+                    return $html;
+                    /*$html = '
                             <div class="dropdown table-action-dropdown">
                                 <a href="#" class="dropdown-toggle arrow-none card-drop" data-bs-toggle="dropdown" aria-expanded="false">
                                     <i class="mdi mdi-dots-vertical"></i>
@@ -185,7 +206,7 @@ class TransactionsTable extends DataTableComponent
                         if (in_array($row->status, [TransactionStatus::SUBMITTED, TransactionStatus::FAILED])) $html .= '<a href="#" class="dropdown-item" wire:click="queryStatus(' . $row->id . ')">Query Status</a>';
                     }
                     $html .= '</div></div>';
-                    return $html;
+                    return $html;*/
                 }
             )
             ->html();
