@@ -38,7 +38,7 @@
                                             wire:click="addFunction">Cancel</button>
                                         <button type="submit" class="btn btn-dark btn-rounded w-sm">Submit</button>
                                         <span class="d-custom-none">
-                                            <img src="{{ asset('themes/agile/img/working.gif') }}" width="20" alt=""> <small>please wait...</small>
+                                            <img src="{{ asset('assets/themes/agile/img/working.gif') }}" width="20" alt=""> <small>please wait...</small>
                                         </span>
                                     </div>
                                 </form>

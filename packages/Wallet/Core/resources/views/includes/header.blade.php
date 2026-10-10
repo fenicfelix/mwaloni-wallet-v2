@@ -13,29 +13,29 @@
     <meta name="developer" content="Naivas eCommerce Technology Team">
 
     <!-- App favicon -->
-    <link rel="shortcut icon" href="{{ asset('themes/hyper/images/favicon.png') }}">
+    <link rel="shortcut icon" href="{{ asset('assets/images/favicon.png') }}">
 
     <!-- Plugin css -->
-    <link href="{{ asset('themes/hyper/vendor/daterangepicker/daterangepicker.css') }}" rel="stylesheet" type="text/css">
-    <link href="{{ asset('themes/hyper/vendor/jsvectormap/jsvectormap.min.css') }}" rel="stylesheet" type="text/css">
+    <link href="{{ asset('assets/vendor/daterangepicker/daterangepicker.css') }}" rel="stylesheet" type="text/css">
+    <link href="{{ asset('assets/vendor/jsvectormap/jsvectormap.min.css') }}" rel="stylesheet" type="text/css">
 
     <!-- Theme Config Js -->
-    <script src="{{ asset('themes/hyper/js/hyper-config.js') }}"></script>
+    <script src="{{ asset('assets/js/hyper-config.js') }}"></script>
 
     <!-- Vendor css -->
-    <link href="{{ asset('themes/hyper/css/vendor.min.css') }}" rel="stylesheet" type="text/css" />
+    <link href="{{ asset('assets/css/vendor.min.css') }}" rel="stylesheet" type="text/css" />
 
     <!-- Plugin css -->
-    <link rel="stylesheet" href="{{ asset('themes/hyper/vendor/jquery-toast-plugin/jquery.toast.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('assets/vendor/jquery-toast-plugin/jquery.toast.min.css') }}">
 
     <!-- App css -->
-    <link href="{{ asset('themes/hyper/css/app.min.css') }}" rel="stylesheet" type="text/css" id="app-style" />
+    <link href="{{ asset('assets/css/app.min.css') }}" rel="stylesheet" type="text/css" id="app-style" />
 
     <!-- Icons css -->
-    <link href="{{ asset('themes/hyper/css/unicons/css/unicons.css') }}" rel="stylesheet" type="text/css" />
-    <link href="{{ asset('themes/hyper/css/remixicon/remixicon.css') }}" rel="stylesheet" type="text/css" />
-    <link href="{{ asset('themes/hyper/css/mdi/css/materialdesignicons.min.css') }}" rel="stylesheet" type="text/css" />
+    <link href="{{ asset('assets/css/unicons/css/unicons.css') }}" rel="stylesheet" type="text/css" />
+    <link href="{{ asset('assets/css/remixicon/remixicon.css') }}" rel="stylesheet" type="text/css" />
+    <link href="{{ asset('assets/css/mdi/css/materialdesignicons.min.css') }}" rel="stylesheet" type="text/css" />
 
     {{-- Custom css --}}
-    <link href="{{ asset('themes/hyper/css/custom.css') }}" rel="stylesheet" type="text/css" id="app-style" />
+    <link href="{{ asset('assets/css/custom.css') }}" rel="stylesheet" type="text/css" id="app-style" />
 </head>

@@ -20,7 +20,7 @@
 
                         <!-- Logo -->
                         <div class="card-header p-0 pt-4 text-center bg-transparent">
-                            <span class="guest-logo"><img src="{{ asset('assets/images/logo.webp') }}"
+                            <span class="guest-logo"><img src="{{ asset('assets/assets/images/logo.webp') }}"
                                     alt="logo"></span>
                         </div>
 

@@ -1,5 +1,5 @@
 <!-- Toastr -->
-<script src="{{ asset('themes/agile/libs/toastr/toastr.min.js') }}"></script>
+<script src="{{ asset('assets/themes/agile/libs/toastr/toastr.min.js') }}"></script>
 <script>
     window.addEventListener('alert', ({
 		detail: {

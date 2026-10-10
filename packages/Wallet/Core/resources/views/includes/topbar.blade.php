@@ -7,20 +7,20 @@
                 <!-- Logo light -->
                 <a href="{{ route('dashboard') }}" class="logo-light">
                     <span class="logo-lg">
-                        <img src="{{ asset('themes/hyper/images/mwaloni_logo_white.png') }}" alt="logo">
+                        <img src="{{ asset('assets/images/mwaloni_logo_white.png') }}" alt="logo">
                     </span>
                     <span class="logo-sm">
-                        <img src="{{ asset('themes/hyper/images/mwaloni_logo_white.png') }}" alt="small logo">
+                        <img src="{{ asset('assets/images/mwaloni_logo_white.png') }}" alt="small logo">
                     </span>
                 </a>
 
                 <!-- Logo Dark -->
                 <a href="{{ route('dashboard') }}" class="logo-dark">
                     <span class="logo-lg">
-                        <img src="{{ asset('themes/hyper/images/mwaloni_logo.png') }}" alt="dark logo">
+                        <img src="{{ asset('assets/images/mwaloni_logo.png') }}" alt="dark logo">
                     </span>
                     <span class="logo-sm">
-                        <img src="{{ asset('themes/hyper/images/mwaloni_logo.png') }}" alt="small logo">
+                        <img src="{{ asset('assets/images/mwaloni_logo.png') }}" alt="small logo">
                     </span>
                 </a>
             </div>

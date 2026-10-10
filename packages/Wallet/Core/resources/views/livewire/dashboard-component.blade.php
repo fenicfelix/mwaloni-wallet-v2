@@ -138,7 +138,7 @@
         console.log(window.dashboardChartData.values);
     </script>
 
-    <script src="{{ asset('themes/hyper/vendor/apexcharts/apexcharts.min.js') }}"></script>
-    <script src="{{ asset('themes/hyper/js/dashboard.js?v=0.0.3') }}"></script>
+    <script src="{{ asset('assets/vendor/apexcharts/apexcharts.min.js') }}"></script>
+    <script src="{{ asset('assets/js/dashboard.js?v=0.0.3') }}"></script>
 @endpush    
 @endonce

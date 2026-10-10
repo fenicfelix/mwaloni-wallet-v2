@@ -4,7 +4,7 @@
     <a href="#" class="navbar-brand">
     	<!-- brand -->
         <a href="#" class="navbar-brand">
-            <img src="{{ asset('themes/agile/img/mwaloni_logo.png') }}" alt="{{ config('app_name') }} Logo">
+            <img src="{{ asset('assets/themes/agile/img/mwaloni_logo.png') }}" alt="{{ config('app_name') }} Logo">
         </a>
         <!-- / brand -->
     </a>

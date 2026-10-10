@@ -1,14 +1,14 @@
 <!-- Vendor js -->
-<script src="{{ asset('themes/hyper/js/vendor.min.js') }}"></script>
+<script src="{{ asset('assets/js/vendor.min.js') }}"></script>
 
 <!-- App js -->
-<script src="{{ asset('themes/hyper/js/app.js') }}"></script>
+<script src="{{ asset('assets/js/app.js') }}"></script>
 
 @stack('js')
 
 <!-- Toastr js -->
-<script src="{{ asset('themes/hyper/vendor/jquery-toast-plugin/jquery.toast.min.js') }}"></script>
-<script src="{{ asset('themes/hyper/js/toastr.js') }}"></script>
+<script src="{{ asset('assets/vendor/jquery-toast-plugin/jquery.toast.min.js') }}"></script>
+<script src="{{ asset('assets/js/toastr.js') }}"></script>
 
 <!-- Sweet Alert -->
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
