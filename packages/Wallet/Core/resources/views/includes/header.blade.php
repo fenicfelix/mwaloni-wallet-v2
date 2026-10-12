@@ -37,5 +37,5 @@
     <link href="{{ asset('assets/css/mdi/css/materialdesignicons.min.css') }}" rel="stylesheet" type="text/css" />
 
     {{-- Custom css --}}
-    <link href="{{ asset('assets/css/custom.css') }}" rel="stylesheet" type="text/css" id="app-style" />
+    <link href="{{ asset('assets/css/custom.css?v=1.0.1') }}" rel="stylesheet" type="text/css" id="app-style" />
 </head>

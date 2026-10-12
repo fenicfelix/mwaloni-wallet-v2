@@ -74,24 +74,15 @@ input[data-switch]:checked+label {
     line-height: 2.5;
 }
 
-.content-fluid {
-    max-width: 85%;
-    margin-right: auto;
-    margin-left: auto;
-    --ct-gutter-x: 1.5rem;
-    --ct-gutter-y: 0;
-    padding-right: 1.5rem;
-    padding-left: 1.5rem;
-}
-
-@media (min-width: 992px) {
+/* Styles applied only to screens 768px wide or smaller */
+@media screen and (max-width: 768px) {
     .container-fluid {
-        max-width: 95%;
+        /* Changed from .container-fluid to match */
+        max-width: 90%;
+        padding-right: 0!important;
+        padding-left: 0!important;
     }
-}
 
-/* // mb-sm-2 for small devices */
-@media (max-width: 576px) {
     .mb-sm-2 {
         margin-bottom: 0.75rem !important;
     }

@@ -11,7 +11,7 @@
                 </div>
                 <div class="page-title-box">
                     <h4 class="mt-4 mb-0">Good day, {{ auth()->user()->first_name }} 👋</h4>
-                    <p class="text-muted font-14">Here's what's happening on eWallet today.</p>
+                    <p class="text-muted font-14">Here's your eWallet activity as of today.</p>
                 </div>
             </div>
         </div>

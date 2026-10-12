@@ -28,12 +28,12 @@
                             <div class="row">
                                 <div class="col-sm-12">
                                     <div class="row">
-                                        <div class="col-6 mb-3">
+                                        <div class="col-12 col-md-6 mb-3">
                                             <x-wallet::form.input label="Account Number"
                                                 wire:model.defer="cashoutFormData.account_number" name="account_number"
                                                 required />
                                         </div>
-                                        <div class="col-6 mb-3">
+                                        <div class="col-12 col-md-6 mb-3">
                                             <x-wallet::form.input label="Account Name"
                                                 wire:model.defer="cashoutFormData.account_name" name="account_name"
                                                 required />
@@ -42,14 +42,14 @@
                                 </div>
                             </div>
                             <div class="row">
-                                <div class="col-sm-6 mb-3">
+                                <div class="col-12 col-md-6 mb-3">
                                     <x-wallet::form.select label="Channel" wire:model.live="cashoutFormData.channel_id"
                                         :options="$payment_channels->pluck('name', 'slug')"
                                         placeholder="Choose Channel" />
                                 </div>
                                 @if (isset($cashoutFormData['channel_id']) && $cashoutFormData['channel_id'] ==
                                 "daraja-paybill")
-                                <div id="paybill-option" class="col-sm-6 mb-3">
+                                <div id="paybill-option" class="col-12 col-md-6 mb-3">
                                     <x-wallet::form.input label="Account Reference"
                                         wire:model.defer="cashoutFormData.account_reference" name="account_reference"
                                         help="Only for Daraja Paybill" required />

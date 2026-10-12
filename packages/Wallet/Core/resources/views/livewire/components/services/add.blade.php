@@ -38,10 +38,10 @@
                                 </div>
                                 <div class="col-sm-12">
                                     <div class="row">
-                                        <div class="col-6 mb-3">
+                                        <div class="col-12 col-md-6 mb-3">
                                             <x-wallet::form.select label="Client" wire:model.defer="formData.client_id" :options="$clients->pluck('name', 'id')" placeholder="Choose Client" />
                                         </div>
-                                        <div class="col-6 mb-3">
+                                        <div class="col-12 col-md-6 mb-3">
                                             <x-wallet::form.select label="Account" wire:model.defer="formData.account_id" :options="$accounts->pluck('name', 'id')" placeholder="Choose Account" />
                                         </div>
                                     </div>
@@ -50,14 +50,14 @@
                                     <x-wallet::form.input type="url" label="Callback URL" wire:model.defer="formData.callback_url"/>
                                 </div>
                                 <div class="row">
-                                    <div class="col-sm-6 mb-3">
+                                    <div class="col-12 col-md-6 mb-3">
                                         <x-wallet::form.input type="number" label="System Charges" wire:model.defer="formData.system_charges" id="add-system_charges" required/>
                                     </div>
-                                    <div class="col-sm-6 mb-3">
+                                    <div class="col-12 col-md-6 mb-3">
                                         <x-wallet::form.input type="number" label="SMS Charges" wire:model.defer="formData.sms_charges" id="add-sms_charges" required/>
                                     </div>
                                 </div>
-                                <div class="col-sm-12 mb-3">
+                                <div class="col-12 col-md-6 mb-3">
                                     <x-wallet::form.input type="number" label="Max Transaction Amount" wire:model.defer="formData.max_trx_amount" id="add-max_trx_amount" required/>
                                 </div>
                                 <hr>

@@ -1,4 +1,4 @@
-<div class="content-fluid">
+<div class="container-fluid">
     @if ($list)
     @include('core::livewire.components.transactions.list')
     @elseif($view)

@@ -39,17 +39,17 @@
                                     </div>
                                 </div>
                                 <div class="row">
-                                    <div class="col-sm-6 mb-3">
+                                    <div class="col-12 col-md-6 mb-3">
                                         <x-wallet::form.select label="Channel" wire:model.live="withdrawalForm.channel_id" :options="$payment_channels->pluck('name', 'slug')"
                                             placeholder="Choose Channel" />
                                     </div>
                                     @if (isset($withdrawalForm['channel_id']) && $withdrawalForm['channel_id'] == "daraja-paybill")
-                                        <div id="paybill-option" class="col-sm-6 mb-3">
+                                        <div id="paybill-option" class="col-12 col-md-6 mb-3">
                                             <x-wallet::form.input label="Account Reference" wire:model.defer="withdrawalForm.account_reference" name="Account Reference" help="Only for Daraja Paybill"
                                                 required />
                                         </div>
                                     @endif
-                                    <div class="col-sm-12 mb-3">
+                                    <div class="col-12 mb-3">
                                         <x-wallet::form.input type="number" label="Amount" wire:model.defer="withdrawalForm.amount"
                                             name="Amount" help="Should not exceed {{ number_format($max_amount, 2) }}" required min="0" max="{{ $max_amount }}" />
                                     </div>
